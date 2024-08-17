@@ -47,7 +47,7 @@ body {
 }
 
 .logo {
-    font-size: 2em;
+    font-size: 3em;
     text-transform: uppercase;
     color: var(--color-black);
     font-weight: 700;
@@ -73,7 +73,7 @@ body {
 }
 
 .header .navigation ul li a {
-    font-size: 20px;
+    font-size: 1.5em;
     color: var(--color-black);
     text-decoration: none;
     padding-right: 20px;
@@ -100,7 +100,7 @@ body {
 }
 
 .header .navigation ul li ul li a {
-    font-size: 18px;
+    font-size: 1.25em;
     text-transform: capitalize;
 }
 
@@ -125,7 +125,7 @@ body {
     color: var(--color-white);
     background: var(--color-primary-dark);
     padding: 5px 10px;
-    font-size: 12px;
+    font-size: 1.25 em;
     text-align: center;
     border-radius: 5px;
 }
@@ -139,7 +139,6 @@ body {
 /* Begin making the navigation bar responsive*/
 @media(max-width: 950px) {
 
-    /* Todo: CUrrent we are using differnt max-widths in different parts of the css. We should standardise this.*/
     .header label {
         display: initial;
     }
@@ -153,14 +152,14 @@ body {
         top: 0;
         left: 0;
         right: 0;
-        background: var(--color-primary);
+        background: var( --color-primary-verylight);
 
         display: none;
     }
 
     .header .navigation ul li {
         width: 100%;
-        border-top: 1px solid var(--color-primary-light);
+        border-top: 1px solid var(--color-primary-very-light);
     }
 
     .header .navigation ul li a {
@@ -174,7 +173,7 @@ body {
     }
 
     .header .navigation ul li ul li {
-        background: var(--color-primary);
+        background: var(--color-primary-very-light);
     }
 
     .header .navigation ul li ul li ul {
@@ -308,13 +307,13 @@ footerBottom {
 
 .about-text {
     margin-right: 20px;
-    font-size: 1.5rem;
+    font-size: 2rem;
     margin-bottom: 20px;
 }
 
 
 .highlight {
-    font-size: 2rem;
+    font-size: 3rem;
     padding-top: 1rem;
     color: var(--color-secondary);
 }
@@ -324,10 +323,12 @@ footerBottom {
 }
 
 .message-top {
+    font-size: 5rem;
     color: var(--color-primary);
 }
 
 .message-bottom {
+    font-size: 5rem;
     color: var(--color-secondary);
 }
 
@@ -336,7 +337,7 @@ footerBottom {
     display: inline-block;
     padding: 0.8rem 0.6rem;
     border: none;
-    font-size: 1.4rem;
+    font-size: 2rem;
     border-radius: 5px;
     color: var(--color-white);
     background-color: var(--color-primary);
@@ -359,9 +360,6 @@ iframe {
 
 /* Begin making the hero section responsive*/
 @media screen and (max-width: 950px) {
-    /* .logo {
-      font-size: 1.5rem;
-    } */
 
     .hero {
         flex-direction: column;
@@ -371,7 +369,10 @@ iframe {
     .intro-text h1 {
         font-size: 2.3rem;
         margin: 0 px;
-        /* padding-right: 10px; */
+    }
+
+    .message-bottom, .message-top {
+        font-size: 4rem;
     }
 
     .btn {
@@ -380,7 +381,8 @@ iframe {
     }
 
     iframe {
-        max-width: 80vh;
+        width: 40rem;
+        max-width: 40rem;
     }
 
     .about-text {
@@ -437,7 +439,7 @@ iframe {
 }
 
 .right-panel p {
-    font-size: 20px;
+    font-size: 1.5em;
     color: var(--color-black);
     line-height: 1.6;
     margin-bottom: 20px;
@@ -450,7 +452,7 @@ iframe {
     color: white;
     border: none;
     border-radius: 4px;
-    font-size: 1em;
+    font-size: 1.5em;
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s ease;
@@ -475,7 +477,7 @@ iframe {
     }
 
     .right-panel p {
-        font-size: 1em;
+        font-size: 1.5em;
     }
 
     .cta-button {
@@ -591,7 +593,7 @@ ul li .date {
     display: grid;
     place-items: center;
     color: #fff;
-    font-size: 17px;
+    font-size: 1.5em;
     box-shadow: 1px 2px 12px var(--color-shadow);
 }
 
@@ -613,24 +615,27 @@ ul li:nth-child(odd) .date {
 }
 
 ul li .heading {
-    font-size: 23px;
+    font-size: 2em;
     color: var(--color-primary);
 }
 
 ul li p {
-    font-size: 17px;
+    font-size: 1.3em;
     color: #666;
     line-height: 18px;
     margin: 12px 0 12px 12px;
 }
 
 ul li a {
-    font-size: 13px;
+    font-size: 1.5em;
     text-decoration: none;
-    color: var(--color-link-blue);
+    color: var(--color-primary);
     transition: all 0.3s ease;
 }
 
+ul li img {
+    width: 40px;
+}
 /* Begin making the timeline responsive*/
 @media only screen and (min-width:798px) and (max-width: 1100px) {
     .container {
@@ -718,7 +723,7 @@ ul li a {
 /* Add some padding inside the card container */
 .card-text {
     padding: 2px 16px;
-    font-size: 1rem;
+    font-size: 2rem;
     flex-grow: 1;
     display: flex;
     align-items: center;
@@ -780,7 +785,7 @@ ul li a {
 }
 
 .card-right-panel p {
-    font-size: 20px;
+    font-size: 1.5em;
     color: var(--color-black);
     line-height: 1.6;
     margin-bottom: 20px;
@@ -844,19 +849,20 @@ ul li a {
 /* Specific styling for the image part */
 .image-part img {
     max-width: 100%;
-    height: auto;
+    height: 100%;
+    /* height: auto; */
     border: solid 4px;
     border-color: var(--color-secondary);
 }
 
 .text-part p {
-    font-size: 1.5rem; /* Adjust the font size as needed */
+    font-size: 2rem; /* Adjust the font size as needed */
     margin: 0;
 }
 
 
 .text-part img {
-    width: 3rem;
+    width: 5rem;
     border: solid 2px;
     padding: 2px;
     border-color: var(--color-secondary);
@@ -883,7 +889,7 @@ ul li a {
     border: solid 1px;
     border-color: var(--color-primary);
     border-radius: 5px;
-    font-size: 1rem;
+    font-size: 2rem;
     cursor: pointer;
     background-color: var(--color-white);
     transition: background-color 0.3s ease;
@@ -917,13 +923,13 @@ ul li a {
 
 /* Begin style elements for the sponsors section on the home page */
 .sponsors-section {
-    padding: 40px 10%;
+    /* padding: 40px 10%; */
     background-color: var(--color-white);
     text-align: center;
 }
 
 .sponsors-section h2 {
-    font-size: 2em;
+    font-size: 3em;
     color: var(--color-primary-dark);
     margin-bottom: 20px;
 }
@@ -931,7 +937,7 @@ ul li a {
 .sponsor-logos {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 20px;
+    gap: 10px;
     justify-items: center;
 }
 
@@ -971,6 +977,7 @@ ul li a {
 
 .filter-label {
     font-weight: bold;
+    font-size: 1.5em;
     margin-right: 10px;
 }
 
@@ -981,6 +988,7 @@ ul li a {
     background-color: var(--color-white);
     color: var(--color-primary);
     cursor: pointer;
+    font-size: 1.25em;
 }
 
 .filter-btn.active {
@@ -1009,24 +1017,28 @@ ul li a {
     color: var(--color-white);
     padding: 3px 7px;
     border-radius: 3px;
-    font-size: 0.9rem;
+    font-size: 1.5rem;
     margin-right: 10px;
 }
 
 .publication-header h2 {
-    font-size: 1.5rem;
+    font-size: 2rem;
     margin: 10px 0;
 }
 
 .publication-header p {
+    font-size: 1.5rem;
     color: #666;
 }
 
 .links a {
     margin-right: 10px;
-    color: #007bff;
+    font-size: 1.5rem;
+    color: var(--color-primary);
     text-decoration: none;
 }
+
+
 
 .links a:hover {
     text-decoration: underline;
