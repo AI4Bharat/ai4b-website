@@ -1,0 +1,72 @@
+/* Begin style for the tools pages */
+
+.section-heading {
+    font-size: 5rem;
+    color: var(--color-secondary);
+    font-weight: bold;
+}
+
+.description {
+    font-size: 1.5rem;
+    margin-top: 20px;
+    color: var(color-black);
+    line-height: 1.6;
+}
+
+.buttons-group {
+    margin-top: 30px;
+}
+
+.buttons-group .btn-custom {
+    background-color: var(--color-primary);
+    color: #fff;
+    margin-right: 15px;
+    margin-bottom: 10px;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.buttons-group .btn-custom:hover {
+    background-color: var(--color-secondary);
+}
+
+.blog-section {
+    margin-top: 50px;
+    padding: 30px;
+    background-color: var(--color-white);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    font-size: 1.5rem;
+
+}
+
+.blog-section h3 {
+    color: var(--color-primary);
+    font-weight: bold;
+    margin-bottom: 20px;
+    font-size: 2rem;
+}
+
+.blog-section pre {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-left: 5px solid var(--color-primary);
+    border-radius: 5px;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .section-heading {
+        font-size: 3rem;
+    }
+
+    .iframe-container iframe {
+        height: 200px;
+    }
+}
+
+/* End style for the tools pages */

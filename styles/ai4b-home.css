@@ -71,14 +71,6 @@
     color: #fff;
 }
 
-iframe {
-    width: 30rem;
-    max-width: 60rem;
-    border-top: 40px groove var(--color-primary);
-    border-bottom: 40px groove var(--color-primary);
-    border-right: 28px solid var(--color-secondary);
-    border-left: 28px solid var(--color-secondary);
-}
 
 /* Begin making the hero section responsive*/
 @media screen and (max-width: 950px) {
@@ -100,11 +92,6 @@ iframe {
     .btn {
         padding: 0.5rem;
         font-size: 1.2rem;
-    }
-
-    iframe {
-        width: 40rem;
-        max-width: 40rem;
     }
 
     .about-text {
