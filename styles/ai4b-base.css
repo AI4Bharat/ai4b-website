@@ -154,3 +154,9 @@ iframe {
         height: 200px;
     }
 }
+
+.highlight {
+    font-size: 3rem;
+    padding-top: 1rem;
+    color: var(--color-secondary);
+}

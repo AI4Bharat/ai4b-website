@@ -34,11 +34,6 @@
 }
 
 
-.highlight {
-    font-size: 3rem;
-    padding-top: 1rem;
-    color: var(--color-secondary);
-}
 
 .hero p {
     line-height: var(--line-height);
