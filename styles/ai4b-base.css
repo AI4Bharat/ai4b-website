@@ -1,0 +1,123 @@
+:root {
+    --normal-font: 400;
+    --bold-font: 600;
+    --bolder-font: 900;
+    --line-height: 1.7rem;
+    --transition: 0.4s ease-in;
+    --color-primary: rgb(255, 102, 0);
+    --color-primary-transparent: rgba(255, 102, 0, 0.478);
+    --color-primary-light: rgb(255, 122, 0);
+    --color-primary-verylight: rgb(255, 157, 0);
+    --color-primary-dark: rgb(255, 82, 0);
+    --color-secondary: rgb(234, 32, 39);
+    --color-model: rgb(255, 102, 0);
+    --color-dataset: rgb(234, 32, 39);
+    --color-black: rgb(0, 0, 0);
+    --color-white: rgb(255, 255, 255);
+    --color-light-black: rgb(17, 17, 17);
+    --color-shadow: rgba(0, 0, 0, 0.1);
+    --color-link-blue: rgb(18, 54, 214);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0% 2% 0% 2%;
+    font-family: 'Crimson Text';
+}
+
+/* putting this in the base file as it is used on both the home page as well as the area pages */
+/* Begin style elements for the Area Page intro section */
+.asr-section {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 50px;
+    padding-bottom: 10px;
+    background-color: var(--color-white);
+    border-bottom: 4px solid var(--color-primary);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.left-panel {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--color-white);
+    color: var(--color-black);
+    padding: 20px;
+    text-align: left;
+}
+
+.left-panel h1 {
+    font-size: 5em;
+    margin: 0;
+    font-weight: bold;
+}
+
+.right-panel {
+    flex: 2;
+    padding: 20px 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.right-panel p {
+    font-size: 1.5em;
+    color: var(--color-black);
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.cta-button {
+    align-self: flex-start;
+    padding: 12px 24px;
+    background-color: rgb(255, 102, 0);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.5em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-transform: uppercase;
+}
+
+/* Begin making the Area page intro section responsive*/
+@media (max-width: 950px) {
+    .asr-section {
+        flex-direction: column;
+        padding: 10px;
+    }
+
+    .left-panel,
+    .right-panel {
+        flex: 1;
+        padding: 10px;
+    }
+
+    .left-panel h1 {
+        font-size: 3em;
+    }
+
+    .right-panel p {
+        font-size: 1.5em;
+    }
+
+    .cta-button {
+        align-self: center;
+        padding: 10px 20px;
+    }
+}
+
+/* End making the Area page intro section responsive*/
+/* End style elements for the Area Page intro section */

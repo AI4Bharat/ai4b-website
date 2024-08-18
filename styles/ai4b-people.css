@@ -1,0 +1,64 @@
+h2.section-title {
+    color: rgb(255, 102, 0);
+    font-weight: bold;
+    text-align: center;
+    margin-top: 50px;
+    margin-bottom: 30px;
+}
+
+.profile-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin-bottom: 30px;
+    transition: transform 0.3s;
+}
+
+.profile-card:hover {
+    transform: translateY(-5px);
+}
+
+.profile-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 50%;
+    max-width: 150px;
+    margin-bottom: 15px;
+}
+
+.profile-card h5 {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: rgb(255, 102, 0);
+}
+
+.profile-card p {
+    font-size: 14px;
+    margin-bottom: 0;
+}
+
+.alumni-section {
+    padding: 50px 0;
+    background-color: #fff;
+    border-top: 1px solid rgb(255, 102, 0);
+    margin-top: 50px;
+}
+
+.alumni-section h3 {
+    text-align: center;
+    margin-bottom: 40px;
+    color: rgb(255, 102, 0);
+    font-weight: bold;
+}
+
+.alumni-list {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.alumni-list li {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
