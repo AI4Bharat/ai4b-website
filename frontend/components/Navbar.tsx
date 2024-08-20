@@ -237,7 +237,7 @@ interface NavItem {
 }
 
 const NAV_ITEMS: Array<NavItem> = [
-  { label: "Home", href: "" },
+  { label: "Home", href: "/" },
   {
     label: "Areas",
     children: [
@@ -266,6 +266,7 @@ const NAV_ITEMS: Array<NavItem> = [
         href: "#",
       },
     ],
+    href: "/areas",
   },
   {
     label: "Tools",
@@ -287,8 +288,9 @@ const NAV_ITEMS: Array<NavItem> = [
         href: "#",
       },
     ],
+    href: "/tools",
   },
-  { label: "Publications", href: "" },
-  { label: "People", href: "" },
-  { label: "Careers", href: "" },
+  { label: "Publications", href: "publications" },
+  { label: "People", href: "people" },
+  { label: "Careers", href: "careers" },
 ];
