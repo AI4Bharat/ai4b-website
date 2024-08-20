@@ -108,6 +108,7 @@ export default function Datasets() {
                 alt={"Hero Image"}
                 fit={"cover"}
                 align={"center"}
+                padding={1}
                 w={"100%"}
                 h={"100%"}
                 src={"/assets/data-collection.png"}
