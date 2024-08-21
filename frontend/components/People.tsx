@@ -10,6 +10,7 @@ import {
   Stack,
   Text,
   useColorModeValue,
+  Skeleton,
 } from "@chakra-ui/react";
 import { ReactElement } from "react";
 import {
@@ -81,20 +82,24 @@ export default function PeopleSection({
       </Stack>
 
       <Container maxW={"5xl"} mt={12}>
-        <Flex flexWrap="wrap" gridGap={6} justify="center">
-          {members.map((member) =>
-            member.team === team ? (
-              <Card
-                first_name={member.first_name}
-                last_name={member.last_name}
-                role={member.role}
-                photo={member.photo}
-              />
-            ) : (
-              <></>
-            )
-          )}
-        </Flex>
+        {Object.keys(members).length > 0 ? (
+          <Flex flexWrap="wrap" gridGap={6} justify="center">
+            {members.map((member) =>
+              member.team === team ? (
+                <Card
+                  first_name={member.first_name}
+                  last_name={member.last_name}
+                  role={member.role}
+                  photo={member.photo}
+                />
+              ) : (
+                <></>
+              )
+            )}
+          </Flex>
+        ) : (
+          <Skeleton height={300} />
+        )}
       </Container>
     </Box>
   );

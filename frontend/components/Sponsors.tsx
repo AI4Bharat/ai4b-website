@@ -26,7 +26,10 @@ export default function Sponsors() {
   return (
     <Box p={4}>
       <Stack spacing={4} as={Container} maxW={"3xl"} textAlign={"center"}>
-        <Heading fontSize={{ base: "2xl", sm: "4xl" }} fontWeight={"bold"}>
+        <Heading
+          fontSize={{ base: "3xl", sm: "4xl", lg: "6xl" }}
+          fontWeight={"bold"}
+        >
           Our Sponsors
         </Heading>
       </Stack>

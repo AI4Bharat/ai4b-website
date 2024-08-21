@@ -1,11 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./global.css";
-import { ChakraProvider, extendTheme } from "@chakra-ui/react";
-import Navbar from "../../components/Navbar";
-import Footer from "../../components/Footer";
-
-const inter = Inter({ subsets: ["latin"] });
+import Layout from "../../components/Layout";
 
 export const metadata: Metadata = {
   title: "AI4Bharat",
@@ -18,15 +12,5 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en">
-      <body className={inter.className}>
-        <ChakraProvider>
-          <Navbar />
-          {children}
-          <Footer />
-        </ChakraProvider>
-      </body>
-    </html>
-  );
+  return <Layout children={children} />;
 }

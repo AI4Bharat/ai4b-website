@@ -36,28 +36,15 @@ export default function Hero() {
             fontWeight={600}
             fontSize={{ base: "3xl", sm: "4xl", lg: "6xl" }}
           >
-            <Text
-              as={"span"}
-              position={"relative"}
-              _after={{
-                content: "''",
-                width: "full",
-                height: "30%",
-                position: "absolute",
-                bottom: 1,
-                left: 0,
-                bg: "red.400",
-                zIndex: -1,
-              }}
-            >
+            <Text as={"span"} color={"a4borange"} position={"relative"}>
               Building AI
             </Text>
             <br />
-            <Text as={"span"} color={"red.400"}>
+            <Text as={"span"} color={"a4bred"}>
               for India!
             </Text>
           </Heading>
-          <Text color={"gray.500"}>
+          <Text color={"black"}>
             AI4Bharat, a research lab at IIT Madras, is dedicated to advancing
             AI technology for Indian languages through open-source
             contributions. Over the past, the lab has developed and released a

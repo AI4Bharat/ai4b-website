@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import PeopleSection from "../../../components/People";
-import { Stack } from "@chakra-ui/react";
+import { Stack, Skeleton } from "@chakra-ui/react";
 
 export default function People() {
   const [members, setMembers] = useState([]);

@@ -69,8 +69,12 @@ export default function Features() {
   return (
     <Box p={4}>
       <Stack spacing={4} as={Container} maxW={"3xl"} textAlign={"center"}>
-        <Heading fontSize={{ base: "2xl", sm: "4xl" }} fontWeight={"bold"}>
-          Cutting-edge work across areas.
+        <Heading
+          fontSize={{ base: "3xl", sm: "4xl", lg: "6xl" }}
+          fontWeight={"bold"}
+        >
+          <Text textColor={"a4borange"}>Cutting-edge work</Text>
+          <Text textColor={"a4bred"}>across areas.</Text>
         </Heading>
       </Stack>
 

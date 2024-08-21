@@ -68,24 +68,11 @@ export default function Datasets() {
             fontWeight={600}
             fontSize={{ base: "3xl", sm: "4xl", lg: "6xl" }}
           >
-            <Text
-              as={"span"}
-              position={"relative"}
-              _after={{
-                content: "''",
-                width: "full",
-                height: "30%",
-                position: "absolute",
-                bottom: 1,
-                left: 0,
-                bg: "red.400",
-                zIndex: -1,
-              }}
-            >
+            <Text as={"span"} color={"a4borange"} position={"relative"}>
               Pioneering
             </Text>
             <br />
-            <Text as={"span"} color={"red.400"}>
+            <Text as={"span"} color={"a4bred"}>
               Data Collection!
             </Text>
           </Heading>
