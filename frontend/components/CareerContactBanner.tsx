@@ -49,7 +49,7 @@ const Banner = () => {
       >
         <Button
           as={Link}
-          href="mailto:umashanks99@gmail.com"
+          href="mailto:enquiry@ai4bharat.org"
           color="white"
           variant="solid"
           size="lg"
