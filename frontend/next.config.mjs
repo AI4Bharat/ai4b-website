@@ -8,6 +8,9 @@ const nextConfig = {
       },
     ];
   },
+  images: {
+    domains: ["localhost"], // Replace 'example.com' with the hostname of your image source
+  },
 };
 
 export default nextConfig;

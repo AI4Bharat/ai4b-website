@@ -6,7 +6,7 @@ from .models import Member
 
 
 class MemberAdmin(admin.ModelAdmin):
-    list_filter = ["team"]
+    list_filter = ["team", "language"]
     search_fields = (
         "first_name",
         "last_name",
