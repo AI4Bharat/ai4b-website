@@ -92,7 +92,7 @@ ul li:nth-child(even) .circle {
 
 ul li .date {
     position: absolute;
-    width: 130px;
+    width: 150px;
     height: 33px;
     /* background-image: linear-gradient(to right, var(--color-primary), var(--color-primary)); */
     border-radius: 15px;
