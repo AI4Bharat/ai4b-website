@@ -2,9 +2,7 @@ from django.shortcuts import render
 
 from .models import Member
 from rest_framework import viewsets
-from rest_framework.response import Response
 from .serializers import MemberSerializer
-from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 
 

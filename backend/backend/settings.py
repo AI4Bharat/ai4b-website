@@ -28,11 +28,14 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+TIME_ZONE = "Asia/Kolkata"
+
 
 # Application definition
 
 INSTALLED_APPS = [
     "people.apps.PeopleConfig",
+    "careers.apps.CareersConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -111,8 +114,6 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
-
-TIME_ZONE = "UTC"
 
 USE_I18N = True
 

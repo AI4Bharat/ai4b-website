@@ -19,7 +19,6 @@ export default function People() {
     };
 
     fetchMembers();
-    console.log(members);
   }, []);
 
   return (
