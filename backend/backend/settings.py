@@ -34,6 +34,7 @@ TIME_ZONE = "Asia/Kolkata"
 # Application definition
 
 INSTALLED_APPS = [
+    "areas.apps.AreasConfig",
     "people.apps.PeopleConfig",
     "careers.apps.CareersConfig",
     "django.contrib.admin",

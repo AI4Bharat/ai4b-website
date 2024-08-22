@@ -245,6 +245,7 @@ const NAV_ITEMS: Array<NavItem> = [
         label: "Input Tools",
         href: "#",
       },
+      { label: "Transliteration", href: "#" },
       {
         label: "Machine Translation",
         href: "#",

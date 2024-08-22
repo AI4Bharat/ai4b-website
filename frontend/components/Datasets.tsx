@@ -1,5 +1,5 @@
 "use client";
-import { ReactElement } from "react";
+import { ReactElement, useState, useEffect } from "react";
 import {
   Box,
   SimpleGrid,
@@ -13,25 +13,33 @@ import {
   CardBody,
   useColorModeValue,
   Image,
+  SkeletonCircle,
+  SkeletonText,
 } from "@chakra-ui/react";
-import { FcAssistant, FcDonate, FcInTransit } from "react-icons/fc";
+import axios from "axios";
+import { useQuery } from "react-query";
 
 interface FeatureProps {
   title: string;
   icon: ReactElement;
 }
 
-const datasets: { [key: string]: { path: string; icon: string } } = {
-  Sangraha: { path: "", icon: "/assets/icons/llm.png" },
-  Samanantar: { path: "", icon: "/assets/icons/mt.png" },
-  BPCC: { path: "", icon: "/assets/icons/mt.png" },
-  Shrutilipi: { path: "", icon: "/assets/icons/asr.png" },
-  Svarah: { path: "", icon: "/assets/icons/asr.png" },
-  Lahaja: { path: "", icon: "/assets/icons/asr.png" },
-  IndicVoices: { path: "", icon: "/assets/icons/asr.png" },
-  Rasa: { path: "", icon: "/assets/icons/tts.png" },
-  Aksharantar: { path: "", icon: "/assets/icons/xlit.png" },
-};
+interface Dataset {
+  title: string;
+  area: string;
+}
+
+// const datasets: { [key: string]: { path: string; icon: string } } = {
+//   Sangraha: { path: "", icon: "/assets/icons/llm.png" },
+//   Samanantar: { path: "", icon: "/assets/icons/mt.png" },
+//   BPCC: { path: "", icon: "/assets/icons/mt.png" },
+//   Shrutilipi: { path: "", icon: "/assets/icons/asr.png" },
+//   Svarah: { path: "", icon: "/assets/icons/asr.png" },
+//   Lahaja: { path: "", icon: "/assets/icons/asr.png" },
+//   IndicVoices: { path: "", icon: "/assets/icons/asr.png" },
+//   Rasa: { path: "", icon: "/assets/icons/tts.png" },
+//   Aksharantar: { path: "", icon: "/assets/icons/xlit.png" },
+// };
 
 const Feature = ({ title, icon }: FeatureProps) => {
   return (
@@ -53,7 +61,28 @@ const Feature = ({ title, icon }: FeatureProps) => {
   );
 };
 
+const fetchDatasets = async () => {
+  try {
+    const response = await axios.get("http://localhost:8000/datasets/");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching datasets:", error);
+    return [];
+  }
+};
+
 export default function Datasets() {
+  const [datasets, setDatasets] = useState([]);
+  const { isLoading, error, data } = useQuery("fetchDatasets", fetchDatasets);
+
+  useEffect(() => {
+    if (error || isLoading) {
+      setDatasets([]);
+    } else {
+      setDatasets(data);
+    }
+  }, [error, data, isLoading]);
+
   return (
     <Container maxW={"7xl"}>
       <Stack
@@ -77,7 +106,7 @@ export default function Datasets() {
             </Text>
           </Heading>
           <Flex
-            flex={1}
+            flex={2}
             justify={"center"}
             align={"center"}
             position={"relative"}
@@ -103,25 +132,44 @@ export default function Datasets() {
             </Box>
           </Flex>
         </Stack>
-        <SimpleGrid columns={{ base: 1, md: 3 }} spacing={10}>
-          {Object.keys(datasets).map((key) => (
-            <Card key={key} border={"solid"} borderColor={"orange"}>
-              <CardBody>
-                <Feature
-                  icon={
-                    <Image
-                      src={datasets[key].icon}
-                      alt="Icon"
-                      width={50}
-                      height={50}
-                    />
-                  }
-                  title={key}
-                />
-              </CardBody>
-            </Card>
-          ))}
-        </SimpleGrid>
+        {isLoading ? (
+          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={10}>
+            {Array.from({ length: 1 }, (_, index) => (
+              <Card
+                key={index}
+                border={"solid"}
+                borderColor={"orange"}
+                w={113.77}
+                h={140}
+                padding="6"
+              >
+                <SkeletonCircle />
+                <br />
+                <SkeletonText />
+              </Card>
+            ))}
+          </SimpleGrid>
+        ) : (
+          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={10}>
+            {datasets.map((dataset: Dataset) => (
+              <Card key={dataset.title} border={"solid"} borderColor={"orange"}>
+                <CardBody>
+                  <Feature
+                    icon={
+                      <Image
+                        src={`/assets/icons/${dataset.area.toLowerCase()}.png`}
+                        alt="Icon"
+                        width={50}
+                        height={50}
+                      />
+                    }
+                    title={dataset.title}
+                  />
+                </CardBody>
+              </Card>
+            ))}
+          </SimpleGrid>
+        )}
       </Stack>
     </Container>
   );
