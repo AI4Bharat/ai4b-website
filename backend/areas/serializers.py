@@ -9,6 +9,7 @@ class DatasetSerializer(ModelSerializer):
             "id",
             "title",
             "area",
+            "published_on",
             "description",
             "paper_link",
             "website_link",
