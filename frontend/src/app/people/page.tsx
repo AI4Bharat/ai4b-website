@@ -4,10 +4,15 @@ import axios from "axios";
 import PeopleSection from "../../../components/People";
 import { Stack } from "@chakra-ui/react";
 import { useQuery } from "react-query";
+import { API_URL } from "../config";
 
 const fetchMembers = async () => {
   try {
-    const response = await axios.get("http://localhost:8000/member/");
+    const response = await axios.get(`${API_URL}/member/`, {
+      headers: {
+        "ngrok-skip-browser-warning": true,
+      },
+    });
     return response.data;
   } catch (error) {
     console.error("Error fetching members:", error);

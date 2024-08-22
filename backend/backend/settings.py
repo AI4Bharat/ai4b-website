@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-$b@55^do#pwyl)vdgf=5az6mk=g^w33nn63mc9cg&1a+oaje2l
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [".ngrok-free.app", "localhost"]
 
 TIME_ZONE = "Asia/Kolkata"
 
@@ -142,3 +142,16 @@ REST_FRAMEWORK = {
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ALLOW_HEADERS = (
+    "content-disposition",
+    "accept-encoding",
+    "content-encoding",
+    "content-type",
+    "accept",
+    "origin",
+    "authorization",
+    "ngrok-skip-browser-warning",
+)

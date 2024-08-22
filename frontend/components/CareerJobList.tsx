@@ -18,20 +18,12 @@ import { IconType } from "react-icons";
 import { FaRegComment, FaRegHeart, FaRegEye } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+import { API_URL } from "@/app/config";
 interface JobAttributes {
   title: string;
   link: string;
   created_at: string;
 }
-
-const jobs: JobAttributes[] = [
-  {
-    title: "Intern",
-    link: "https://www.google.co.in/",
-    created_at: "21 Jan 2022",
-  },
-];
 
 const Jobs = () => {
   const [jobs, setJobs] = useState<JobAttributes[]>([]);
@@ -39,7 +31,11 @@ const Jobs = () => {
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/careers/");
+        const response = await axios.get(`${API_URL}/careers/`, {
+          headers: {
+            "ngrok-skip-browser-warning": true,
+          },
+        });
         setJobs(response.data);
       } catch (error) {
         console.error("Error fetching members:", error);

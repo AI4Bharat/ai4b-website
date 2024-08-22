@@ -18,6 +18,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useQuery } from "react-query";
+import { API_URL } from "@/app/config";
 
 interface FeatureProps {
   title: string;
@@ -63,7 +64,11 @@ const Feature = ({ title, icon }: FeatureProps) => {
 
 const fetchDatasets = async () => {
   try {
-    const response = await axios.get("http://localhost:8000/datasets/");
+    const response = await axios.get(`${API_URL}/datasets/`,{
+      headers:{
+        "ngrok-skip-browser-warning":true
+      }
+    });
     return response.data;
   } catch (error) {
     console.error("Error fetching datasets:", error);
