@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Annotation Tool</title>
+    <!-- Bootstrap CSS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/ai4b-base.css">
+    <link rel="stylesheet" href="../styles/ai4b-tools.css">
+    <style>
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            width: 300px;
+            height: 300px;
+            border: 2px solid black;
+            position: relative;
+        }
+
+        .circle {
+            width: 30px;
+            height: 30px;
+            background-color: red;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            /* Center vertically */
+            left: 100%;
+            /* Move to the right edge */
+            transform: translate(-50%, -50%);
+            border: 2px solid black;
+            /* Optional: add a border to match the grid border */
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div id="head_content"></div>
+    <!-- Top Section -->
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Left Sub-Section -->
+            <div class="col-lg-8 col-md-12">
+                <div>
+                    <h1 class="section-heading">Anudesh</h1>
+                    <p class="description">Anudesh is an open source platform to annotate Large language model's data at scale, built with a vision to enhance digital presence of under-represented languages in India.
+                    </p>
+
+                    <div class="buttons-group">
+                        <a href="https://anudesh.ai4bharat.org/" target="_blank" class="btn btn-custom">Try Demo</a>
+                        <a href="https://github.com/AI4Bharat/anudesh" target="_blank"
+                            class="btn btn-custom">Codebase</a>
+                        <!-- <a href="https://www.youtube.com/@anudesh-ekstep" target="_blank"
+                            class="btn btn-custom">Tutorial</a> -->
+                        <a href="https://backend.dev.anudesh.ai4bharat.org/swagger/" target="_blank"
+                            class="btn btn-custom">API Specs</a>
+                        <!-- <a href="https://ai4bharat.iitm.ac.in/blog/anudesh-blog/" target="_blank"
+                            class="btn btn-custom">Blog</a> -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sub-Section with iFrame -->
+            <div class="col-lg-4 col-md-5 iframe-container">
+                <iframe src="https://www.youtube.com/embed/Jq3CcEb9pxQ"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Blog Section -->
+    <div class="container-fluid blog-section">
+        <h3>Installation Instructions</h3>
+        <p>Follow the steps below to install and run the AI Annotation Tool:</p>
+        <h5>Backend Setup</h5>
+        <pre>
+# Clone the Anudesh-Backend repository from GitHub to your local machine.
+git clone https://github.com/AI4Bharat/Anudesh-Backend.git
+            
+# Create a virtual environment for the project. Replace <YOUR-ENVIRONMENT-NAME> with your preferred environment name.
+python3 -m venv <YOUR-ENVIRONMENT-NAME>
+
+# Activate the virtual environment. This ensures that the packages you install are isolated from the global Python environment.
+source <YOUR-ENVIRONMENT-NAME>/bin/activate
+
+# Install all required Python packages listed in the requirements-dev.txt file.
+pip install -r deploy/requirements-dev.txt
+
+# Set up the environment variables needed for the project by copying the example environment file.
+cp .env.example ./backend/.env
+
+# Generate a new secret key for Django (within the virtual environment):
+# Open a Python shell.
+python backend/manage.py shell
+
+    # Import the utility function to generate a secret key.
+    >> from django.core.management.utils import get_random_secret_key
+
+    # Generate and print a new secret key.
+    >> get_random_secret_key()
+
+# Copy the generated secret key and paste it into the .env file as the value for SECRET_KEY.
+
+# Docker Installation
+# Build the Docker containers as defined in the docker-compose-local.yml file.
+docker-compose -f docker-compose-local.yml build
+
+# Run the containers in detached mode (-d flag). This will start up all the services defined in the Docker Compose file.
+docker-compose -f docker-compose-local.yml up -d
+
+# Run Migrations
+# The following steps are required only when you run the project for the first time or after making changes to the models.
+
+    # Check if there are any pending migrations.
+    docker-compose exec web python backend/manage.py makemigrations 
+
+    # Apply all pending migrations to the database.
+    docker-compose exec web python backend/manage.py migrate
+
+# Create a superuser for accessing the Django admin interface (required only once).
+docker-compose exec web python backend/manage.py createsuperuser
+
+# Run the Django development server within the Docker container.
+docker-compose exec web python backend/manage.py runserver
+</pre>
+        <h5>Frontend Setup</h5>
+        <pre>
+# Clone the Anudesh-Frontend repository from GitHub to your local machine.
+git clone https://github.com/AI4Bharat/Anudesh-Frontend.git
+
+# Change directory to the newly cloned Anudesh-Frontend folder.
+cd Anudesh-Frontend
+
+# Install the necessary dependencies for the project. 
+# The --force flag is used to bypass conflicts with the existing dependencies.
+npm i --force
+
+# Start the development server. This will run the frontend application on a local server.
+npm run dev</pre>
+        <p>If you encounter any issues, please refer to the <a
+                href="https://github.com/AI4Bharat/Anudesh-Backend/blob/master/README.md"
+                target="_blank">backend</a>
+            and <a href="https://github.com/AI4Bharat/Anudesh-Frontend/blob/master/README.md"
+                target="_blank">frontend</a> documentation or reach out to our <a href="mailto:admin@ai4bharat.org"
+                target="_blank">support team.</a></p>
+    </div>
+
+    <section class="experience pt-100 pb-100" id="experience">
+        <div class="row">
+            <div class="col-xl-8 mx-auto text-center">
+                <div class="section-title">
+                    <h4>Anudesh Releases</h4>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="timeline-row">
+            <div class="timeline-col timeline-col-right">
+                <div class="timeline-content">
+                    <span>V 1.0</span>
+                    <h4>2024</h4>
+                    <p></p>
+                </div>
+                <div class="timeline-circle"></div>
+            </div>
+            <div class="timeline-col"></div>
+        </div>
+
+        <!-- <div class="timeline-row">
+            <div class="timeline-col"></div>
+            <div class="timeline-col timeline-col-left">
+                <div class="timeline-content">
+                    <span></span>
+                    <h4></h4>
+                    <p></p>
+                </div>
+                <div class="timeline-circle"></div>
+            </div>
+        </div> -->
+
+    </section>
+
+    <div id="foot_content"></div>
+</body>
+
+
+<script type="text/javascript">
+    $('#head_content').load('header.html')
+    $('#foot_content').load('footer.html')
+</script>
+<!-- Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</html>

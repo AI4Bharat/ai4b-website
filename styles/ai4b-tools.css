@@ -69,4 +69,120 @@
     }
 }
 
+.pt-100{
+    padding-top:100px;
+}
+.pb-100{
+    padding-bottom:100px;
+}
+.section-title {
+  margin-bottom: 60px;
+  color: var(--color-secondary);
+}
+.section-title p {
+	color: #777;
+	font-size: 16px;
+}
+.section-title h4 {
+	text-transform: capitalize;
+	font-size: 40px;
+	position: relative;
+	padding-bottom: 20px;
+	margin-bottom: 20px;
+	font-weight: 600;
+}
+.section-title h4:before {
+	position: absolute;
+	content: "";
+	width: 60px;
+	height: 2px;
+	background-color: rgb(255, 102, 0);
+	bottom: 0;
+	left: 50%;
+	margin-left: -30px;
+}
+.section-title h4:after {
+	position: absolute;
+	background-color: rgb(255, 102, 0);
+	content: "";
+	width: 10px;
+	height: 10px;
+	bottom: -4px;
+	left: 50%;
+	margin-left: -5px;
+	border-radius: 50%;
+}
+
+.timeline-content h4 {
+	font-size: 22px;
+	font-weight: 600;
+	margin: 10px 0;
+}
+.timeline-content p{
+	margin: 0;
+}
+
+.timeline-content span {
+	font-size: 18px;
+	font-weight: 500;
+	font-family: poppins;
+	color: rgb(255, 102, 0);
+}
+
+.timeline-row {
+    display: flex;
+    text-align: center;
+}
+
+.timeline-col {
+    flex: 1;
+    position: relative;
+    padding: 10px;
+}
+
+.timeline-col-right {
+    border-right: solid 2px rgb(255, 102, 0);
+}
+
+.timeline-col-left {
+    border-left: solid 2px rgb(255, 102, 0);
+}
+
+.timeline-content {
+    border: solid 2px rgb(255, 102, 0);
+    margin: 0.5% 5%;
+    padding: 4%;
+    width: fit-content;
+}
+
+.timeline-col-right .timeline-content {
+    text-align: right;
+    margin-left: auto;
+}
+
+.timeline-col-left .timeline-content {
+    text-align: left;
+    margin-right: auto;
+}
+
+.timeline-circle {
+    width: 20px;
+    height: 20px;
+    background-color: rgb(255, 102, 0);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.timeline-col-right .timeline-circle {
+    right: -1px;
+    transform: translate(50%, -50%);
+}
+
+.timeline-col-left .timeline-circle {
+    left: -1px;
+    transform: translate(-50%, -50%);
+}
+
 /* End style for the tools pages */

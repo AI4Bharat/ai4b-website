@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Annotation Tool</title>
+    <!-- Bootstrap CSS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/ai4b-base.css">
+    <link rel="stylesheet" href="../styles/ai4b-tools.css">
+    <style>
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            width: 300px;
+            height: 300px;
+            border: 2px solid black;
+            position: relative;
+        }
+
+        .circle {
+            width: 30px;
+            height: 30px;
+            background-color: red;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            /* Center vertically */
+            left: 100%;
+            /* Move to the right edge */
+            transform: translate(-50%, -50%);
+            border: 2px solid black;
+            /* Optional: add a border to match the grid border */
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div id="head_content"></div>
+    <!-- Top Section -->
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Left Sub-Section -->
+            <div class="col-lg-8 col-md-12">
+                <div>
+                    <h1 class="section-heading">Chitralekha</h1>
+                    <p class="description">Chitralekha is an open-source AI-powered video transcreation platform,
+                        developed by AI4Bharat and EkStep. It has an integrated workforce management system, which
+                        enables end-to-end transcreation of a video from one language to another through the stages of
+                        transcription, translation and voice-over for the translated language.
+                    </p>
+
+                    <div class="buttons-group">
+                        <a href="https://chitralekha.ai4bharat.org/" target="_blank" class="btn btn-custom">Try Demo</a>
+                        <a href="https://github.com/AI4Bharat/Chitralekha/wiki" target="_blank"
+                            class="btn btn-custom">Codebase</a>
+                        <a href="https://www.youtube.com/@chitralekha-ekstep" target="_blank"
+                            class="btn btn-custom">Tutorial</a>
+                        <a href="https://backend.chitralekha.ai4bharat.org/swagger/" target="_blank"
+                            class="btn btn-custom">API Specs</a>
+                        <a href="https://ai4bharat.iitm.ac.in/blog/chitralekha-blog/" target="_blank"
+                            class="btn btn-custom">Blog</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sub-Section with iFrame -->
+            <div class="col-lg-4 col-md-5 iframe-container">
+                <iframe src="https://www.youtube.com/embed/Jq3CcEb9pxQ"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Blog Section -->
+    <div class="container-fluid blog-section">
+        <h3>Installation Instructions</h3>
+        <p>Follow the steps below to install and run the AI Annotation Tool:</p>
+        <h5>Backend Setup</h5>
+        <pre>
+# Clone the Chitralekha-Backend repository from GitHub to your local machine.
+git clone https://github.com/AI4Bharat/Chitralekha-Backend.git
+            
+# Create a virtual environment for the project. Replace <YOUR-ENVIRONMENT-NAME> with your preferred environment name.
+python3 -m venv <YOUR-ENVIRONMENT-NAME>
+
+# Activate the virtual environment. This ensures that the packages you install are isolated from the global Python environment.
+source <YOUR-ENVIRONMENT-NAME>/bin/activate
+
+# Install all required Python packages listed in the requirements-dev.txt file.
+pip install -r deploy/requirements-dev.txt
+
+# Set up the environment variables needed for the project by copying the example environment file.
+cp .env.example ./backend/.env
+
+# Generate a new secret key for Django (within the virtual environment):
+# Open a Python shell.
+python backend/manage.py shell
+
+    # Import the utility function to generate a secret key.
+    >> from django.core.management.utils import get_random_secret_key
+
+    # Generate and print a new secret key.
+    >> get_random_secret_key()
+
+# Copy the generated secret key and paste it into the .env file as the value for SECRET_KEY.
+
+# Run Migrations
+# The following steps are required only when you run the project for the first time or after making changes to the models.
+
+    # Check if there are any pending migrations.
+    python backend/manage.py makemigrations 
+
+    # Apply all pending migrations to the database.
+    python backend/manage.py migrate
+
+# Create a superuser for accessing the Django admin interface (required only once).
+python backend/manage.py createsuperuser
+
+# Install and start Redis in a separate terminal.
+# Start Flower for monitoring Celery workers.
+python -m celery -A backend flower
+
+# Start the first Celery worker for the "default" queue.
+python -m celery -A backend worker -Q default --concurrency=1 -l DEBUG
+
+# Start the second Celery worker for the "voiceover" queue.
+python -m celery -A backend worker -Q voiceover --concurrency=1 -l DEBUG
+
+# Run the Django development server.
+python manage.py runserver</pre>
+        <h5>Frontend Setup</h5>
+        <pre>
+# Clone the Chitralekha-Frontend repository from GitHub to your local machine.
+git clone https://github.com/AI4Bharat/Chitralekha-Frontend.git
+
+# Change directory to the newly cloned Chitralekha-Frontend folder.
+cd Chitralekha-Frontend
+
+# Install the necessary dependencies for the project. 
+# The --force flag is used to bypass conflicts with the existing dependencies.
+npm i --force
+
+# Start the development server. This will run the frontend application on a local server.
+npm start</pre>
+        <p>If you encounter any issues, please refer to the <a
+                href="https://github.com/AI4Bharat/Chitralekha-Backend/blob/master/README.md"
+                target="_blank">backend</a>
+            and <a href="https://github.com/AI4Bharat/Chitralekha-Frontend/blob/master/README.md"
+                target="_blank">frontend</a> documentation or reach out to our <a href="mailto:admin@ai4bharat.org"
+                target="_blank">support team.</a></p>
+    </div>
+
+    <section class="experience pt-100 pb-100" id="experience">
+        <div class="row">
+            <div class="col-xl-8 mx-auto text-center">
+                <div class="section-title">
+                    <h4>Chitralekha Releases</h4>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="timeline-row">
+            <div class="timeline-col timeline-col-right">
+                <div class="timeline-content">
+                    <span>V 3.1</span>
+                    <h4>March 2024</h4>
+                    <p>Bulk Download of VoiceOver Tasks -> Zip file will be emailed to the users.</p>
+                    <p>Bug fix in decimal points in Translation Tasks.</p>
+                    <p>OnBoarding functionality for new clients.</p>
+                    <p>Enable Original Source Translation.</p>
+                    <p>User can Preview subtitles in Edit Page.</p>
+                </div>
+                <div class="timeline-circle"></div>
+            </div>
+            <div class="timeline-col"></div>
+        </div>
+
+        <div class="timeline-row">
+            <div class="timeline-col"></div>
+            <div class="timeline-col timeline-col-left">
+                <div class="timeline-content">
+                    <span>V 3.0</span>
+                    <h4>February 2024</h4>
+                    <p>Local implementation of Transliteration.</p>
+                    <p>Users can add and view glossary.</p>
+                    <p>Their added glossary will be automatically replaced in newly created Translation Edit
+                        tasks.</p>
+                    <p>Org Owners can upload bulk glossary.</p>
+                    <p>Sorted filter list.</p>
+                    <p>Added skip tutorial functionality.</p>
+                    <p>Description of video as name of file downloaded by NPTEL.</p>
+                    <p>Made get updated audio button disabled instead of hiding it.</p>
+                    <p>Countdown for remaining time while recording VO task.</p>
+                    <p>Testimonials in landing page.</p>
+                    <p>Public Charts in landing page.</p>
+                    <p>Show decimal values in VoiceOver's duration.</p>
+                </div>
+                <div class="timeline-circle"></div>
+            </div>
+        </div>
+
+        <div class="timeline-row">
+            <div class="timeline-col timeline-col-right">
+                <div class="timeline-content">
+                    <span>V 2.8</span>
+                    <h4>January 2024</h4>
+                    <p>Paginate Reports at Organisation and Project Level.</p>
+                    <p>In case of Machine Generated Source type, if Transcription/Translation API fails, Org
+                        Owner/Project Manager can regenerate the response.</p>
+                    <p>Show Project Id in Projects list.</p>
+                    <p>Org Owners can clone a project into multiple projects (max. 20).</p>
+                    <p>Task Id and Project Id are shown in Reports.</p>
+                    <p>Organization specific priority upgrade.</p>
+                    <p>Org Owner and Project Manager can update roles of members.</p>
+                </div>
+                <div class="timeline-circle"></div>
+            </div>
+            <div class="timeline-col"></div>
+        </div>
+
+        <div class="timeline-row">
+            <div class="timeline-col"></div>
+            <div class="timeline-col timeline-col-left">
+                <div class="timeline-content">
+                    <span>V 2.7</span>
+                    <h4>January 2024</h4>
+                    <p>Retained the filters in task list.</p>
+                    <p>Newsletter new UI with separate Write and Preview screens.</p>
+                    <p>Enable preview for HTML files uploaded in template 3.</p>
+                    <p>Org Owner would not have org owner permission if he is a member of project and not
+                        org owner.</p>
+                    <p>User can update newsletter email and newsletter categories that they are subscribed
+                        to.</p>
+                    <p>Clear Report table when project is changed.</p>
+                    <p>Return to task list after completion of a task.</p>
+                    <p>Snackbar showing up in the background in Video Update (issue fix).</p>
+                    <p>Added category and preview for all the three templates.</p>
+                    <p>Newsletter Subject is made customizable.</p>
+                </div>
+                <div class="timeline-circle"></div>
+            </div>
+        </div>
+
+        <div class="timeline-row">
+            <div class="timeline-col timeline-col-right">
+                <div class="timeline-content">
+                    <span>V 2.6</span>
+                    <h4>December 2023</h4>
+                    <p>BG music enabled from FE.</p>
+                    <p>Add button in Newsletter -> To add multiple headers and paragraphs in a single
+                        template.</p>
+                    <p>Subscribed User can unsubscribe or update their emails in their profile section.</p>
+                    <p>Users can unsubscribe directly from the Newsletter email.</p>
+                    <p>Sort Tasks list by created_at, updated_at, description in ascending and descending
+                        order. (Default sorting is done by updated_at in descending order.)</p>
+                    <p>Fix in Update multi speaker Info in video Update.</p>
+                    <p>Support for exporting additional subtitle formats in sbv, TTML, scc, rt.</p>
+                    <p>Send Newsletters immediately.</p>
+                    <p>All NPTEL users have been subscribed to newsletter.</p>
+                    <p>Subscript/superscript for VoiceOver as well.</p>
+                    <p>Enable email for users who have already subscribed to daily mails.</p>
+                    <p>Label changes for unsubscribe and update email.</p>
+                    <p>Toggle for subscription has been removed. It will happen through buttons.</p>
+                </div>
+                <div class="timeline-circle"></div>
+            </div>
+            <div class="timeline-col"></div>
+        </div>
+
+        <div class="timeline-row">
+            <div class="timeline-col"></div>
+            <div class="timeline-col timeline-col-left">
+                <div class="timeline-content">
+                    <span>V 2.5</span>
+                    <h4>December 2023</h4>
+                    <p>Accept multiple speaker info in video update.</p>
+                    <p>Background music shifted to a new server.</p>
+                    <p>New Scheduled Tasks:</p>
+                    <p>a. Org owner email notifications -> for new joinees to the organization.</p>
+                    <p>b. ETA email notifications -> To all users, reminder ETA mails.</p>
+                    <p>Return info of empty cards in Transcription and Translation.</p>
+                    <p>Reopen Translation Task.</p>
+                    <p>Newsletter -> Users can subscribe to newsletter (in their profile page) and get
+                        updates from our end.</p>
+                    <p>Move multiple cards simultaneously.</p>
+                    <p>Bug fix in Bulk Task Update.</p>
+                    <p>Removed "Original Source" option for the subtitles.</p>
+                </div>
+                <div class="timeline-circle"></div>
+            </div>
+        </div>
+
+        <div class="timeline-row">
+            <div class="timeline-col timeline-col-right">
+                <div class="timeline-content">
+                    <span>V 2.4</span>
+                    <h4>September 2023</h4>
+                    <p>Search by Task Id in Tasks tab.</p>
+                    <p>ETA in CSV upload (This field needs to be added in the end. The accepted format is
+                        DD-MM-YYYY. The ETA date should be greater than current date).</p>
+                    <p>Show Task queue status separately for Transcription/Translation/VoiceOver.</p>
+                    <p>Show "Updated At" in Column selector of Tasks table.</p>
+                    <p>Show description by default in tasks Table for NPTEL.</p>
+                    <p>Fix for Preview not showing the subtitles for completed tasks.</p>
+                    <p>Color of the selected text changed.</p>
+                    <p>Shortcut keys changed for few cases.</p>
+                    <p>Focus issue for the selected card.</p>
+                </div>
+                <div class="timeline-circle"></div>
+            </div>
+            <div class="timeline-col"></div>
+        </div>
+
+        <div class="timeline-row">
+            <div class="timeline-col"></div>
+            <div class="timeline-col timeline-col-left">
+                <div class="timeline-content">
+                    <span>V 2.3</span>
+                    <h4>September 2023</h4>
+                    <p>Background music integration with the target translated video.</p>
+                    <p>Add Source Type Original Source for Translation. (Create Translation from YouTube
+                        caption. In this case, Transcription Edit should not be created.)</p>
+                    <p>Support for Superscript/subscript in transcription and translation.</p>
+                    <p>Introduce Keyboard Shortcuts for performing actions on the edit window.</p>
+                    <p>Info of wrong timestamps in Transcription.</p>
+                    <p>Reopen already completed Translation. (If a VO task already exists, users will have
+                        to manually delete that before it can be reopened.)</p>
+                    <p>Invite multiple members in the organization.</p>
+                    <p>Hide Add Org Member Button for project Manager.</p>
+                    <p>Search with name or email id in members list of project, while adding members.</p>
+                    <p>Incorrect behavior of the options in settings fixed.</p>
+                </div>
+                <div class="timeline-circle"></div>
+            </div>
+        </div>
+
+        <div class="timeline-row">
+            <div class="timeline-col timeline-col-right">
+                <div class="timeline-content">
+                    <span>V 2.2</span>
+                    <h4>August 2023</h4>
+                    <p>Migrate to Dhruva for IndicASR.</p>
+                    <p>Find and replace for partial words.</p>
+                    <p>Auto logout when page is idle.</p>
+                    <p>Info button to show sentences with time issues in Translation.</p>
+                    <p>Info button to show empty audios in VoiceOver.</p>
+                    <p>Time spent metric for every task.</p>
+                    <p>Page mix-up issue fix.</p>
+                    <p>Manually created Voice-Over fixes.</p>
+                    <p>Make export Async (Send link in email for mp3 and wav. flac can be downloaded
+                        instantly).</p>
+                    <p>Fixes in Machine Generated VO. (Call serial TTS API)</p>
+                </div>
+                <div class="timeline-circle"></div>
+            </div>
+            <div class="timeline-col"></div>
+        </div>
+
+        <div class="timeline-row">
+            <div class="timeline-col"></div>
+            <div class="timeline-col timeline-col-left">
+                <div class="timeline-content">
+                    <span>V 2.1</span>
+                    <h4>July 2023</h4>
+                    <p>Optimized Editor.</p>
+                    <p>Multiple speaker info in Video creation.</p>
+                    <p>Speaker tagging:</p>
+                    <p>a. Users can choose speaker while doing Transcription only.</p>
+                    <p>b. Currently, age is not taken into account.</p>
+                    <p>c. If users choose With Speaker Tagging during export of Transcription and
+                        Translation, they will see the names of speakers.</p>
+                    <p>d. In VoiceOver, Speech will be generated according to the speaker chosen during
+                        transcription.</p>
+                    <p>Export to docx-bilingual for translation.</p>
+                    <p>Export VoiceOver to mp4/mp3/wav/flac. (Note: mp3/flac/wav can't be exported for older
+                        VO tasks that are already completed.)</p>
+                    <p>Users can update their languages in "My Profile."</p>
+                    <p>Create Bulk task for Transcription Review, Translation Edit, Translation Edit and
+                        VoiceOver Edit is enabled. A single user can be assigned bulk tasks.</p>
+                    <p>Show only the videos for which tasks are assigned to the editors/reviewers.</p>
+                </div>
+                <div class="timeline-circle"></div>
+            </div>
+        </div>
+
+        <div class="timeline-row">
+            <div class="timeline-col timeline-col-right">
+                <div class="timeline-content">
+                    <span>V 2.0</span>
+                    <h4>June 2023</h4>
+                    <p>VoiceOver Task support.</p>
+                    <p>Added Reports for Project and Organization.</p>
+                    <p>Upload subtitles to YouTube.</p>
+                    <p>API Migration to Dhruva for TTS and NMT.</p>
+                    <p>Created Admin Portal (all the features for Admin mode -- creation/updation/deletion
+                        of Organization).</p>
+                    <p>Project Settings (Workflow integration and UI change).</p>
+                    <p>Enabled RTL and Other User Settings for Transcription and Translation Pages.</p>
+                    <p>Added Bulk Actions for creation of Task, Videos, Task Updation, Task/Video Deletion,
+                        SubtitleEx Download.</p>
+                    <p>Export Subtitle Feature in different formats.</p>
+                    <p>Creation of videos and tasks by uploading CSV.</p>
+                    <p>Created Custom Pagination.</p>
+                    <p>Enabled Google SSO.</p>
+                    <p>Recreated User Profile Section.</p>
+                    <p>Made the App optimized and responsive.</p>
+                    <p>Paginated Transcription and Translation.</p>
+                    <p>Server side Pagination with server side search and filter.</p>
+                    <p>Undo Redo feature for transcript/translation editing-review.</p>
+                    <p>Bulk Upload of videos at Organization and Project level.</p>
+                    <p>Instant Email notification to Editors/Reviewers, when their tasks become active.</p>
+                    <p>Periodic Email notifications to Project Manager, about Completed tasks and Active
+                        Tasks.</p>
+                </div>
+                <div class="timeline-circle"></div>
+            </div>
+            <div class="timeline-col"></div>
+        </div>
+
+        <div class="timeline-row">
+            <div class="timeline-col"></div>
+            <div class="timeline-col timeline-col-left">
+                <div class="timeline-content">
+                    <span>V 1.0</span>
+                    <h4>February 2023</h4>
+                    <p>Transcription and Translation editing support.</p>
+                    <p>Project Management Hierarchy.</p>
+                    <p>Maker & Checker process.</p>
+                    <p>Transliteration based typing support wherever applicable.</p>
+                    <p>Subtitles exporting feature in all popular formats.</p>
+                    <p>Video and Audio (mp3) media support.</p>
+                    <p>Sign Up/Sign In.</p>
+                    <p>Roles based account setup.</p>
+                    <p>Word Level Alignment view.</p>
+                    <p>Basic Reports at every level.</p>
+                    <p>Selection source comparison.</p>
+                </div>
+                <div class="timeline-circle"></div>
+            </div>
+        </div>
+
+    </section>
+
+    <div id="foot_content"></div>
+</body>
+
+
+<script type="text/javascript">
+    $('#head_content').load('header.html')
+    $('#foot_content').load('footer.html')
+</script>
+<!-- Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</html>
