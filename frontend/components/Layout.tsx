@@ -4,6 +4,11 @@ import { Inter } from "next/font/google";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+import { QueryClient, QueryClientProvider, useQuery } from "react-query";
+
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { staleTime: 10000 } },
+});
 
 const theme = extendTheme({
   fonts: {
@@ -27,9 +32,11 @@ export default function Layout({
     <html lang="en">
       <body className={inter.className}>
         <ChakraProvider theme={theme}>
-          <Navbar />
-          {children}
-          <Footer />
+          <QueryClientProvider client={queryClient}>
+            <Navbar />
+            {children}
+            <Footer />
+          </QueryClientProvider>
         </ChakraProvider>
       </body>
     </html>

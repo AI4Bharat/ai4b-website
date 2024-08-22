@@ -2,24 +2,30 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import PeopleSection from "../../../components/People";
-import { Stack, Skeleton } from "@chakra-ui/react";
+import { Stack } from "@chakra-ui/react";
+import { useQuery } from "react-query";
+
+const fetchMembers = async () => {
+  try {
+    const response = await axios.get("http://localhost:8000/member/");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching members:", error);
+    return [];
+  }
+};
 
 export default function People() {
   const [members, setMembers] = useState([]);
+  const { isLoading, error, data } = useQuery("fetchMembers", fetchMembers);
 
   useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        const response = await axios.get("http://localhost:8000/member/");
-        setMembers(response.data);
-      } catch (error) {
-        console.error("Error fetching members:", error);
-        setMembers([]);
-      }
-    };
-
-    fetchMembers();
-  }, []);
+    if (error || isLoading) {
+      setMembers([]);
+    } else {
+      setMembers(data);
+    }
+  }, [error, data, isLoading]);
 
   return (
     <Stack>
