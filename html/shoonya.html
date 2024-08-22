@@ -39,13 +39,15 @@
                             class="btn btn-custom">Tutorial</a>
                         <a href="https://backend.shoonya.ai4bharat.org/swagger/" target="_blank"
                             class="btn btn-custom">API Specs</a>
+                        <a href="https://ai4bharat.iitm.ac.in/blog/blog-on-shoonya/" target="_blank"
+                            class="btn btn-custom">Blog</a>
                     </div>
                 </div>
             </div>
 
             <!-- Right Sub-Section with iFrame -->
             <div class="col-lg-4 col-md-5 iframe-container">
-                <iframe src="https://www.youtube.com/embed/your-video-id" frameborder="0" allowfullscreen></iframe>
+                <iframe src="https://www.youtube.com/watch?v=vkjCmCWejMM" frameborder="0" allowfullscreen></iframe>
             </div>
         </div>
     </div>
@@ -53,229 +55,309 @@
     <!-- Blog Section -->
     <div class="container-fluid blog-section">
         <h3>Installation Instructions</h3>
-        <p>Follow the steps below to install and run the AI Annotation Tool using Docker:</p>
+        <p>Follow the steps below to install and run the AI Annotation Tool:</p>
+        <h5>Backend Setup</h5>
         <pre>
-# Step 1: Pull the Docker image
-docker pull annotation-tool:latest
+# Clone the Shoonya-Backend repository from GitHub to your local machine.
+git clone https://github.com/AI4Bharat/Shoonya-Backend.git
 
-# Step 2: Run the Docker container
-docker run -d -p 8080:8080 annotation-tool
+# Create a virtual environment for the project. Replace <YOUR-ENVIRONMENT-NAME> with your preferred environment name.
+python3 -m venv <YOUR-ENVIRONMENT-NAME>
 
-# Step 3: Access the tool in your browser
-Open your browser and go to http://localhost:8080 to start using the tool.
-        </pre>
-        <p>If you encounter any issues, please refer to the <a href="#">documentation</a> or reach out to our support
-            team.</p>
+# Activate the virtual environment. This ensures that the packages you install are isolated from the global Python environment.
+source <YOUR-ENVIRONMENT-NAME>/bin/activate
+
+# Install all required Python packages listed in the requirements-dev.txt file.
+pip install -r deploy/requirements-dev.txt
+
+# Set up the environment variables needed for the project by copying the example environment file.
+cp .env.example ./backend/.env
+
+# Generate a new secret key for Django (within the virtual environment):
+# Open a Python shell.
+python backend/manage.py shell
+
+    # Import the utility function to generate a secret key.
+    >> from django.core.management.utils import get_random_secret_key
+
+    # Generate and print a new secret key.
+    >> get_random_secret_key()
+
+# Copy the generated secret key and paste it into the .env file as the value for SECRET_KEY.
+
+# Docker Installation
+# Build the Docker containers as defined in the docker-compose-local.yml file.
+docker-compose -f docker-compose-local.yml build
+
+# Run the containers in detached mode (-d flag). This will start up all the services defined in the Docker Compose file.
+docker-compose -f docker-compose-local.yml up -d
+
+# Run Migrations
+# The following steps are required only when you run the project for the first time or after making changes to the models.
+
+    # Check if there are any pending migrations.
+    docker-compose exec web python backend/manage.py makemigrations 
+
+    # Apply all pending migrations to the database.
+    docker-compose exec web python backend/manage.py migrate
+
+# Create a superuser for accessing the Django admin interface (required only once).
+docker-compose exec web python backend/manage.py createsuperuser
+
+# Run the Django development server within the Docker container.
+docker-compose exec web python backend/manage.py runserver
+</pre>
+        <h5>Frontend Setup</h5>
+        <pre>
+# Clone the Shoonya-Frontend repository from GitHub to your local machine.
+git clone https://github.com/AI4Bharat/Shoonya-Frontend.git
+
+# Change directory to the newly cloned Shoonya-Frontend folder.
+cd Shoonya-Frontend
+
+# Install the necessary dependencies for the project. 
+# The --force flag is used to bypass conflicts with the existing dependencies.
+npm i --force
+
+# Start the development server. This will run the frontend application on a local server.
+npm start</pre>
+        <p>If you encounter any issues, please refer to the <a
+                href="https://github.com/AI4Bharat/Shoonya-Backend/blob/master/README.md" target="_blank">backend</a>
+            and <a href="https://github.com/AI4Bharat/Shoonya-Frontend/blob/master/README.md"
+                target="_blank">frontend</a> documentation or reach out to our <a href="mailto:admin@ai4bharat.org"
+                target="_blank">support team.</a></p>
     </div>
 
     <section class="experience pt-100 pb-100" id="experience">
-        <div class="container">
-            <div class="row">
-                <div class="col-xl-8 mx-auto text-center">
-                    <div class="section-title">
-                        <h4>Shoonya Releases</h4>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit</p>
-                    </div>
+        <div class="row">
+            <div class="col-xl-8 mx-auto text-center">
+                <div class="section-title">
+                    <h4>Shoonya Releases</h4>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit</p>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-xl-12">
-                    <ul class="timeline-list">
-                        <li>
-                            <div class="timeline_content">
-                                <span>V 3.0</span>
-                                <h4>May 2024</h4>
-                                <p>
-                                    Flower Configuration for asynchronous celery tasks logging.
-                                    Deletion confirmation endpoint.
-                                    Added new notification types.
-                                    Access level changes for manager role.
-                                    Minor changes to analytics.
-                                    Added new project types - OCRSegmentationCategorization & editing
-                                    Dataset and Task data privacy changes to hide public URLs.
-                                    New endpoint to add a proxy Audio URL service.
-                                    Line Charts based performance analytics.
-                                    Integration changes to AcousticNormalizedTranscriptionEditing project type.
-                                    Exception handling and code refactoring for backend codebase.
-                                    Download endpoints optimisations.
-                                    Endpoint support to store transliteration logs to blob storage.
-                                    User active/inactive integration.
-                                    Decentralized User Invitation to workspace managers.
-                                    Changes to email templates.
-                                </p>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="timeline_content">
-                                <span>V 2.4</span>
-                                <h4>October 2023</h4>
-                                <p>
-                                    Workspace and Organisation level Payment Reports.
-                                    Support for OCR, ASR data types predictions population.
-                                    Consider Batch sampling and automatic annotations creation support to pull new data
-                                    items.
-                                    Reports scheduling feature.
-                                    Backend support for Chitralekha UI for any Audio Project Types.
-                                    New project types Acoustic Normalized Transcription and Acoustic Normalized
-                                    Transcription Editing utilising CL UI.
-                                    Transliteration Logging support using Blob storage.
-                                    Support e-mail-based async calculation to all reports.
-                                    Code Refactoring and reformatting.
-                                    User profile picture upload and change feature using blob storage.
-                                    Elastic search and Kibana support for logging setup.
-                                    Download all projects within a workspace asynchronously using blob storage.
-                                    Some bug fixes for annotation filter, reports mail along with others.
-                                </p>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="timeline_content">
-                                <span>V 2.3</span>
-                                <h4>July 2023</h4>
-                                <p>
-                                    Conversation Verification Project Type.
-                                    OCR Project Types modifications.
-                                    Option to change the stage of a project to Supercheck Stage.
-                                    All endpoints for Supercheck workflow.
-                                    Bug fixes for Assigning and Unassigning Tasks.
-                                    New field domain in TranslationPair datatype.
-                                    Superchecker notes.
-                                    Reports Bug fixes.
-                                    Frozen Users for Workspace.
-                                    Re-invite users.
-                                    Modification for Login and Change Password.
-                                    Automatic Annotation Creation for external data.
-                                    Intra-dataset Automation to populate draft_data_json.
-                                    More quality parameters in reports (WER, segment length etc).
-                                    Workspace-level analytics.
-                                </p>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="timeline_content">
-                                <span>V 2.1</span>
-                                <h4>April 2023</h4>
-                                <p>
-                                    New user roles for Reviewer, Super-checker, and Admin.
-                                    Updated endpoints relevant to Reviewer and Admin roles.
-                                    Integration with new Indic-Trans-v2 deployed on Dhruva.
-                                    New field in the project model to support project stage in place of deprecated field
-                                    review enabled.
-                                    New annotation and task statuses to support super-checker flow in upcoming versions.
-                                    annotation_type field in all annotations to signify which role it belongs to.
-                                    New field named revision_loop_count in the task model to support bookkeeping.
-                                    New field named super_checker_user in the task model.
-                                    Changes to migrate user roles based on the appropriate work they are assigned to.
-                                </p>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="timeline_content">
-                                <span>V 2.0</span>
-                                <h4>March 2023</h4>
-                                <p>
-                                    Design changes to have a status associated with each annotation
-                                    New project Types support for:
-                                    Domain Classification along with Sentence verification.
-                                    Audio Segmentation
-                                    Audio Transcription Editing with support for populating predictions.
-                                    Glossary support on annotation page of Translation Projects.
-                                    Support for reviewers to accept a task with major or minor changes.
-                                    Draft and skip option for reviewers.
-                                    Tags support to allow noise tagging in all Audio project types.
-                                    Improved UI to increase Audio Transcription productivity.
-                                    Word count/ Audio duration based public analytics.
-                                    Optimized project listing based on recently worked project.
-                                    Export fix in conversation translation editing project type.
-                                    Support search and filter based task flow for Start Labeling Now button
-                                    New task status to reflect whether a task is exported.
-                                    All tasks tab for managerial view of a project
-                                    Frontend bug fixes for Automate Datasets page.
-                                    Filters for Projects listing and Datasets listing pages.
-                                    Support to download all annotations from all tasks of a Translation Project.
-                                    Endpoint to allow managers to deallocate tasks for any user in the project.
-                                </p>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="timeline_content">
-                                <span>V 1.3</span>
-                                <h4>November 2022</h4>
-                                <p>
-                                    New project type for Single speaker transcription editing.
-                                    Public API endpoint for language based Organization Analytics.
-                                    Complete support for all levels of review reports.
-                                    Annotation Quality Reports.
-                                    Backend support to categorize accepted with major/minor changes.
-                                    Search support for Dataset Items table.
-                                    Bulk delete endpoints for tasks and data items.
-                                    Support for Managers, Org Owners to be able to annotate tasks.
-                                </p>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="timeline_content">
-                                <span>V 1.2</span>
-                                <h4>October 2022</h4>
-                                <p>
-                                    Improved User reports for annotations and review.
-                                    Patch to update conversation data type to support Machine Translations.
-                                    Celery-based implementation for Automated MT function for Conversation Data Type.
-                                    Removal of task-lock deprecated functionality.
-                                    Workspace-level User analytics for review workflow.
-                                    Endpoint to support bulk deletion of data items and all linked tasks.
-                                    Organization-level User analytics for review workflow.
-                                    Review workflow-based reports for the Analytics tab (publicly accessible endpoint).
-                                    Review reports for User-level progress.
-                                    Integration with Azure Translate.
-                                    TSV support for Projects download.
-                                    Endpoint to support Normalized character-level edit distance between sentences.
-                                    Support to filter by task status while downloading projects.
-                                    New Boolean field in the Users model to support user input for receiving daily
-                                    mails.
-                                    Endpoint and celery-beat setup for sending daily progress emails to Users
-                                    Support for annotation, and review reports for daily progress mails.
-                                </p>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="timeline_content">
-                                <span>V 1.1</span>
-                                <h4>August 2022</h4>
-                                <p>
-                                    Rename Task status rejected to to_be_revised.
-                                    Fix a bug in the review feature.
-                                    Add reviewer reports for project analytics.
-                                    Refactor User field to Annotator in Project model.
-                                    Functionality to remove users from workspace.
-                                    Code refactoring to take user_id instead of username or email in various endpoints.
-                                    Support automated transformation of Sentence Text Datasets to Translation Pairs
-                                    Dataset involving functions for Generating Machine Translations using IndicTrans and
-                                    Google Translate models.
-                                </p>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="timeline_content">
-                                <span>V 1.0</span>
-                                <h4>July 2022</h4>
-                                <p>
-                                    Supports all the 22 official Indian languages
-                                    Currently support Sentence Verification tasks, Context Translation Verification
-                                    project types
-                                    Provides AI support with translation
-                                    Cleaner hierarchy of Organization, Workspace, Projects.
-                                    Reports at various levels (Org, workspace, project, user) and multiple dimensions
-                                    Allow creation of task chains and custom inputs as required by Language Experts
-                                    Enables language coordinators to enable effective collaboration (Shareable Notes,
-                                    Drafts)
-                                    RTL and Transliteration based support
-                                </p>
-                            </div>
-                        </li>
-                    </ul>
+        </div>
+
+        <div class="timeline-row">
+            <div class="timeline-col timeline-col-right">
+                <div class="timeline-content">
+                    <span>V 3.0</span>
+                    <h4>May 2024</h4>
+                    <p>Flower Configuration for asynchronous celery tasks logging.</p>
+                    <p>Deletion confirmation endpoint.</p>
+                    <p>Added new notification types.</p>
+                    <p>Access level changes for manager role.</p>
+                    <p>Minor changes to analytics.</p>
+                    <p>Added new project types - OCRSegmentationCategorization & editing.</p>
+                    <p>Dataset and Task data privacy changes to hide public URLs.</p>
+                    <p>New endpoint to add a proxy Audio URL service.</p>
+                    <p>Line Charts based performance analytics.</p>
+                    <p>Integration changes to AcousticNormalizedTranscriptionEditing project type.</p>
+                    <p>Exception handling and code refactoring for backend codebase.</p>
+                    <p>Download endpoints optimisations.</p>
+                    <p>Endpoint support to store transliteration logs to blob storage.</p>
+                    <p>User active/inactive integration.</p>
+                    <p>Decentralized User Invitation to workspace managers.</p>
+                    <p>Changes to email templates.</p>
                 </div>
+                <div class="timeline-circle"></div>
             </div>
+            <div class="timeline-col"></div>
+        </div>
+
+        <div class="timeline-row">
+            <div class="timeline-col"></div>
+            <div class="timeline-col timeline-col-left">
+                <div class="timeline-content">
+                    <span>V 2.4</span>
+                    <h4>October 2023</h4>
+                    <p>Workspace and Organisation level Payment Reports.</p>
+                    <p>Support for OCR, ASR data types predictions population.</p>
+                    <p>Consider Batch sampling and automatic annotations creation support to pull new data
+                        items.</p>
+                    <p>Reports scheduling feature.</p>
+                    <p>Backend support for Chitralekha UI for any Audio Project Types.</p>
+                    <p>New project types Acoustic Normalized Transcription and Acoustic Normalized
+                        Transcription Editing utilizing CL UI.</p>
+                    <p>Transliteration Logging support using Blob storage.</p>
+                    <p>Support e-mail-based async calculation to all reports.</p>
+                    <p>Code Refactoring and reformatting.</p>
+                    <p>User profile picture upload and change feature using blob storage.</p>
+                    <p>Elastic search and Kibana support for logging setup.</p>
+                    <p>Download all projects within a workspace asynchronously using blob storage.</p>
+                    <p>Some bug fixes for annotation filter, reports mail along with others.</p>
+                </div>
+                <div class="timeline-circle"></div>
+            </div>
+        </div>
+
+        <div class="timeline-row">
+            <div class="timeline-col timeline-col-right">
+                <div class="timeline-content">
+                    <span>V 2.3</span>
+                    <h4>July 2023</h4>
+                    <p>Conversation Verification Project Type.</p>
+                    <p>OCR Project Types modifications.</p>
+                    <p>Option to change the stage of a project to Supercheck Stage.</p>
+                    <p>All endpoints for Supercheck workflow.</p>
+                    <p>Bug fixes for Assigning and Unassigning Tasks.</p>
+                    <p>New field domain in TranslationPair datatype.</p>
+                    <p>Superchecker notes.</p>
+                    <p>Reports Bug fixes.</p>
+                    <p>Frozen Users for Workspace.</p>
+                    <p>Re-invite users.</p>
+                    <p>Modification for Login and Change Password.</p>
+                    <p>Automatic Annotation Creation for external data.</p>
+                    <p>Intra-dataset Automation to populate draft_data_json.</p>
+                    <p>More quality parameters in reports (WER, segment length, etc.).</p>
+                    <p>Workspace-level analytics.</p>
+                </div>
+                <div class="timeline-circle"></div>
+            </div>
+            <div class="timeline-col"></div>
+        </div>
+
+        <div class="timeline-row">
+            <div class="timeline-col"></div>
+            <div class="timeline-col timeline-col-left">
+                <div class="timeline-content">
+                    <span>V 2.1</span>
+                    <h4>April 2023</h4>
+                    <p>New user roles for Reviewer, Super-checker, and Admin.</p>
+                    <p>Updated endpoints relevant to Reviewer and Admin roles.</p>
+                    <p>Integration with new Indic-Trans-v2 deployed on Dhruva.</p>
+                    <p>New field in the project model to support project stage in place of deprecated field
+                        review enabled.</p>
+                    <p>New annotation and task statuses to support super-checker flow in upcoming versions.
+                    </p>
+                    <p>annotation_type field in all annotations to signify which role it belongs to.</p>
+                    <p>New field named revision_loop_count in the task model to support bookkeeping.</p>
+                    <p>New field named super_checker_user in the task model.</p>
+                    <p>Changes to migrate user roles based on the appropriate work they are assigned to.</p>
+                </div>
+                <div class="timeline-circle"></div>
+            </div>
+        </div>
+
+        <div class="timeline-row">
+            <div class="timeline-col timeline-col-right">
+                <div class="timeline-content">
+                    <span>V 2.0</span>
+                    <h4>March 2023</h4>
+                    <p>Design changes to have a status associated with each annotation.</p>
+                    <p>New project Types support for:</p>
+                    <p>- Domain Classification along with Sentence verification.</p>
+                    <p>- Audio Segmentation.</p>
+                    <p>- Audio Transcription Editing with support for populating predictions.</p>
+                    <p>Glossary support on annotation page of Translation Projects.</p>
+                    <p>Support for reviewers to accept a task with major or minor changes.</p>
+                    <p>Draft and skip option for reviewers.</p>
+                    <p>Tags support to allow noise tagging in all Audio project types.</p>
+                    <p>Improved UI to increase Audio Transcription productivity.</p>
+                    <p>Word count/Audio duration based public analytics.</p>
+                    <p>Optimized project listing based on recently worked project.</p>
+                    <p>Export fix in conversation translation editing project type.</p>
+                    <p>Support search and filter based task flow for Start Labeling Now button.</p>
+                    <p>New task status to reflect whether a task is exported.</p>
+                    <p>All tasks tab for managerial view of a project.</p>
+                    <p>Frontend bug fixes for Automate Datasets page.</p>
+                    <p>Filters for Projects listing and Datasets listing pages.</p>
+                    <p>Support to download all annotations from all tasks of a Translation Project.</p>
+                    <p>Endpoint to allow managers to deallocate tasks for any user in the project.</p>
+                </div>
+                <div class="timeline-circle"></div>
+            </div>
+            <div class="timeline-col"></div>
+        </div>
+
+        <div class="timeline-row">
+            <div class="timeline-col"></div>
+            <div class="timeline-col timeline-col-left">
+                <div class="timeline-content">
+                    <span>V 1.3</span>
+                    <h4>November 2022</h4>
+                    <p>New project type for Single speaker transcription editing.</p>
+                    <p>Public API endpoint for language-based Organization Analytics.</p>
+                    <p>Complete support for all levels of review reports.</p>
+                    <p>Annotation Quality Reports.</p>
+                    <p>Backend support to categorize accepted with major/minor changes.</p>
+                    <p>Search support for Dataset Items table.</p>
+                    <p>Bulk delete endpoints for tasks and data items.</p>
+                    <p>Support for Managers, Org Owners to be able to annotate tasks.</p>
+                </div>
+                <div class="timeline-circle"></div>
+            </div>
+        </div>
+
+        <div class="timeline-row">
+            <div class="timeline-col timeline-col-right">
+                <div class="timeline-content">
+                    <span>V 1.2</span>
+                    <h4>October 2022</h4>
+                    <p>Improved User reports for annotations and review.</p>
+                    <p>Patch to update conversation data type to support Machine Translations.</p>
+                    <p>Celery-based implementation for Automated MT function for Conversation Data Type.</p>
+                    <p>Removal of task-lock deprecated functionality.</p>
+                    <p>Workspace-level User analytics for review workflow.</p>
+                    <p>Endpoint to support bulk deletion of data items and all linked tasks.</p>
+                    <p>Organization-level User analytics for review workflow.</p>
+                    <p>Review workflow-based reports for the Analytics tab (publicly accessible endpoint).
+                    </p>
+                    <p>Review reports for User-level progress.</p>
+                    <p>Integration with Azure Translate.</p>
+                    <p>TSV support for Projects download.</p>
+                    <p>Endpoint to support Normalized character-level edit distance between sentences.</p>
+                    <p>Support to filter by task status while downloading projects.</p>
+                    <p>New Boolean field in the Users model to support user input for receiving daily mails.
+                    </p>
+                    <p>Endpoint and celery-beat setup for sending daily progress emails to Users.</p>
+                    <p>Support for annotation and review reports for daily progress mails.</p>
+                </div>
+                <div class="timeline-circle"></div>
+            </div>
+            <div class="timeline-col"></div>
+        </div>
+
+        <div class="timeline-row">
+            <div class="timeline-col"></div>
+            <div class="timeline-col timeline-col-left">
+                <div class="timeline-content">
+                    <span>V 1.1</span>
+                    <h4>August 2022</h4>
+                    <p>Rename Task status rejected to to_be_revised.</p>
+                    <p>Fix a bug in the review feature.</p>
+                    <p>Add reviewer reports for project analytics.</p>
+                    <p>Refactor User field to Annotator in Project model.</p>
+                    <p>Functionality to remove users from workspace.</p>
+                    <p>Code refactoring to take user_id instead of username or email in various endpoints.
+                    </p>
+                    <p>Support automated transformation of Sentence Text Datasets to Translation Pairs
+                        Dataset involving functions for Generating Machine Translations using IndicTrans and
+                        Google Translate models.</p>
+                </div>
+                <div class="timeline-circle"></div>
+            </div>
+        </div>
+
+        <div class="timeline-row">
+            <div class="timeline-col timeline-col-right">
+                <div class="timeline-content">
+                    <span>V 1.0</span>
+                    <h4>July 2022</h4>
+                    <p>Supports all the 22 official Indian languages.</p>
+                    <p>Currently supports Sentence Verification tasks, Context Translation Verification
+                        project types.</p>
+                    <p>Provides AI support with translation.</p>
+                    <p>Cleaner hierarchy of Organization, Workspace, Projects.</p>
+                    <p>Reports at various levels (Org, workspace, project, user) and multiple dimensions.</p>
+                    <p>Allows creation of task chains and custom inputs as required by Language Experts.</p>
+                    <p>Enables language coordinators to enable effective collaboration (Shareable Notes,
+                        Drafts).</p>
+                    <p>RTL and Transliteration based support.</p>
+                </div>
+                <div class="timeline-circle"></div>
+            </div>
+            <div class="timeline-col"></div>
         </div>
     </section>
 
