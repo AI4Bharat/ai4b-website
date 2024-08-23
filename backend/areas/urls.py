@@ -6,6 +6,7 @@ from django.conf import settings
 
 router = DefaultRouter()
 router.register(r"datasets", views.DatasetViewSet)
+router.register(r"tools",views.ToolViewSet)
 
 # The API URLs are now determined automatically by the router.
 urlpatterns = [

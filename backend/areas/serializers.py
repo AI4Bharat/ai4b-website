@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer
-from .models import Dataset
+from .models import Dataset,Tool
 
 
 class DatasetSerializer(ModelSerializer):
@@ -15,4 +15,19 @@ class DatasetSerializer(ModelSerializer):
             "website_link",
             "github_link",
             "hf_link",
+        ]
+
+class ToolSerializer(ModelSerializer):
+    class Meta:
+        model = Tool
+        fields = [
+            "id",
+            "title",
+            "description",
+            "main_video_hyperlink",
+            "installation_steps_markdown",
+            "hyperlink_buttons_json",
+            "release_timeline_json",
+            "feature_cards_json",
+            "contributor_cards_json"
         ]
