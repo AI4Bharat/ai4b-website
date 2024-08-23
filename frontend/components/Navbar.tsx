@@ -23,6 +23,13 @@ import {
   ChevronRightIcon,
 } from "@chakra-ui/icons";
 
+import { useEffect,useState } from "react";
+import { useQuery } from "react-query";
+import { API_URL } from "@/app/config";
+import axios from "axios";
+
+
+
 export default function Navbar() {
   const { isOpen, onToggle } = useDisclosure();
 
@@ -271,25 +278,7 @@ const NAV_ITEMS: Array<NavItem> = [
   },
   {
     label: "Tools",
-    children: [
-      {
-        label: "Shoonya",
-        subLabel: "Open Source platform to annotate and label data at scale",
-        href: "#",
-      },
-      {
-        label: "Chitralekha",
-        subLabel:
-          "Open Source platform for video subtitling across various Indic languages",
-        href: "#",
-      },
-      {
-        label: "Kathbath",
-        subLabel: "Tool for collecting data across different regions of India",
-        href: "#",
-      },
-    ],
-    href: "/tools",
+    href: "tools",
   },
   { label: "Publications", href: "publications" },
   { label: "People", href: "people" },
