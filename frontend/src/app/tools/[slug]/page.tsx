@@ -147,7 +147,7 @@ export default function Tool() {
           {tool.main_video_hyperlink === "" ? (
             <></>
           ) : (
-            <ReactPlayer url={tool.main_video_hyperlink} />
+            <ReactPlayer url={tool.main_video_hyperlink} controls />
           )}
         </Flex>
       </Stack>
