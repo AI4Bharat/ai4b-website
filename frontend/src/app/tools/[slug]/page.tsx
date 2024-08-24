@@ -102,10 +102,10 @@ export default function Tool() {
       <Stack
         align={"center"}
         spacing={{ base: 8, md: 10 }}
-        py={{ base: 20, md: 28 }}
+        py={{ base: 10, md: 18 }}
         direction={{ base: "column", md: "row" }}
       >
-        <Stack flex={1} spacing={{ base: 5, md: 10 }}>
+        <Stack flex={1}>
           <Heading
             lineHeight={1.1}
             fontWeight={600}
