@@ -24,17 +24,18 @@ class Dataset(models.Model):
 
     def __str__(self) -> str:
         return f"{self.title}"
-    
+
+
 class Tool(models.Model):
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=200)
     description = models.TextField()
     main_video_hyperlink = models.URLField(max_length=500)
-    installation_steps_markdown = models.TextField()
     hyperlink_buttons_json = models.JSONField()
     release_timeline_json = models.JSONField()
     feature_cards_json = models.JSONField()
     contributor_cards_json = models.JSONField()
+    installation_steps_json = models.JSONField()
 
     def __str__(self) -> str:
         return f"{self.title}"

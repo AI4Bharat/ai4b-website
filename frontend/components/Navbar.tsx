@@ -23,12 +23,10 @@ import {
   ChevronRightIcon,
 } from "@chakra-ui/icons";
 
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { API_URL } from "@/app/config";
 import axios from "axios";
-
-
 
 export default function Navbar() {
   const { isOpen, onToggle } = useDisclosure();
@@ -278,9 +276,9 @@ const NAV_ITEMS: Array<NavItem> = [
   },
   {
     label: "Tools",
-    href: "tools",
+    href: "/tools",
   },
-  { label: "Publications", href: "publications" },
-  { label: "People", href: "people" },
-  { label: "Careers", href: "careers" },
+  { label: "Publications", href: "/publications" },
+  { label: "People", href: "/people" },
+  { label: "Careers", href: "/careers" },
 ];
