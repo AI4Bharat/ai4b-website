@@ -24,7 +24,7 @@ export default function ToolInstructions({
   steps: Array<Instruction>;
 }) {
   return (
-    <Container maxW="6xl">
+    <Container maxW="20xl">
       <chakra.h2 fontSize="4xl" fontWeight="bold" mb={2}>
         Installation Steps
       </chakra.h2>
@@ -33,12 +33,7 @@ export default function ToolInstructions({
         direction={{ base: "column", md: "row" }}
         spacing={{ base: 0, md: 3 }}
       >
-        <VStack
-          spacing={4}
-          alignItems="flex-start"
-          mb={{ base: 5, md: 0 }}
-          maxW="md"
-        >
+        <VStack spacing={4} alignItems="flex-start" mb={{ base: 5, md: 0 }}>
           {steps.map((data, index) => (
             <Box key={index}>
               <HStack spacing={2}>
@@ -51,13 +46,7 @@ export default function ToolInstructions({
               {data.codeString === null ? (
                 <></>
               ) : (
-                <Code
-                  borderRadius={15}
-                  w={1000}
-                  p={7}
-                  fontSize="md"
-                  color="gray.500"
-                >
+                <Code borderRadius={15} p={5} fontSize="md" color="gray.500">
                   {data.codeString}
                 </Code>
               )}
