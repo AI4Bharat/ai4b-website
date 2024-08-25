@@ -246,33 +246,24 @@ const NAV_ITEMS: Array<NavItem> = [
   {
     label: "Areas",
     children: [
-      {
-        label: "Input Tools",
-        href: "#",
-      },
-      { label: "Transliteration", href: "#" },
+      { label: "Transliteration", href: "/areas/xlit" },
       {
         label: "Machine Translation",
-        href: "#",
+        href: "/areas/nmt",
       },
       {
         label: "Automatic Speech Recognition",
-        href: "#",
+        href: "/areas/asr",
       },
       {
         label: "Speech Synthesis",
-        href: "#",
+        href: "/areas/tts",
       },
       {
         label: "Large Language Models",
-        href: "#",
-      },
-      {
-        label: "Document Understanding",
-        href: "#",
+        href: "/areas/llm",
       },
     ],
-    href: "/areas",
   },
   {
     label: "Tools",

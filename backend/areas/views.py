@@ -3,14 +3,23 @@ from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
 
 # Create your views here.
-from .models import Dataset, Tool
+from .models import Dataset, Tool, Model
 from rest_framework import viewsets
-from .serializers import DatasetSerializer, ToolSerializer
+from .serializers import DatasetSerializer, ToolSerializer, ModelSerializer
+from rest_framework.decorators import permission_classes
+from rest_framework import permissions
+
+from datetime import datetime
 
 
 class DatasetViewSet(viewsets.ModelViewSet):
     queryset = Dataset.objects.all()
     serializer_class = DatasetSerializer
+
+
+class ModelViewSet(viewsets.ModelViewSet):
+    queryset = Model.objects.all()
+    serializer_class = ModelSerializer
 
 
 class ToolViewSet(viewsets.ModelViewSet):
@@ -40,3 +49,52 @@ class ToolViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(tool)
         return Response(serializer.data)
+
+
+@permission_classes((permissions.AllowAny,))
+class PublicationFilterOptions(viewsets.ViewSet):
+    def list(self, request, *args, **kwargs):
+
+        areas = []
+        years = []
+        conferences = []
+
+        areas += Dataset.objects.values_list("area", flat=True).distinct()
+        areas += Model.objects.values_list("area", flat=True).distinct()
+
+        conferences += Dataset.objects.values_list("conference", flat=True).distinct()
+        conferences += Model.objects.values_list("conference", flat=True).distinct()
+
+        years += Dataset.objects.values_list("published_on", flat=True).distinct()
+        years += Model.objects.values_list("published_on", flat=True).distinct()
+
+        years = [x.year for x in years]
+
+        return Response(
+            {
+                "areas": list(set(areas)),
+                "years": list(set(years)),
+                "conferences": list(set(conferences)),
+            }
+        )
+
+
+@permission_classes((permissions.AllowAny,))
+class PublicationViewSet(viewsets.ViewSet):
+    def list(self, request, *args, **kwargs):
+        datasets = Dataset.objects.all()
+        models = Model.objects.all()
+
+        dataset_serializer = DatasetSerializer(datasets, many=True)
+        model_serializer = ModelSerializer(models, many=True)
+
+        publications = []
+        publications += dataset_serializer.data
+        publications += model_serializer.data
+
+        # combined_data = {
+        #     "datasets": dataset_serializer.data,
+        #     "models": model_serializer.data,
+        # }
+
+        return Response(publications)

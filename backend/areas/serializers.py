@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer
-from .models import Dataset, Tool
+from .models import Dataset, Tool, Model
 
 
 class DatasetSerializer(ModelSerializer):
@@ -10,6 +10,24 @@ class DatasetSerializer(ModelSerializer):
             "title",
             "area",
             "published_on",
+            "conference",
+            "description",
+            "paper_link",
+            "website_link",
+            "github_link",
+            "hf_link",
+        ]
+
+
+class ModelSerializer(ModelSerializer):
+    class Meta:
+        model = Model
+        fields = [
+            "id",
+            "title",
+            "area",
+            "published_on",
+            "conference",
             "description",
             "paper_link",
             "website_link",

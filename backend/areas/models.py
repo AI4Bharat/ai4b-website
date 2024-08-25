@@ -16,11 +16,29 @@ class Dataset(models.Model):
     title = models.CharField(max_length=500)
     area = models.CharField(choices=Area.choices, max_length=3)
     published_on = models.DateField(default=date.today)
+    conference = models.CharField(max_length=10, null=True, blank=True)
     description = models.TextField()
     paper_link = models.URLField(max_length=500)
-    website_link = models.URLField(max_length=500)
+    website_link = models.URLField(max_length=500, null=True, blank=True)
     github_link = models.URLField(max_length=500)
     hf_link = models.URLField(max_length=500)
+
+    def __str__(self) -> str:
+        return f"{self.title}"
+
+
+class Model(models.Model):
+    id = models.AutoField(primary_key=True)
+    title = models.CharField(max_length=500)
+    area = models.CharField(choices=Area.choices, max_length=3)
+    published_on = models.DateField(default=date.today)
+    conference = models.CharField(max_length=10, null=True, blank=True)
+    description = models.TextField()
+    paper_link = models.URLField(max_length=500)
+    website_link = models.URLField(max_length=500, null=True, blank=True)
+    github_link = models.URLField(max_length=500)
+    hf_link = models.URLField(max_length=500)
+    api_link = models.URLField(max_length=500, null=True, blank=True)
 
     def __str__(self) -> str:
         return f"{self.title}"
