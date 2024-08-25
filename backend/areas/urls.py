@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from areas import views
 from django.conf.urls.static import static
 from django.conf import settings
-from .views import PublicationViewSet, PublicationFilterOptions
+from .views import PublicationViewSet, PublicationFilterOptions, AreaViewSet
 
 router = DefaultRouter()
 router.register(r"datasets", views.DatasetViewSet)
@@ -30,6 +30,11 @@ urlpatterns = [
         PublicationViewSet.as_view({"get": "list"}),
         name="publication-list",
     ),
+    path(
+        "area/<str:area>/",
+        AreaViewSet.as_view({"get":"list"}),
+        name="area-list"
+    )
 ]
 # Add static file serving if needed
 if settings.DEBUG:

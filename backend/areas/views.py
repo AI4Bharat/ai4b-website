@@ -98,3 +98,22 @@ class PublicationViewSet(viewsets.ViewSet):
         # }
 
         return Response(publications)
+
+
+@permission_classes((permissions.AllowAny,))
+class AreaViewSet(viewsets.ViewSet):
+    def list(self, request, *args, **kwargs):
+        area = kwargs.get("area")
+        datasets = Dataset.objects.filter(area=area)
+        models = Model.objects.filter(area=area)
+
+        dataset_serializer = DatasetSerializer(datasets, many=True)
+        model_serializer = ModelSerializer(models, many=True)
+
+        publications = []
+        publications += dataset_serializer.data
+        publications += model_serializer.data
+
+        publications.sort(key=lambda pub: pub.get("published_on"))
+
+        return Response(publications)
