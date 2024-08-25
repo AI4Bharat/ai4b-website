@@ -49,6 +49,7 @@ interface CardProps {
   description: string;
   area: string;
   published_on: string;
+  conference: string;
   hf_link: string;
   paper_link: string;
   github_link: string;
@@ -60,6 +61,7 @@ const Card = ({
   description,
   area,
   published_on,
+  conference,
   hf_link,
   paper_link,
   github_link,
@@ -89,6 +91,9 @@ const Card = ({
       }}
     >
       <Box>
+        <HStack spacing={2} mb={1}>
+          <Text fontSize="sm">{conference}</Text>
+        </HStack>
         <VStack spacing={2} mb={3} textAlign="left">
           <chakra.h1
             as={Link}
@@ -118,6 +123,7 @@ const Card = ({
           </HStack>
         </VStack>
         <Text fontSize="sm">{published_on}</Text>
+        <br />
         {type === "Model" ? (
           <Button
             as={Link}
