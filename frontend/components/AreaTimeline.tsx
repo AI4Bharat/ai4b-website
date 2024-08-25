@@ -8,7 +8,7 @@ import {
   HStack,
   VStack,
   Flex,
-  Icon,
+  Button,
   useColorModeValue,
 } from "@chakra-ui/react";
 // Here we have used react-icons package for the icons
@@ -25,6 +25,7 @@ interface Publication {
   hf_link: string;
   paper_link: string;
   github_link: string;
+  type: string;
 }
 
 const AreaTimeline = ({ data }: { data: Array<Publication> }) => {
@@ -46,19 +47,23 @@ const AreaTimeline = ({ data }: { data: Array<Publication> }) => {
 interface CardProps {
   title: string;
   description: string;
+  area: string;
   published_on: string;
   hf_link: string;
   paper_link: string;
   github_link: string;
+  type: string;
 }
 
 const Card = ({
   title,
   description,
+  area,
   published_on,
   hf_link,
   paper_link,
   github_link,
+  type,
 }: CardProps) => {
   return (
     <HStack
@@ -113,6 +118,19 @@ const Card = ({
           </HStack>
         </VStack>
         <Text fontSize="sm">{published_on}</Text>
+        {type === "Model" ? (
+          <Button
+            as={Link}
+            href={`/areas/model/${area}/${title}`}
+            borderColor={"a4borange"}
+            variant={"outline"}
+            color={"a4borange"}
+          >
+            Try it Out!
+          </Button>
+        ) : (
+          <></>
+        )}
       </Box>
     </HStack>
   );
