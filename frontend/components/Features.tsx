@@ -155,7 +155,7 @@ export default function Features() {
             }
             href={"#"}
           />
-          <Card
+          {/* <Card
             heading={"OCR"}
             icon={
               <Image
@@ -169,7 +169,7 @@ export default function Features() {
               "AI4Bharat has pioneered the development of multilingual LLMs tailored for Indian languages, such as IndicBERT, IndicBART, and Airavata trained on extensive, diverse datasets like IndicCorpora and Sangraha."
             }
             href={"#"}
-          />
+          /> */}
         </Flex>
       </Container>
     </Box>
