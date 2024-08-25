@@ -15,6 +15,7 @@ import {
   Image,
   SkeletonCircle,
   SkeletonText,
+  Link,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useQuery } from "react-query";
@@ -26,6 +27,7 @@ interface FeatureProps {
 }
 
 interface Dataset {
+  website_link: string | undefined;
   title: string;
   area: string;
 }
@@ -64,10 +66,10 @@ const Feature = ({ title, icon }: FeatureProps) => {
 
 const fetchDatasets = async () => {
   try {
-    const response = await axios.get(`${API_URL}/datasets/`,{
-      headers:{
-        "ngrok-skip-browser-warning":true
-      }
+    const response = await axios.get(`${API_URL}/datasets/`, {
+      headers: {
+        "ngrok-skip-browser-warning": true,
+      },
     });
     return response.data;
   } catch (error) {
@@ -157,7 +159,14 @@ export default function Datasets() {
         ) : (
           <SimpleGrid columns={{ base: 1, md: 3 }} spacing={10}>
             {datasets.map((dataset: Dataset) => (
-              <Card key={dataset.title} border={"solid"} borderColor={"orange"}>
+              <Card
+                as={Link}
+                target="_blank"
+                key={dataset.title}
+                border={"solid"}
+                borderColor={"orange"}
+                href={dataset.website_link}
+              >
                 <CardBody>
                   <Feature
                     icon={

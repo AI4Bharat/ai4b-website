@@ -10,6 +10,7 @@ import {
   Stack,
   Text,
   useColorModeValue,
+  Link,
 } from "@chakra-ui/react";
 import { ReactElement } from "react";
 import {
@@ -57,9 +58,11 @@ const Card = ({ heading, description, icon, href }: CardProps) => {
             {description}
           </Text>
         </Box>
-        <Button variant={"link"} colorScheme={"blue"} size={"sm"}>
-          Learn more
-        </Button>
+        <Link href={href}>
+          <Button variant={"link"} colorScheme={"blue"} size={"sm"}>
+            Learn more
+          </Button>
+        </Link>
       </Stack>
     </Box>
   );
@@ -93,7 +96,7 @@ export default function Features() {
             description={
               "AI4Bharat has pioneered the development of multilingual LLMs tailored for Indian languages, such as IndicBERT, IndicBART, and Airavata trained on extensive, diverse datasets like IndicCorpora and Sangraha."
             }
-            href={"#"}
+            href={"/areas/llm"}
           />
           <Card
             heading={"Machine Translation"}
@@ -108,7 +111,7 @@ export default function Features() {
             description={
               "AI4Bharat has pioneered the development of multilingual LLMs tailored for Indian languages, such as IndicBERT, IndicBART, and Airavata trained on extensive, diverse datasets like IndicCorpora and Sangraha."
             }
-            href={"#"}
+            href={"/areas/nmt"}
           />
           <Card
             heading={"Transliteration"}
@@ -123,7 +126,7 @@ export default function Features() {
             description={
               "AI4Bharat has pioneered the development of multilingual LLMs tailored for Indian languages, such as IndicBERT, IndicBART, and Airavata trained on extensive, diverse datasets like IndicCorpora and Sangraha."
             }
-            href={"#"}
+            href={"/areas/xlit"}
           />
           <Card
             heading={"Automatic Speech Recognition"}
@@ -138,7 +141,7 @@ export default function Features() {
             description={
               "AI4Bharat has pioneered the development of multilingual LLMs tailored for Indian languages, such as IndicBERT, IndicBART, and Airavata trained on extensive, diverse datasets like IndicCorpora and Sangraha."
             }
-            href={"#"}
+            href={"/areas/asr"}
           />
           <Card
             heading={"Text to Speech"}
@@ -153,7 +156,7 @@ export default function Features() {
             description={
               "AI4Bharat has pioneered the development of multilingual LLMs tailored for Indian languages, such as IndicBERT, IndicBART, and Airavata trained on extensive, diverse datasets like IndicCorpora and Sangraha."
             }
-            href={"#"}
+            href={"/areas/tts"}
           />
           {/* <Card
             heading={"OCR"}
