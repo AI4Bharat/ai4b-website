@@ -102,7 +102,7 @@ export default function Features() {
             heading={"Machine Translation"}
             icon={
               <Image
-                src="/assets/icons/mt.png"
+                src="/assets/icons/nmt.png"
                 alt="LLM"
                 width={100}
                 height={100}

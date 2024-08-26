@@ -12,7 +12,7 @@ const nextConfig = {
   //   ];
   // },
   images: {
-    domains: ["localhost", "e5e4-91-203-135-89.ngrok-free.app"], // Replace 'example.com' with the hostname of your image source
+    domains: ["localhost", "admin.models.ai4bharat.org"], // Replace 'example.com' with the hostname of your image source
   },
 };
 
