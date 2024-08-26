@@ -27,3 +27,6 @@
 # Log files
 *.log
 
+Caddyfile
+
+/static/
