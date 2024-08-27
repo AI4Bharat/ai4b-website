@@ -191,13 +191,17 @@ const Card = ({
             <Link target="_blank" href={paper_link}>
               <FaPaperclip size={25} />
             </Link>
-            <Link target="_blank" href={`https://huggingface.co/${hf_id}`}>
-              <img
-                src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg"
-                alt="Hugging Face"
-                style={{ width: "25px", height: "25px" }}
-              />
-            </Link>
+            {hf_id === null ? (
+              <></>
+            ) : (
+              <Link target="_blank" href={`https://huggingface.co/${hf_id}`}>
+                <img
+                  src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg"
+                  alt="Hugging Face"
+                  style={{ width: "25px", height: "25px" }}
+                />
+              </Link>
+            )}
           </HStack>
         </VStack>
         {type === "Model" ? (
