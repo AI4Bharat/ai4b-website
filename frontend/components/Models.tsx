@@ -15,12 +15,14 @@ import {
   IconProps,
   useColorModeValue,
   Link,
+  HStack,
 } from "@chakra-ui/react";
 import { useQuery } from "react-query";
 import { API_URL } from "@/app/config";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import NMT from "./TryOut/NMT";
+import { FaPaperclip, FaGithub, FaArrowDown } from "react-icons/fa";
 
 const fetchModel = async ({ title }: { title: string }) => {
   try {
@@ -34,11 +36,20 @@ const fetchModel = async ({ title }: { title: string }) => {
 
 export default function ModelView({ slug }: { slug: Array<string> }) {
   const [model, setModel] = useState<{
+    hfData: any;
+    conference: string;
     paper_link: string | undefined;
     github_link: string | undefined;
     title: string;
     description?: string;
-  }>({ title: "", description: "", github_link: "", paper_link: "" });
+  }>({
+    title: "",
+    description: "",
+    github_link: "",
+    paper_link: "",
+    conference: "",
+    hfData: {},
+  });
 
   const [hfData, setHFData] = useState({});
 
@@ -50,7 +61,14 @@ export default function ModelView({ slug }: { slug: Array<string> }) {
 
   useEffect(() => {
     if (modelError || modelLoading) {
-      setModel({ title: "", description: "", github_link: "", paper_link: "" });
+      setModel({
+        title: "",
+        description: "",
+        github_link: "",
+        paper_link: "",
+        conference: "",
+        hfData: {},
+      });
     } else {
       setModel(modelData);
     }
@@ -74,38 +92,47 @@ export default function ModelView({ slug }: { slug: Array<string> }) {
               {model.title}
             </Text>
           </Heading>
+          <HStack>
+            <Box
+              borderRadius={15}
+              p={1}
+              borderWidth={3}
+              borderColor={"a4borange"}
+            >
+              <Text textColor={"a4borange"}>
+                Conference : {model.conference}
+              </Text>
+            </Box>
+            <Box
+              borderRadius={15}
+              p={1}
+              borderWidth={3}
+              borderColor={"a4borange"}
+            >
+              <Text textColor={"a4borange"}>
+                Downloads : {model.hfData.downloads}
+              </Text>
+            </Box>
+          </HStack>
           <Text color={"gray.500"}>{model.description}</Text>
-          <Stack
-            spacing={{ base: 4, sm: 6 }}
-            direction={{ base: "column", sm: "row" }}
-          >
-            <Button
-              as={Link}
-              href={model.github_link}
-              rounded={"full"}
-              size={"lg"}
-              fontWeight={"normal"}
-              px={6}
-              colorScheme={"red"}
-              bg={"red.400"}
-              _hover={{ bg: "red.500" }}
-            >
-              Codebase
-            </Button>
-            <Button
-              as={Link}
-              href={model.paper_link}
-              rounded={"full"}
-              size={"lg"}
-              fontWeight={"normal"}
-              px={6}
-              colorScheme={"red"}
-              bg={"red.400"}
-              _hover={{ bg: "red.500" }}
-            >
-              Paper
-            </Button>
-          </Stack>
+          <HStack>
+            <Box borderRadius={50} p={1} borderWidth={3} borderColor={"black"}>
+              <Link target="_blank" href={model.github_link}>
+                <HStack>
+                  <FaGithub size={25} />
+                  <Text>Github</Text>
+                </HStack>
+              </Link>
+            </Box>
+            <Box borderRadius={50} p={1} borderWidth={3} borderColor={"black"}>
+              <Link target="_blank" href={model.paper_link}>
+                <HStack>
+                  <FaPaperclip size={25} />
+                  <Text>Paper</Text>
+                </HStack>
+              </Link>
+            </Box>
+          </HStack>
         </Stack>
         <Flex
           flex={1}

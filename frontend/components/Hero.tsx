@@ -125,15 +125,6 @@ export default function Hero() {
           position={"relative"}
           w={"full"}
         >
-          <Blob
-            w={"150%"}
-            h={"150%"}
-            position={"absolute"}
-            top={"-20%"}
-            left={0}
-            zIndex={-1}
-            color={useColorModeValue("red.50", "red.400")}
-          />
           <Box
             position={"relative"}
             height={"300px"}
