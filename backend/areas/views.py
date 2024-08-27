@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
+import requests
 
 # Create your views here.
 from .models import Dataset, Tool, Model,News
@@ -21,6 +22,8 @@ class DatasetViewSet(viewsets.ModelViewSet):
     serializer_class = DatasetSerializer
 
 
+
+
 class ModelViewSet(viewsets.ModelViewSet):
     queryset = Model.objects.all()
     serializer_class = ModelSerializer
@@ -33,7 +36,10 @@ class ModelViewSet(viewsets.ModelViewSet):
             raise NotFound("Model with the given title does not exist.")
 
         serializer = self.get_serializer(model)
-        return Response(serializer.data)
+        modelData = serializer.data
+        hfData = requests.get(f"https://huggingface.co/api/models/{modelData['hf_id']}")
+        modelData["hfData"] = hfData.json()
+        return Response(modelData)
 
 
 class ToolViewSet(viewsets.ModelViewSet):
