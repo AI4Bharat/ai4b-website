@@ -1,8 +1,9 @@
 "use client";
 import { useParams } from "next/navigation";
+import ModelView from "../../../../../components/Models";
 
-export default function ModelView() {
+export default function Model() {
   const params = useParams();
   const slug = params.slug;
-  return <div>{slug}</div>;
+  return <ModelView slug={slug} />;
 }
