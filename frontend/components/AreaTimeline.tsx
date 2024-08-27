@@ -153,11 +153,11 @@ const Card = ({
   return (
     <HStack
       flex={1}
-      p={{ base: 1, sm: 6 }}
+      p={{ base: 3, sm: 6 }}
       bg={useColorModeValue("gray.100", "gray.800")}
-      rounded="lg"
       alignItems="center"
       pos="relative"
+      borderRadius={type === "Model" ? undefined : 30}
     >
       <Box>
         <HStack>

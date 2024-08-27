@@ -19,6 +19,29 @@ import { useQuery } from "react-query";
 import axios from "axios";
 import { API_URL } from "../config";
 
+const ExpandableText = ({
+  text,
+  noOfLines = 2,
+}: {
+  text: string;
+  noOfLines: number;
+}) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const handleToggle = () => setIsExpanded(!isExpanded);
+
+  return (
+    <Box onClick={handleToggle} cursor="pointer">
+      <Text fontSize={13} noOfLines={isExpanded ? undefined : noOfLines}>
+        {text}
+      </Text>
+      <Text textColor="a4borange" mt={1}>
+        {isExpanded ? "Show less" : "Read more"}
+      </Text>
+    </Box>
+  );
+};
+
 const fetchPubFilters = async () => {
   try {
     const response = await axios.get(`${API_URL}/pubfilters/`);
@@ -241,7 +264,7 @@ const Card = ({
           >
             {title}
           </chakra.h1>
-          <Text fontSize="md">{description}</Text>
+          <ExpandableText text={description} />
           <HStack>
             <Link target="_blank" href={github_link}>
               <FaGithub size={50} />
