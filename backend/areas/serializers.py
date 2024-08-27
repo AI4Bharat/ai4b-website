@@ -32,7 +32,7 @@ class ModelSerializer(ModelSerializer):
             "paper_link",
             "website_link",
             "github_link",
-            "hf_link",
+            "hf_id",
         ]
 
 
