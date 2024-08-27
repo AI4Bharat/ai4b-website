@@ -32,6 +32,7 @@ interface Publication {
   hf_link: string;
   paper_link: string;
   github_link: string;
+  website_link: string;
   type: string;
 }
 
@@ -40,9 +41,9 @@ const AreaTimeline = ({ data }: { data: Array<Publication> }) => {
   const isDesktop = useBreakpointValue({ base: false, md: true });
 
   return (
-    <Container maxWidth="7xl" p={{ base: 2, sm: 10 }}>
+    <Container maxWidth="7xl" p={{ base: 1, sm: 5 }}>
       <chakra.h3 fontSize="4xl" fontWeight="bold" mb={18} textAlign="center">
-        Milestones
+        Timeline
       </chakra.h3>
       {data.map((milestone, index) => (
         <Flex key={index} mb="10px">
@@ -87,6 +88,7 @@ interface CardProps {
   hf_link: string;
   paper_link: string;
   github_link: string;
+  website_link: string;
   type: string;
   index: number;
 }
@@ -114,7 +116,9 @@ const ExpandableText = ({
 
   return (
     <Box onClick={handleToggle} cursor="pointer">
-      <Text noOfLines={isExpanded ? undefined : noOfLines}>{text}</Text>
+      <Text fontSize={13} noOfLines={isExpanded ? undefined : noOfLines}>
+        {text}
+      </Text>
       <Text textColor="a4borange" mt={1}>
         {isExpanded ? "Show less" : "Read more"}
       </Text>
@@ -131,6 +135,7 @@ const Card = ({
   hf_link,
   paper_link,
   github_link,
+  website_link,
   type,
   index,
 }: CardProps) => {
@@ -148,55 +153,53 @@ const Card = ({
   return (
     <HStack
       flex={1}
-      p={{ base: 3, sm: 6 }}
+      p={{ base: 1, sm: 6 }}
       bg={useColorModeValue("gray.100", "gray.800")}
-      spacing={5}
       rounded="lg"
       alignItems="center"
       pos="relative"
-      _before={{
-        content: `""`,
-        w: "0",
-        h: "0",
-        borderColor: `transparent ${useColorModeValue(
-          "#edf2f6",
-          "#1a202c"
-        )} transparent`,
-        borderStyle: "solid",
-        borderWidth: borderWidthValue,
-        position: "absolute",
-        left: leftValue,
-        right: rightValue,
-        display: "block",
-      }}
     >
       <Box>
-        <Text fontSize="lg" color={isEvenId ? "teal.400" : "blue.400"}>
-          {published_on}
-        </Text>
+        <HStack>
+          <HStack spacing={2} mb={1}>
+            <Text fontSize="lg" color={isEvenId ? "teal.400" : "blue.400"}>
+              {published_on}
+            </Text>
+            <Text fontSize="sm">{type}</Text>
+            <Text fontSize="sm">{conference}</Text>
+          </HStack>
+        </HStack>
 
-        <VStack spacing={2} mb={3} textAlign="left">
-          <chakra.h1 fontSize="2xl" lineHeight={1.2} fontWeight="bold" w="100%">
+        <VStack spacing={1} mb={3} textAlign="left">
+          <chakra.h1
+            as={Link}
+            href={
+              type === "Model" ? `/areas/model/${area}/${title}` : website_link
+            }
+            fontSize="1xl"
+            lineHeight={1.2}
+            fontWeight="bold"
+            w="100%"
+          >
             {title}
           </chakra.h1>
           <ExpandableText noOfLines={2} text={description} />
           <HStack>
             <Link target="_blank" href={github_link}>
-              <FaGithub size={50} />
+              <FaGithub size={25} />
             </Link>
             <Link target="_blank" href={paper_link}>
-              <FaPaperclip size={50} />
+              <FaPaperclip size={25} />
             </Link>
             <Link target="_blank" href={hf_link}>
               <img
                 src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg"
                 alt="Hugging Face"
-                style={{ width: "50px", height: "50px" }}
+                style={{ width: "25px", height: "25px" }}
               />
             </Link>
           </HStack>
         </VStack>
-        <br />
         {type === "Model" ? (
           <Button
             as={Link}
@@ -204,6 +207,7 @@ const Card = ({
             borderColor={"a4borange"}
             variant={"outline"}
             color={"a4borange"}
+            fontSize={15}
           >
             Try it Out!
           </Button>
