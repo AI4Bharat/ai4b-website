@@ -21,7 +21,7 @@ class Dataset(models.Model):
     paper_link = models.URLField(max_length=500)
     website_link = models.URLField(max_length=500, null=True, blank=True)
     github_link = models.URLField(max_length=500)
-    hf_link = models.URLField(max_length=500)
+    hf_id = models.CharField(max_length=500,null=True,blank=True)
 
     def __str__(self) -> str:
         return f"{self.title}"
