@@ -20,6 +20,7 @@ import {
 import Features from "./Features";
 import Datasets from "./Datasets";
 import Sponsors from "./Sponsors";
+import News from "./NewsSection";
 
 export default function Hero() {
   return (
@@ -152,6 +153,8 @@ export default function Hero() {
           </Box>
         </Flex>
       </Stack>
+      <Divider colorScheme="orange" variant={"solid"} />
+      <News />
       <Divider colorScheme="orange" variant={"solid"} />
       <Features />
       <Divider colorScheme="orange" variant={"solid"} />

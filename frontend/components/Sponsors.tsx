@@ -35,26 +35,26 @@ export default function Sponsors() {
       </Stack>
 
       <Container maxW={"5xl"} mt={12}>
-        <SimpleGrid columns={{ base: 1, md: 3 }} spacing={10}>
-          <Card w={300} h={100}>
+        <SimpleGrid columns={{ base: 1, md: 4 }} spacing={10}>
+          <Card w={150} h={50}>
             <Image src="/assets/logos/meity.svg" alt="LLM" fill={true} />
           </Card>
-          <Card w={300} h={150}>
+          <Card w={150} h={50}>
             <Image src="/assets/logos/C-DAC.png" alt="LLM" fill={true} />
           </Card>
-          <Card w={300} h={100}>
+          <Card w={150} h={50}>
             <Image src="/assets/logos/nilekani.png" alt="LLM" fill={true} />
           </Card>
-          <Card w={300} h={100}>
+          <Card w={150} h={50}>
             <Image src="/assets/logos/ekstep.png" alt="LLM" fill={true} />
           </Card>
-          <Card w={300} h={100}>
+          <Card w={150} h={50}>
             <Image src="/assets/logos/microsoft.png" alt="LLM" fill={true} />
           </Card>
-          <Card w={300} h={100}>
+          <Card w={150} h={50}>
             <Image src="/assets/logos/google.png" alt="LLM" fill={true} />
           </Card>
-          <Card w={300} h={100}>
+          <Card w={150} h={50}>
             <Image src="/assets/logos/yotta.png" alt="LLM" fill={true} />
           </Card>
         </SimpleGrid>
