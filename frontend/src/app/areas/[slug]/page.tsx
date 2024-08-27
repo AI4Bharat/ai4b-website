@@ -11,6 +11,7 @@ import {
   Flex,
   Text,
   Heading,
+  VStack,
 } from "@chakra-ui/react";
 import { useQuery } from "react-query";
 import axios from "axios";
@@ -115,7 +116,9 @@ export default function Areas() {
       ) : (
         <></>
       )}
-      {areaInfo[slug] ? <AreaTimeline data={areaData} /> : <></>}
+      <VStack>
+        {areaInfo[slug] ? <AreaTimeline data={areaData} /> : <></>}
+      </VStack>
     </Container>
   );
 }
