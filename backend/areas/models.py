@@ -38,7 +38,7 @@ class Model(models.Model):
     website_link = models.URLField(max_length=500, null=True, blank=True)
     github_link = models.URLField(max_length=500)
     hf_link = models.URLField(max_length=500)
-    api_link = models.URLField(max_length=500, null=True, blank=True)
+    service_id = models.CharField(max_length=500, null=True, blank=True)
 
     def __str__(self) -> str:
         return f"{self.title}"
