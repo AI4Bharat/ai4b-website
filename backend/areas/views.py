@@ -10,7 +10,7 @@ from .serializers import DatasetSerializer, ToolSerializer, ModelSerializer,News
 from rest_framework.decorators import permission_classes
 from rest_framework import permissions
 
-DHRUVA_MODEL_VIEW_URL = "https://api.dhruva.ekstep.ai/services/details/view_model"
+DHRUVA_MODEL_VIEW_URL = "https://api.dhruva.ekstep.ai/services/details/view_service"
 DHRUVA_API_KEY = "0aaef7ff-86f3-4bb0-a30b-9f50f3de1a52"
 
 from datetime import datetime
@@ -45,18 +45,15 @@ class ModelViewSet(viewsets.ModelViewSet):
                                        headers=
                                        {'x-auth-source': 'API_KEY',
                                         'Authorization': '0aaef7ff-86f3-4bb0-a30b-9f50f3de1a52'},
-                                        json={'modelId':modelData["service_id"]}).json()
+                                        json={'serviceId':modelData["service_id"]}).json()["model"]
         
         languages = dhruvaModelData["languages"]
 
         sourceLanguages = list(set([x["sourceLanguage"] for x in languages]))
-        targetLanguages = list(set([x["sourceLanguage"] for x in languages]))
-
-        inferenceSchema = dhruvaModelData["inferenceEndPoint"]["schema"]["request"]
+        targetLanguages = list(set([x["targetLanguage"] for x in languages]))
 
         modelData["hfData"] = hfData.json()
         modelData["languageFilters"] = {"sourceLanguages":sourceLanguages,"targetLanguages":targetLanguages}
-        modelData["inferenceSchema"] = inferenceSchema
         return Response(modelData)
 
 
