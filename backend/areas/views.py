@@ -112,10 +112,13 @@ class PublicationViewSet(viewsets.ViewSet):
         publications += dataset_serializer.data
         publications += model_serializer.data
 
-        # combined_data = {
-        #     "datasets": dataset_serializer.data,
-        #     "models": model_serializer.data,
-        # }
+        for publication in publications:
+            if publication in dataset_serializer.data:
+                publication["type"] = "Dataset"
+            if publication in model_serializer.data:
+                publication["type"] = "Model"
+
+        publications.sort(key=lambda pub: pub.get("published_on"))
 
         return Response(publications)
 
