@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   FormControl,
   FormLabel,
@@ -15,6 +15,7 @@ import {
   Switch,
 } from "@chakra-ui/react";
 import { LANGUAGE_CODE_NAMES } from "@/app/config";
+import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import axios from "axios";
 
 const fetchTranslation = async ({
@@ -60,6 +61,7 @@ export default function NMT({
 }) {
   const [sourceLanguage, setSourceLanguage] = useState("en");
   const [targetLanguage, setTargetLanguage] = useState("hi");
+  const [transliteration, setTransliteration] = useState(true);
   const [inputText, setInputText] = useState("");
   const [outputText, setOutputText] = useState("");
 
@@ -110,14 +112,29 @@ export default function NMT({
               <FormLabel textColor={"gray.500"}>
                 Enable Transliteration:
               </FormLabel>
-              <Switch colorScheme={"orange"}></Switch>
+              <Switch
+                isChecked={transliteration}
+                onChange={() => setTransliteration(!transliteration)}
+                colorScheme={"orange"}
+              ></Switch>
             </VStack>
           </HStack>
           <VStack w={"full"}>
-            <Textarea
+            <IndicTransliterate
+              enabled={sourceLanguage !== "en" && transliteration}
+              renderComponent={(props) => (
+                <Textarea
+                  minWidth={270}
+                  width={{ base: "90%", md: "80%", lg: "100%" }}
+                  {...props}
+                />
+              )}
               value={inputText}
-              onChange={(event) => setInputText(event.target.value)}
-            ></Textarea>
+              onChangeText={(text) => {
+                setInputText(text);
+              }}
+              lang={sourceLanguage}
+            />
             <Textarea value={outputText} isReadOnly></Textarea>
             <Button
               onClick={async () => {
