@@ -68,7 +68,7 @@ interface Publication {
   area: string;
   conference: string;
   published_on: string;
-  hf_link: string;
+  hf_id: string;
   paper_link: string;
   github_link: string;
 }
@@ -193,7 +193,7 @@ const Publications = () => {
             categories={[pub.area, pub.conference]}
             description={pub.description}
             date={new Date(pub.published_on).toDateString()}
-            hf_link={pub.hf_link}
+            hf_id={pub.hf_id}
             paper_link={pub.paper_link}
             github_link={pub.github_link}
           />
@@ -208,7 +208,7 @@ interface CardProps {
   categories: string[];
   description: string;
   date: string;
-  hf_link: string;
+  hf_id: string;
   paper_link: string;
   github_link: string;
 }
@@ -218,7 +218,7 @@ const Card = ({
   categories,
   description,
   date,
-  hf_link,
+  hf_id,
   paper_link,
   github_link,
 }: CardProps) => {
@@ -264,7 +264,7 @@ const Card = ({
           >
             {title}
           </chakra.h1>
-          <ExpandableText text={description} />
+          <ExpandableText noOfLines={2} text={description} />
           <HStack>
             <Link target="_blank" href={github_link}>
               <FaGithub size={50} />
@@ -272,7 +272,7 @@ const Card = ({
             <Link target="_blank" href={paper_link}>
               <FaPaperclip size={50} />
             </Link>
-            <Link target="_blank" href={hf_link}>
+            <Link target="_blank" href={`https://huggingface.co/${hf_id}`}>
               <img
                 src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg"
                 alt="Hugging Face"

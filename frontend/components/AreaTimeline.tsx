@@ -29,7 +29,7 @@ interface Publication {
   area: string;
   conference: string;
   published_on: string;
-  hf_link: string;
+  hf_id: string;
   paper_link: string;
   github_link: string;
   website_link: string;
@@ -85,7 +85,7 @@ interface CardProps {
   area: string;
   published_on: string;
   conference: string;
-  hf_link: string;
+  hf_id: string;
   paper_link: string;
   github_link: string;
   website_link: string;
@@ -132,7 +132,7 @@ const Card = ({
   area,
   published_on,
   conference,
-  hf_link,
+  hf_id,
   paper_link,
   github_link,
   website_link,
@@ -191,7 +191,7 @@ const Card = ({
             <Link target="_blank" href={paper_link}>
               <FaPaperclip size={25} />
             </Link>
-            <Link target="_blank" href={hf_link}>
+            <Link target="_blank" href={`https://huggingface.co/${hf_id}`}>
               <img
                 src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg"
                 alt="Hugging Face"
