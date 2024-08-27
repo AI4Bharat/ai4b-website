@@ -30,3 +30,5 @@
 Caddyfile
 
 /static/
+
+data_dump.json

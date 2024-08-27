@@ -1,8 +1,10 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Dataset, Tool, Model
+from .models import Dataset, Tool, Model,News
 
+class NewsAdmin(admin.ModelAdmin):
+    search_fields=["title"]
 
 class DatasetAdmin(admin.ModelAdmin):
     list_filter = ["area", "conference"]
@@ -21,3 +23,4 @@ class ToolAdmin(admin.ModelAdmin):
 admin.site.register(Dataset, DatasetAdmin)
 admin.site.register(Tool, ToolAdmin)
 admin.site.register(Model, ModelAdmin)
+admin.site.register(News,NewsAdmin)

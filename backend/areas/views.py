@@ -3,13 +3,17 @@ from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
 
 # Create your views here.
-from .models import Dataset, Tool, Model
+from .models import Dataset, Tool, Model,News
 from rest_framework import viewsets
-from .serializers import DatasetSerializer, ToolSerializer, ModelSerializer
+from .serializers import DatasetSerializer, ToolSerializer, ModelSerializer,NewsSerializer
 from rest_framework.decorators import permission_classes
 from rest_framework import permissions
 
 from datetime import datetime
+
+class NewsViewSet(viewsets.ModelViewSet):
+    queryset = News.objects.all()
+    serializer_class = NewsSerializer
 
 
 class DatasetViewSet(viewsets.ModelViewSet):

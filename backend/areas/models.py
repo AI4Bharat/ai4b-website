@@ -57,3 +57,21 @@ class Tool(models.Model):
 
     def __str__(self) -> str:
         return f"{self.title}"
+    
+
+def image_directory_path(instance, filename):
+
+    # file will be uploaded to MEDIA_ROOT / user_<id>/<filename>
+    return "images/{0}/{1}".format(
+        instance.title, filename
+    )
+
+class News(models.Model):
+    id = models.AutoField(primary_key=True)
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    published_on = models.DateField(default=date.today)
+    image = models.ImageField(upload_to=image_directory_path,null=True,blank=True)
+
+    def __str__(self) -> str:
+        return f"{self.title}"

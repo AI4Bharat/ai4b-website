@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer
-from .models import Dataset, Tool, Model
+from .models import Dataset, Tool, Model,News
 
 
 class DatasetSerializer(ModelSerializer):
@@ -49,4 +49,15 @@ class ToolSerializer(ModelSerializer):
             "feature_cards_json",
             "contributor_cards_json",
             "installation_steps_json",
+        ]
+
+class NewsSerializer(ModelSerializer):
+    class Meta:
+        model = News
+        fields = [
+            "id",
+            "title",
+            "description",
+            "published_on",
+            "image"
         ]
