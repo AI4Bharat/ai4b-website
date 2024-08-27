@@ -7,7 +7,6 @@ from .views import PublicationViewSet, PublicationFilterOptions, AreaViewSet,New
 
 router = DefaultRouter()
 router.register(r"datasets", views.DatasetViewSet)
-router.register(r"models", views.ModelViewSet)
 router.register(r"news",views.NewsViewSet)
 # Do not register the ToolViewSet with the router, as we need custom routes
 
@@ -16,10 +15,16 @@ urlpatterns = [
     path("", include(router.urls)),
     # Custom URL pattern for the ToolViewSet to use title for retrieval
     path("tools/", views.ToolViewSet.as_view({"get": "list"}), name="tool-list"),
+    path("models/", views.ModelViewSet.as_view({"get": "list"}), name="model-list"),
     path(
         "tools/<str:title>/",
         views.ToolViewSet.as_view({"get": "retrieve"}),
         name="tool-detail",
+    ),
+    path(
+        "models/<str:title>/",
+        views.ModelViewSet.as_view({"get": "retrieve"}),
+        name="model-detail",
     ),
     path(
         "pubfilters/",

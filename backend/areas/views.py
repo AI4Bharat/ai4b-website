@@ -25,6 +25,16 @@ class ModelViewSet(viewsets.ModelViewSet):
     queryset = Model.objects.all()
     serializer_class = ModelSerializer
 
+    def retrieve(self, request, *args, **kwargs):
+        title = kwargs.get("title")
+        try:
+            model = Model.objects.get(title=title)
+        except Model.DoesNotExist:
+            raise NotFound("Model with the given title does not exist.")
+
+        serializer = self.get_serializer(model)
+        return Response(serializer.data)
+
 
 class ToolViewSet(viewsets.ModelViewSet):
     queryset = Tool.objects.all()
