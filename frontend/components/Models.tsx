@@ -36,6 +36,7 @@ const fetchModel = async ({ title }: { title: string }) => {
 
 export default function ModelView({ slug }: { slug: Array<string> }) {
   const [model, setModel] = useState<{
+    service_id: string;
     inferenceSchema: any;
     languageFilters: any;
     hfData: any;
@@ -53,6 +54,7 @@ export default function ModelView({ slug }: { slug: Array<string> }) {
     hfData: {},
     inferenceSchema: {},
     languageFilters: {},
+    service_id: "",
   });
 
   const [hfData, setHFData] = useState({});
@@ -74,6 +76,7 @@ export default function ModelView({ slug }: { slug: Array<string> }) {
         hfData: {},
         inferenceSchema: {},
         languageFilters: {},
+        service_id: "",
       });
     } else {
       setModel(modelData);
@@ -150,7 +153,7 @@ export default function ModelView({ slug }: { slug: Array<string> }) {
           <NMT
             sourceLanguages={model.languageFilters.sourceLanguages}
             targetLanguages={model.languageFilters.targetLanguages}
-            schema={model.inferenceSchema}
+            serviceId={model.service_id}
           />
         </Flex>
       </Stack>
