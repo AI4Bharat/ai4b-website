@@ -8,6 +8,9 @@ import {
   Button,
   useColorModeValue,
   Container,
+  Flex,
+  Text,
+  Heading,
 } from "@chakra-ui/react";
 import { useQuery } from "react-query";
 import axios from "axios";
@@ -66,57 +69,53 @@ export default function Areas() {
   }, [data, isLoading, error]);
 
   return (
-    <Box pb={8}>
-      <Stack
-        pos="relative"
-        bgGradient="linear(to-l, #ff944d,#ff6600)"
-        height="250px"
-        w="100%"
-      ></Stack>
-      <Box
-        maxW="3xl"
-        p={4}
-        isolation="isolate"
-        zIndex={3}
-        mt="-10rem"
-        marginInline="auto"
-      >
-        <Box
-          boxShadow={useColorModeValue(
-            "0 4px 6px rgba(160, 174, 192, 0.6)",
-            "0 4px 6px rgba(9, 17, 28, 0.9)"
-          )}
-          bg={useColorModeValue("white", "gray.800")}
-          p={{ base: 4, sm: 8 }}
-          overflow="hidden"
-          rounded="2xl"
+    <Container maxW={"7xl"}>
+      {areaInfo[slug] ? (
+        <Stack
+          align={"center"}
+          spacing={{ base: 4, md: 5 }}
+          py={{ base: 10, md: 18 }}
+          direction={{ base: "column", md: "row" }}
         >
-          {areaInfo[slug] ? (
-            <Stack
-              pos="relative"
-              zIndex={1}
-              direction="column"
-              spacing={5}
-              textAlign="left"
+          <Stack flex={1} spacing={{ base: 5, md: 10 }}>
+            <Heading
+              lineHeight={1.1}
+              fontWeight={600}
+              fontSize={{ base: "3xl", sm: "4xl", lg: "6xl" }}
             >
-              <chakra.h1 fontSize="4xl" lineHeight={1.2} fontWeight="bold">
+              <Text as={"span"} position={"relative"}>
                 {areaInfo[slug].title}
-              </chakra.h1>
-              <chakra.h1
-                color="gray.400"
-                fontSize="xl"
-                maxW="600px"
-                lineHeight={1.2}
-              >
-                {areaInfo[slug].description}
-              </chakra.h1>
-            </Stack>
-          ) : (
-            <></>
-          )}
-        </Box>
-      </Box>
+              </Text>
+            </Heading>
+            <Text textColor={"a4borange"}>
+              To know more about our contributions over the years see the
+              timeline below!
+            </Text>
+          </Stack>
+          <Flex
+            flex={1}
+            justify={"center"}
+            align={"center"}
+            position={"relative"}
+            w={"full"}
+          >
+            <Box
+              position={"relative"}
+              rounded={"2xl"}
+              boxShadow={"2xl"}
+              width={"full"}
+              overflow={"hidden"}
+              bg="a4borange"
+              p={5}
+            >
+              <Text textColor={"white"}>{areaInfo[slug].description}</Text>
+            </Box>
+          </Flex>
+        </Stack>
+      ) : (
+        <></>
+      )}
       {areaInfo[slug] ? <AreaTimeline data={areaData} /> : <></>}
-    </Box>
+    </Container>
   );
 }
