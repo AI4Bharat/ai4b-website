@@ -71,6 +71,7 @@ interface Publication {
   hf_id: string;
   paper_link: string;
   github_link: string;
+  type: string;
 }
 
 const Publications = () => {
@@ -196,6 +197,7 @@ const Publications = () => {
             hf_id={pub.hf_id}
             paper_link={pub.paper_link}
             github_link={pub.github_link}
+            type={pub.type}
           />
         </Flex>
       ))}
@@ -211,6 +213,7 @@ interface CardProps {
   hf_id: string;
   paper_link: string;
   github_link: string;
+  type: string;
 }
 
 const Card = ({
@@ -221,6 +224,7 @@ const Card = ({
   hf_id,
   paper_link,
   github_link,
+  type,
 }: CardProps) => {
   return (
     <HStack
@@ -272,7 +276,14 @@ const Card = ({
             <Link target="_blank" href={paper_link}>
               <FaPaperclip size={50} />
             </Link>
-            <Link target="_blank" href={`https://huggingface.co/${hf_id}`}>
+            <Link
+              target="_blank"
+              href={
+                type === "Model"
+                  ? `https://huggingface.co/${hf_id}`
+                  : `https://huggingface.co/datasets/${hf_id}`
+              }
+            >
               <img
                 src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg"
                 alt="Hugging Face"
