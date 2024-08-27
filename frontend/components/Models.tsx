@@ -18,11 +18,11 @@ import {
   HStack,
 } from "@chakra-ui/react";
 import { useQuery } from "react-query";
-import { API_URL } from "@/app/config";
+import { API_URL, LANGUAGE_CODE_NAMES } from "@/app/config";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import NMT from "./TryOut/NMT";
-import { FaPaperclip, FaGithub, FaArrowDown } from "react-icons/fa";
+import { FaPaperclip, FaGithub } from "react-icons/fa";
 
 const fetchModel = async ({ title }: { title: string }) => {
   try {
@@ -36,6 +36,8 @@ const fetchModel = async ({ title }: { title: string }) => {
 
 export default function ModelView({ slug }: { slug: Array<string> }) {
   const [model, setModel] = useState<{
+    inferenceSchema: any;
+    languageFilters: any;
     hfData: any;
     conference: string;
     paper_link: string | undefined;
@@ -49,6 +51,8 @@ export default function ModelView({ slug }: { slug: Array<string> }) {
     paper_link: "",
     conference: "",
     hfData: {},
+    inferenceSchema: {},
+    languageFilters: {},
   });
 
   const [hfData, setHFData] = useState({});
@@ -68,6 +72,8 @@ export default function ModelView({ slug }: { slug: Array<string> }) {
         paper_link: "",
         conference: "",
         hfData: {},
+        inferenceSchema: {},
+        languageFilters: {},
       });
     } else {
       setModel(modelData);
@@ -141,7 +147,11 @@ export default function ModelView({ slug }: { slug: Array<string> }) {
           position={"relative"}
           w={"full"}
         >
-          <NMT />
+          <NMT
+            sourceLanguages={model.languageFilters.sourceLanguages}
+            targetLanguages={model.languageFilters.targetLanguages}
+            schema={model.inferenceSchema}
+          />
         </Flex>
       </Stack>
     </Container>
