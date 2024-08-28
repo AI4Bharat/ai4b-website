@@ -12,11 +12,11 @@ import {
   Card,
   CardBody,
   useColorModeValue,
-  Image,
   SkeletonCircle,
   SkeletonText,
   Link,
 } from "@chakra-ui/react";
+import Image from "next/image";
 import axios from "axios";
 import { useQuery } from "react-query";
 import { API_URL } from "@/app/config";
@@ -130,11 +130,7 @@ export default function Datasets() {
             >
               <Image
                 alt={"Hero Image"}
-                fit={"cover"}
-                align={"center"}
-                padding={1}
-                w={"100%"}
-                h={"100%"}
+                fill
                 src={`${imagePrefix}/assets/data-collection.png`}
               />
             </Box>
