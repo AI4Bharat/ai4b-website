@@ -53,6 +53,14 @@ const fetchAreaData = async (slug: string) => {
   }
 };
 
+export async function generateStaticParams() {
+  const areas = ["xlit", "nmt", "asr", "tts", "llm"];
+
+  return areas.map((area) => ({
+    slug: area,
+  }));
+}
+
 export default function Areas() {
   const params = useParams();
   const slug = params.slug as keyof typeof areaInfo;
