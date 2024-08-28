@@ -13,13 +13,7 @@ import {
   Link,
 } from "@chakra-ui/react";
 import { ReactElement } from "react";
-import {
-  FcAbout,
-  FcAssistant,
-  FcCollaboration,
-  FcDonate,
-  FcManager,
-} from "react-icons/fc";
+import { imagePrefix } from "@/app/config";
 
 interface CardProps {
   heading: string;
@@ -87,7 +81,7 @@ export default function Features() {
             heading={"Large Language Models"}
             icon={
               <Image
-                src="/assets/icons/llm.png"
+                src={`${imagePrefix}/assets/icons/llm.png`}
                 alt="LLM"
                 width={100}
                 height={100}
@@ -102,7 +96,7 @@ export default function Features() {
             heading={"Machine Translation"}
             icon={
               <Image
-                src="/assets/icons/nmt.png"
+                src={`${imagePrefix}/assets/icons/nmt.png`}
                 alt="LLM"
                 width={100}
                 height={100}
@@ -117,7 +111,7 @@ export default function Features() {
             heading={"Transliteration"}
             icon={
               <Image
-                src="/assets/icons/xlit.png"
+                src={`${imagePrefix}/assets/icons/xlit.png`}
                 alt="LLM"
                 width={100}
                 height={100}
@@ -132,7 +126,7 @@ export default function Features() {
             heading={"Automatic Speech Recognition"}
             icon={
               <Image
-                src="/assets/icons/asr.png"
+                src={`${imagePrefix}/assets/icons/asr.png`}
                 alt="LLM"
                 width={100}
                 height={100}
@@ -147,7 +141,7 @@ export default function Features() {
             heading={"Text to Speech"}
             icon={
               <Image
-                src="/assets/icons/tts.png"
+                src={`${imagePrefix}/assets/icons/tts.png`}
                 alt="LLM"
                 width={100}
                 height={100}

@@ -1,5 +1,4 @@
 const nextConfig = {
-  basePath: "/ai4b-website",
   output: "export",
   eslint: {
     ignoreDuringBuilds: true,

@@ -24,3 +24,5 @@ export const LANGUAGE_CODE_NAMES = {
   mr: "Marathi",
   mni: "Meitei (Manipuri)",
 };
+
+export const imagePrefix = process.env.BASE_PATH || "";

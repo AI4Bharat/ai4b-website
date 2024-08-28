@@ -13,14 +13,7 @@ import {
   useColorModeValue,
   SimpleGrid,
 } from "@chakra-ui/react";
-import { ReactElement } from "react";
-import {
-  FcAbout,
-  FcAssistant,
-  FcCollaboration,
-  FcDonate,
-  FcManager,
-} from "react-icons/fc";
+import { imagePrefix } from "@/app/config";
 
 export default function Sponsors() {
   return (
@@ -37,25 +30,53 @@ export default function Sponsors() {
       <Container maxW={"5xl"} mt={12}>
         <SimpleGrid columns={{ base: 1, md: 4 }} spacing={10}>
           <Card w={150} h={50}>
-            <Image src="/assets/logos/meity.svg" alt="LLM" fill={true} />
+            <Image
+              src={`${imagePrefix}/assets/logos/meity.svg`}
+              alt="LLM"
+              fill={true}
+            />
           </Card>
           <Card w={150} h={50}>
-            <Image src="/assets/logos/C-DAC.png" alt="LLM" fill={true} />
+            <Image
+              src={`${imagePrefix}/assets/logos/nilekani.png`}
+              alt="LLM"
+              fill={true}
+            />
           </Card>
           <Card w={150} h={50}>
-            <Image src="/assets/logos/nilekani.png" alt="LLM" fill={true} />
+            <Image
+              src={`${imagePrefix}/assets/logos/C-DAC.png`}
+              alt="LLM"
+              fill={true}
+            />
           </Card>
           <Card w={150} h={50}>
-            <Image src="/assets/logos/ekstep.png" alt="LLM" fill={true} />
+            <Image
+              src={`${imagePrefix}/assets/logos/microsoft.png`}
+              alt="LLM"
+              fill={true}
+            />
           </Card>
           <Card w={150} h={50}>
-            <Image src="/assets/logos/microsoft.png" alt="LLM" fill={true} />
+            <Image
+              src={`${imagePrefix}/assets/logos/google.png`}
+              alt="LLM"
+              fill={true}
+            />
           </Card>
           <Card w={150} h={50}>
-            <Image src="/assets/logos/google.png" alt="LLM" fill={true} />
+            <Image
+              src={`${imagePrefix}/assets/logos/yotta.png`}
+              alt="LLM"
+              fill={true}
+            />
           </Card>
           <Card w={150} h={50}>
-            <Image src="/assets/logos/yotta.png" alt="LLM" fill={true} />
+            <Image
+              src={`${imagePrefix}/assets/logos/ekstep.png`}
+              alt="LLM"
+              fill={true}
+            />
           </Card>
         </SimpleGrid>
       </Container>

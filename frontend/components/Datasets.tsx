@@ -20,6 +20,7 @@ import {
 import axios from "axios";
 import { useQuery } from "react-query";
 import { API_URL } from "@/app/config";
+import { imagePrefix } from "@/app/config";
 
 interface FeatureProps {
   title: string;
@@ -171,7 +172,7 @@ export default function Datasets() {
                   <Feature
                     icon={
                       <Image
-                        src={`/assets/icons/${dataset.area.toLowerCase()}.png`}
+                        src={`${imagePrefix}/assets/icons/${dataset.area.toLowerCase()}.png`}
                         alt="Icon"
                         width={50}
                         height={50}
