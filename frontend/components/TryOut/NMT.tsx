@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { LANGUAGE_CODE_NAMES } from "@/app/config";
 import axios from "axios";
-import dynamic from "next/dynamic";
+import { API_URL } from "@/app/config";
 const IndicTransliterate =
   typeof window !== "undefined"
     ? require("@ai4bharat/indic-transliterate").IndicTransliterate
@@ -36,7 +36,7 @@ const fetchTranslation = async ({
   serviceId: string;
 }) => {
   try {
-    const response = await axios.post(`/api/inference`, {
+    const response = await axios.post(`${API_URL}/inference/`, {
       sourceLanguage: sourceLanguage,
       targetLanguage: targetLanguage,
       input: input,
