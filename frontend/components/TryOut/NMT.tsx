@@ -15,8 +15,12 @@ import {
   Switch,
 } from "@chakra-ui/react";
 import { LANGUAGE_CODE_NAMES } from "@/app/config";
-import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import axios from "axios";
+import dynamic from "next/dynamic";
+const IndicTransliterate =
+  typeof window !== "undefined"
+    ? require("@ai4bharat/indic-transliterate").IndicTransliterate
+    : null;
 
 const fetchTranslation = async ({
   sourceLanguage,
@@ -120,7 +124,7 @@ export default function NMT({
             </VStack>
           </HStack>
           <VStack w={"full"}>
-            <IndicTransliterate
+            {/* <IndicTransliterate
               enabled={sourceLanguage !== "en" && transliteration}
               renderComponent={(props) => (
                 <Textarea
@@ -134,6 +138,14 @@ export default function NMT({
                 setInputText(text);
               }}
               lang={sourceLanguage}
+            /> */}
+            <Textarea
+              minWidth={270}
+              width={{ base: "90%", md: "80%", lg: "100%" }}
+              value={inputText}
+              onChange={(event) => {
+                setInputText(event.target.value);
+              }}
             />
             <Textarea value={outputText} isReadOnly></Textarea>
             <Button
