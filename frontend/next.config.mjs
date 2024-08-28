@@ -4,7 +4,6 @@ let assetPrefix = `/${repo}/`;
 let basePath = `/${repo}`;
 
 const nextConfig = {
-  assetPrefix: process.env.GITHUB_ACTIONS ? assetPrefix : "",
   basePath: process.env.GITHUB_ACTIONS ? basePath : "",
   output: "export",
   eslint: {
