@@ -81,7 +81,10 @@ class ModelViewSet(viewsets.ModelViewSet):
         languages = dhruvaModelData["languages"]
 
         sourceLanguages = list(set([x["sourceLanguage"] for x in languages]))
-        targetLanguages = list(set([x["targetLanguage"] for x in languages]))
+        if "targetLanguage" in languages[0]:
+            targetLanguages = list(set([x["targetLanguage"] for x in languages]))
+        else:
+            targetLanguages = []
 
         modelData["hfData"] = hfData.json()
         modelData["languageFilters"] = {"sourceLanguages":sourceLanguages,"targetLanguages":targetLanguages}
