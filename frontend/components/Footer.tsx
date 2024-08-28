@@ -21,6 +21,7 @@ import {
   FaDiscord,
 } from "react-icons/fa";
 import { BiMailSend } from "react-icons/bi";
+import { imagePrefix } from "@/app/config";
 
 const Logo = (props: any) => {
   return (
@@ -93,7 +94,7 @@ export default function Footer() {
           <Stack spacing={6}>
             <Box>
               <Image
-                src="/assets/logos/ai4b-logo.png"
+                src={`${imagePrefix}/assets/logos/ai4b-logo.png`}
                 alt="A4B Logo"
                 width={50}
                 height={25}
