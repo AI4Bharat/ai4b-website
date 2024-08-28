@@ -161,7 +161,7 @@ CORS_ALLOW_HEADERS = (
     "accept",
     "origin",
     "authorization",
-    "ngrok-skip-browser-warning",
 )
 
-CSRF_TRUSTED_ORIGINS = ["https://e5e4-91-203-135-89.ngrok-free.app"]
+
+DEBUG_PROPAGATE_EXCEPTIONS = True

@@ -5,15 +5,48 @@ import requests
 
 # Create your views here.
 from .models import Dataset, Tool, Model,News
-from rest_framework import viewsets
+from rest_framework import viewsets,status
 from .serializers import DatasetSerializer, ToolSerializer, ModelSerializer,NewsSerializer
 from rest_framework.decorators import permission_classes
 from rest_framework import permissions
 
+from rest_framework.views import APIView
+
 DHRUVA_MODEL_VIEW_URL = "https://api.dhruva.ekstep.ai/services/details/view_service"
 DHRUVA_API_KEY = "0aaef7ff-86f3-4bb0-a30b-9f50f3de1a52"
 
-from datetime import datetime
+@permission_classes((permissions.AllowAny,))
+class InferenceView(APIView):
+    def post(self, request, format=None):
+        body = request.data
+        task = body["task"]
+        if task=="translation":
+            INFERENCE_API = "https://api.dhruva.ekstep.ai/services/inference/translation"
+            inferenceResult = requests.post(INFERENCE_API,headers=
+                                       {'x-auth-source': 'API_KEY',
+                                        'Authorization': DHRUVA_API_KEY},
+                                        json={
+                                                "controlConfig": {
+                                                    "dataTracking": True
+                                                },
+                                                "config": {
+                                                    "serviceId": body["serviceId"],
+                                                    "language": {
+                                                    "sourceLanguage": body["sourceLanguage"],
+                                                    "sourceScriptCode": "",
+                                                    "targetLanguage": body["targetLanguage"],
+                                                    "targetScriptCode": ""
+                                                    }
+                                                },
+                                                "input": [
+                                                    {
+                                                    "source": body["input"]
+                                                    }
+                                                ]
+                                                })
+        
+        return Response(inferenceResult.json(),status=status.HTTP_200_OK)
+
 
 class NewsViewSet(viewsets.ModelViewSet):
     queryset = News.objects.all()
@@ -23,8 +56,6 @@ class NewsViewSet(viewsets.ModelViewSet):
 class DatasetViewSet(viewsets.ModelViewSet):
     queryset = Dataset.objects.all()
     serializer_class = DatasetSerializer
-
-
 
 
 class ModelViewSet(viewsets.ModelViewSet):
@@ -44,7 +75,7 @@ class ModelViewSet(viewsets.ModelViewSet):
         dhruvaModelData = requests.post(DHRUVA_MODEL_VIEW_URL,
                                        headers=
                                        {'x-auth-source': 'API_KEY',
-                                        'Authorization': '0aaef7ff-86f3-4bb0-a30b-9f50f3de1a52'},
+                                        'Authorization': DHRUVA_API_KEY},
                                         json={'serviceId':modelData["service_id"]}).json()["model"]
         
         languages = dhruvaModelData["languages"]
@@ -161,3 +192,5 @@ class AreaViewSet(viewsets.ViewSet):
         publications.sort(key=lambda pub: pub.get("published_on"))
 
         return Response(publications)
+    
+
