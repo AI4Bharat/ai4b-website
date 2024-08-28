@@ -23,7 +23,7 @@ const areaInfo: { [key: string]: { title: string; description: string } } = {
   nmt: {
     title: "Machine Translation",
     description:
-      "AI4Bharat is a pioneering initiative focused on building open-source AI solutions that address challenges unique to India. One of their significant contributions is in the field of machine translation, where they aim to bridge the linguistic diversity of the country. AI4Bharat has developed state-of-the-art models that facilitate the translation of text between Indian languages, enabling seamless communication across different linguistic communities. Their work includes creating large-scale datasets, fine-tuning models for regional languages, and ensuring these tools are accessible to developers and researchers. This initiative not only promotes inclusivity but also helps preserve the rich linguistic heritage of India by making digital content available in multiple languages.",
+      "Our machine translation models, including IndicTransv2, are built on large-scale datasets mined from the web and carefully curated human translations, catering to all 22 Indian languages and competing with commercial models as validated on multiple benchmarks.",
   },
   llm: {
     title: "Large Language Models",
@@ -39,6 +39,21 @@ const areaInfo: { [key: string]: { title: string; description: string } } = {
                     to expanding our pretraining corpora to support the development of even more robust generative
                     models, while ensuring diversity in their generation capabilities, thereby advancing the frontier of
                     language technology for India’s diverse linguistic landscape.`,
+  },
+  asr: {
+    title: "Automatic Speech Recognition",
+    description:
+      "Our ASR models, including IndicWav2Vec and IndicWhisper, are trained on rich datasets like Kathbath, Shrutilipi and IndicVoices, covering multiple Indian languages.",
+  },
+  tts: {
+    title: "Speech Synthesis",
+    description:
+      "AI4Bharat’s TTS efforts, exemplified by AI4BTTS, focus on creating natural-sounding synthetic voices for Indian languages using a mix of web-crawled data and carefully curated datasets like Rasa.",
+  },
+  xlit: {
+    title: "Transliteration",
+    description:
+      "AI4Bharat’s transliteration models, like IndicXlit, are optimized for converting text between scripts of Indian languages and English, leveraging large scale datasets such as Aksharantar",
   },
 };
 
