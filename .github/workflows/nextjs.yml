@@ -46,12 +46,14 @@ jobs:
 
       - name: Setup Node
         uses: actions/setup-node@v4
+        working-directory: frontend
         with:
           node-version: "20"
           cache: ${{ steps.detect-package-manager.outputs.manager }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
+        working-directory: frontend
         with:
           static_site_generator: next
 
