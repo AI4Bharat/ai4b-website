@@ -60,7 +60,7 @@ export default function Navbar() {
         </Flex>
         <Flex flex={{ base: 1 }} justify={{ base: "center", md: "start" }}>
           <Image
-            src="./assets/logos/ai4b-logo.png"
+            src="/assets/logos/ai4b-logo.png"
             alt="A4B Logo"
             width={25}
             height={25}
