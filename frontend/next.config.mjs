@@ -1,10 +1,5 @@
-const repo = "ai4b-website";
-
-let assetPrefix = `/${repo}/`;
-let basePath = `/${repo}`;
-
 const nextConfig = {
-  basePath: process.env.GITHUB_ACTIONS ? basePath : "",
+  basePath: "/ai4b-website",
   output: "export",
   eslint: {
     ignoreDuringBuilds: true,
