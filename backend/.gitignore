@@ -1,0 +1,34 @@
+# Django project files
+*.pyc
+*.pyo
+*/__pycache__/
+*/migrations
+/people/media
+*.sqlite3
+
+# Static files
+/staticfiles/
+
+# Media files
+/media/
+
+# Environment variables
+.env
+
+# IDE files
+.vscode/
+.idea/
+
+# Compiled Python files
+*.pyc
+*.pyo
+*.pyd
+
+# Log files
+*.log
+
+Caddyfile
+
+/static/
+
+data_dump.json
