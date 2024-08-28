@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from areas import views
 from django.conf.urls.static import static
 from django.conf import settings
-from .views import PublicationViewSet, PublicationFilterOptions, AreaViewSet,NewsViewSet
+from .views import PublicationViewSet, PublicationFilterOptions, AreaViewSet,InferenceView
 
 router = DefaultRouter()
 router.register(r"datasets", views.DatasetViewSet)
@@ -40,7 +40,8 @@ urlpatterns = [
         "area/<str:area>/",
         AreaViewSet.as_view({"get":"list"}),
         name="area-list"
-    )
+    ),
+    path("inference/",InferenceView.as_view(),name="inference"),
 ]
 # Add static file serving if needed
 if settings.DEBUG:
