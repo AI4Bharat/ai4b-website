@@ -93,7 +93,7 @@ export default function Footer() {
           <Stack spacing={6}>
             <Box>
               <Image
-                src="/assets/logos/ai4b-logo.png"
+                src="./assets/logos/ai4b-logo.png"
                 alt="A4B Logo"
                 width={50}
                 height={25}

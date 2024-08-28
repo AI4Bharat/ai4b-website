@@ -33,15 +33,15 @@ interface Dataset {
 }
 
 // const datasets: { [key: string]: { path: string; icon: string } } = {
-//   Sangraha: { path: "", icon: "/assets/icons/llm.png" },
-//   Samanantar: { path: "", icon: "/assets/icons/nmt.png" },
-//   BPCC: { path: "", icon: "/assets/icons/nmt.png" },
-//   Shrutilipi: { path: "", icon: "/assets/icons/asr.png" },
-//   Svarah: { path: "", icon: "/assets/icons/asr.png" },
-//   Lahaja: { path: "", icon: "/assets/icons/asr.png" },
-//   IndicVoices: { path: "", icon: "/assets/icons/asr.png" },
-//   Rasa: { path: "", icon: "/assets/icons/tts.png" },
-//   Aksharantar: { path: "", icon: "/assets/icons/xlit.png" },
+//   Sangraha: { path: "", icon: "./assets/icons/llm.png" },
+//   Samanantar: { path: "", icon: "./assets/icons/nmt.png" },
+//   BPCC: { path: "", icon: "./assets/icons/nmt.png" },
+//   Shrutilipi: { path: "", icon: "./assets/icons/asr.png" },
+//   Svarah: { path: "", icon: "./assets/icons/asr.png" },
+//   Lahaja: { path: "", icon: "./assets/icons/asr.png" },
+//   IndicVoices: { path: "", icon: "./assets/icons/asr.png" },
+//   Rasa: { path: "", icon: "./assets/icons/tts.png" },
+//   Aksharantar: { path: "", icon: "./assets/icons/xlit.png" },
 // };
 
 const Feature = ({ title, icon }: FeatureProps) => {
@@ -134,7 +134,7 @@ export default function Datasets() {
                 padding={1}
                 w={"100%"}
                 h={"100%"}
-                src={"/assets/data-collection.png"}
+                src={"./assets/data-collection.png"}
               />
             </Box>
           </Flex>

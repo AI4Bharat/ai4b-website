@@ -87,7 +87,7 @@ export default function Features() {
             heading={"Large Language Models"}
             icon={
               <Image
-                src="/assets/icons/llm.png"
+                src="./assets/icons/llm.png"
                 alt="LLM"
                 width={100}
                 height={100}
@@ -102,7 +102,7 @@ export default function Features() {
             heading={"Machine Translation"}
             icon={
               <Image
-                src="/assets/icons/nmt.png"
+                src="./assets/icons/nmt.png"
                 alt="LLM"
                 width={100}
                 height={100}
@@ -117,7 +117,7 @@ export default function Features() {
             heading={"Transliteration"}
             icon={
               <Image
-                src="/assets/icons/xlit.png"
+                src="./assets/icons/xlit.png"
                 alt="LLM"
                 width={100}
                 height={100}
@@ -132,7 +132,7 @@ export default function Features() {
             heading={"Automatic Speech Recognition"}
             icon={
               <Image
-                src="/assets/icons/asr.png"
+                src="./assets/icons/asr.png"
                 alt="LLM"
                 width={100}
                 height={100}
@@ -147,7 +147,7 @@ export default function Features() {
             heading={"Text to Speech"}
             icon={
               <Image
-                src="/assets/icons/tts.png"
+                src="./assets/icons/tts.png"
                 alt="LLM"
                 width={100}
                 height={100}
@@ -162,7 +162,7 @@ export default function Features() {
             heading={"OCR"}
             icon={
               <Image
-                src="/assets/icons/ocr.png"
+                src="./assets/icons/ocr.png"
                 alt="LLM"
                 width={100}
                 height={100}
