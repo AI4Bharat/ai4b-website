@@ -7,18 +7,11 @@ import {
   Box,
   Heading,
   Text,
-  Button,
-  Image,
-  Icon,
-  IconButton,
-  createIcon,
-  IconProps,
-  useColorModeValue,
   Link,
   HStack,
 } from "@chakra-ui/react";
 import { useQuery } from "react-query";
-import { API_URL, LANGUAGE_CODE_NAMES } from "@/app/config";
+import { API_URL } from "@/app/config";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import NMT from "./TryOut/NMT";
@@ -34,7 +27,38 @@ const fetchModel = async ({ title }: { title: string }) => {
   }
 };
 
-export default function ModelView({ slug }: { slug: Array<string> }) {
+interface Model {
+  service_id: string;
+  inferenceSchema: any;
+  languageFilters: any;
+  hfData: any;
+  conference: string;
+  paper_link: string | undefined;
+  github_link: string | undefined;
+  title: string;
+  description?: string;
+}
+
+const renderTryOut = ({ area, model }: { area: string; model: Model }) => {
+  switch (area) {
+    case "NMT":
+      return (
+        <NMT
+          sourceLanguages={model.languageFilters.sourceLanguages}
+          targetLanguages={model.languageFilters.targetLanguages}
+          serviceId={model.service_id}
+        />
+      );
+  }
+};
+
+export default function ModelView({
+  area,
+  title,
+}: {
+  area: string;
+  title: string;
+}) {
   const [model, setModel] = useState<{
     service_id: string;
     inferenceSchema: any;
@@ -57,13 +81,11 @@ export default function ModelView({ slug }: { slug: Array<string> }) {
     service_id: "",
   });
 
-  const [hfData, setHFData] = useState({});
-
   const {
     isLoading: modelLoading,
     error: modelError,
     data: modelData,
-  } = useQuery(["fetchModel", slug], () => fetchModel({ title: slug[1] }));
+  } = useQuery(["fetchModel", title], () => fetchModel({ title: title }));
 
   useEffect(() => {
     if (modelError || modelLoading) {
@@ -112,16 +134,20 @@ export default function ModelView({ slug }: { slug: Array<string> }) {
                 Conference : {model.conference}
               </Text>
             </Box>
-            <Box
-              borderRadius={15}
-              p={1}
-              borderWidth={3}
-              borderColor={"a4borange"}
-            >
-              <Text textColor={"a4borange"}>
-                Downloads : {model.hfData.downloads}
-              </Text>
-            </Box>
+            {model.hfData.downloads ? (
+              <Box
+                borderRadius={15}
+                p={1}
+                borderWidth={3}
+                borderColor={"a4borange"}
+              >
+                <Text textColor={"a4borange"}>
+                  Downloads : {model.hfData.downloads}
+                </Text>
+              </Box>
+            ) : (
+              <></>
+            )}
           </HStack>
           <Text color={"gray.500"}>{model.description}</Text>
           <HStack>
@@ -150,11 +176,7 @@ export default function ModelView({ slug }: { slug: Array<string> }) {
           position={"relative"}
           w={"full"}
         >
-          <NMT
-            sourceLanguages={model.languageFilters.sourceLanguages}
-            targetLanguages={model.languageFilters.targetLanguages}
-            serviceId={model.service_id}
-          />
+          {renderTryOut({ area: area, model: model })}
         </Flex>
       </Stack>
     </Container>
