@@ -243,30 +243,30 @@ const NAV_ITEMS: Array<NavItem> = [
   {
     label: "Areas",
     children: [
-      { label: "Transliteration", href: "/areas/xlit" },
+      { label: "Transliteration", href: `${imagePrefix}/areas/xlit` },
       {
         label: "Machine Translation",
-        href: "/areas/nmt",
+        href: `${imagePrefix}/areas/nmt`,
       },
       {
         label: "Automatic Speech Recognition",
-        href: "/areas/asr",
+        href: `${imagePrefix}/areas/asr`,
       },
       {
         label: "Speech Synthesis",
-        href: "/areas/tts",
+        href: `${imagePrefix}/areas/tts`,
       },
       {
         label: "Large Language Models",
-        href: "/areas/llm",
+        href: `${imagePrefix}/areas/llm`,
       },
     ],
   },
   {
     label: "Tools",
-    href: "/tools",
+    href: `${imagePrefix}/tools`,
   },
-  { label: "Publications", href: "/publications" },
-  { label: "People", href: "/people" },
-  { label: "Careers", href: "/careers" },
+  { label: "Publications", href: `${imagePrefix}/publications` },
+  { label: "People", href: `${imagePrefix}/people` },
+  { label: "Careers", href: `${imagePrefix}/careers` },
 ];

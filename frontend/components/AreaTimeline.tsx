@@ -19,9 +19,8 @@ import {
 } from "@chakra-ui/react";
 // Here we have used react-icons package for the icons
 import { FaPaperclip, FaGithub, FaArrowDown } from "react-icons/fa";
-import { BsGithub } from "react-icons/bs";
-import { IconType } from "react-icons";
 import { useState } from "react";
+import { imagePrefix } from "@/app/config";
 
 interface Publication {
   title: string;
@@ -207,7 +206,7 @@ const Card = ({
         {type === "Model" ? (
           <Button
             as={Link}
-            href={`/areas/model/${area}/${title}`}
+            href={`${imagePrefix}/areas/model/${area}/${title}`}
             borderColor={"a4borange"}
             variant={"outline"}
             color={"a4borange"}

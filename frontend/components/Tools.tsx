@@ -13,6 +13,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import NextLink from "next/link";
 import { Link as ChakraLink } from "@chakra-ui/react";
+import { imagePrefix } from "@/app/config";
 
 const Link = ({
   href,
@@ -93,7 +94,9 @@ const ToolsList = () => {
               {tool.description}
             </Text>
             <br />
-            <Link href={`/tools/${tool.title}`}>Learn more →</Link>
+            <Link href={`${imagePrefix}/tools/${tool.title}`}>
+              Learn more →
+            </Link>
           </Box>
         ))}
       </SimpleGrid>
