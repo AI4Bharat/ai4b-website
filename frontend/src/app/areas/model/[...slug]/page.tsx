@@ -1,16 +1,29 @@
-"use client";
-import { useParams } from "next/navigation";
-import { VStack } from "@chakra-ui/react";
 import ModelView from "../../../../../components/Models";
-import ModelInstallationTestimonial from "../../../../../components/ModelInstTest";
 
-export default function Model() {
-  const params = useParams();
+interface ParamsType {
+  slug: Array<string>;
+}
+
+interface Model {
+  area: string;
+  title: string;
+}
+
+export async function generateStaticParams() {
+  const models = await fetch("https://admin.models.ai4bharat.org/models/").then(
+    (res) => res.json()
+  );
+
+  return models.map((model: Model) => ({
+    slug: [model.area, model.title],
+  }));
+}
+
+export default function Model({ params }: { params: ParamsType }) {
   const slug = params.slug;
   return (
     <>
-      <ModelView slug={slug as Array<string>} />
-      <ModelInstallationTestimonial />
+      <ModelView slug={slug} />
     </>
   );
 }
