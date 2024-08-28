@@ -157,12 +157,9 @@ export default function Datasets() {
           <SimpleGrid columns={{ base: 1, md: 3 }} spacing={10}>
             {datasets.map((dataset: Dataset) => (
               <Card
-                as={Link}
-                target="_blank"
                 key={dataset.title}
                 border={"solid"}
                 borderColor={"orange"}
-                href={dataset.website_link}
               >
                 <CardBody>
                   <Feature
