@@ -23,10 +23,7 @@ import {
   ChevronRightIcon,
 } from "@chakra-ui/icons";
 
-import { useEffect, useState } from "react";
-import { useQuery } from "react-query";
-import { API_URL } from "@/app/config";
-import axios from "axios";
+import { imagePrefix } from "@/app/config";
 
 export default function Navbar() {
   const { isOpen, onToggle } = useDisclosure();
@@ -60,7 +57,7 @@ export default function Navbar() {
         </Flex>
         <Flex flex={{ base: 1 }} justify={{ base: "center", md: "start" }}>
           <Image
-            src="/assets/logos/ai4b-logo.png"
+            src={`${imagePrefix}/assets/logos/ai4b-logo.png`}
             alt="A4B Logo"
             width={25}
             height={25}
