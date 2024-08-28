@@ -31,11 +31,7 @@ const Jobs = () => {
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const response = await axios.get(`${API_URL}/careers/`, {
-          headers: {
-            "ngrok-skip-browser-warning": true,
-          },
-        });
+        const response = await axios.get(`${API_URL}/careers/`, {});
         setJobs(response.data);
       } catch (error) {
         console.error("Error fetching members:", error);

@@ -46,11 +46,7 @@ interface Tool {
 
 const fetchTool = async (slug: string) => {
   try {
-    const response = await axios.get(`${API_URL}/tools/${slug}/`, {
-      headers: {
-        "ngrok-skip-browser-warning": true,
-      },
-    });
+    const response = await axios.get(`${API_URL}/tools/${slug}/`, {});
     return response.data;
   } catch (error) {
     console.error("Error fetching tool:", error);

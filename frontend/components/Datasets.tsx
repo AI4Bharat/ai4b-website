@@ -76,11 +76,7 @@ const Feature = ({ title, icon }: FeatureProps) => {
 
 const fetchDatasets = async () => {
   try {
-    const response = await axios.get(`${API_URL}/datasets/`, {
-      headers: {
-        "ngrok-skip-browser-warning": true,
-      },
-    });
+    const response = await axios.get(`${API_URL}/datasets/`, {});
     return response.data;
   } catch (error) {
     console.error("Error fetching datasets:", error);
