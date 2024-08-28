@@ -8,7 +8,11 @@ export async function generateStaticParams() {
   }));
 }
 
-export default function Areas({ params }) {
+interface ParamsType {
+  slug: string;
+}
+
+export default function Areas({ params }: { params: ParamsType }) {
   const slug = params.slug;
 
   return <AreaComponent slug={slug} />;
