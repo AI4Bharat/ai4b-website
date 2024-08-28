@@ -90,7 +90,7 @@ export default function Features() {
             description={
               "AI4Bharat has pioneered the development of multilingual LLMs tailored for Indian languages, such as IndicBERT, IndicBART, and Airavata trained on extensive, diverse datasets like IndicCorpora and Sangraha."
             }
-            href={"/areas/llm"}
+            href={`${imagePrefix}/areas/llm`}
           />
           <Card
             heading={"Machine Translation"}
@@ -105,7 +105,7 @@ export default function Features() {
             description={
               "AI4Bharat has pioneered the development of multilingual LLMs tailored for Indian languages, such as IndicBERT, IndicBART, and Airavata trained on extensive, diverse datasets like IndicCorpora and Sangraha."
             }
-            href={"/areas/nmt"}
+            href={`${imagePrefix}/areas/nmt`}
           />
           <Card
             heading={"Transliteration"}
@@ -120,7 +120,7 @@ export default function Features() {
             description={
               "AI4Bharat has pioneered the development of multilingual LLMs tailored for Indian languages, such as IndicBERT, IndicBART, and Airavata trained on extensive, diverse datasets like IndicCorpora and Sangraha."
             }
-            href={"/areas/xlit"}
+            href={`${imagePrefix}/areas/xlit`}
           />
           <Card
             heading={"Automatic Speech Recognition"}
@@ -135,7 +135,7 @@ export default function Features() {
             description={
               "AI4Bharat has pioneered the development of multilingual LLMs tailored for Indian languages, such as IndicBERT, IndicBART, and Airavata trained on extensive, diverse datasets like IndicCorpora and Sangraha."
             }
-            href={"/areas/asr"}
+            href={`${imagePrefix}/areas/asr`}
           />
           <Card
             heading={"Text to Speech"}
@@ -150,7 +150,7 @@ export default function Features() {
             description={
               "AI4Bharat has pioneered the development of multilingual LLMs tailored for Indian languages, such as IndicBERT, IndicBART, and Airavata trained on extensive, diverse datasets like IndicCorpora and Sangraha."
             }
-            href={"/areas/tts"}
+            href={`${imagePrefix}/areas/tts`}
           />
           {/* <Card
             heading={"OCR"}
