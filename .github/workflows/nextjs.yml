@@ -53,7 +53,6 @@ jobs:
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
-        working-directory: frontend
         with:
           static_site_generator: next
 
