@@ -241,36 +241,35 @@ interface NavItem {
   href?: string;
 }
 
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 const NAV_ITEMS: Array<NavItem> = [
-  { label: "Home", href: `${basePath}/` },
+  { label: "Home", href: "/" },
   {
     label: "Areas",
     children: [
-      { label: "Transliteration", href: `${basePath}/areas/xlit` },
+      { label: "Transliteration", href: "/areas/xlit" },
       {
         label: "Machine Translation",
-        href: `${basePath}/areas/nmt`,
+        href: "/areas/nmt",
       },
       {
         label: "Automatic Speech Recognition",
-        href: `${basePath}/areas/asr`,
+        href: "/areas/asr",
       },
       {
         label: "Speech Synthesis",
-        href: `${basePath}/areas/tts`,
+        href: "/areas/tts",
       },
       {
         label: "Large Language Models",
-        href: `${basePath}/areas/llm`,
+        href: "/areas/llm",
       },
     ],
   },
   {
     label: "Tools",
-    href: `${basePath}/tools`,
+    href: "/tools",
   },
-  { label: "Publications", href: `${basePath}/publications` },
-  { label: "People", href: `${basePath}/people` },
-  { label: "Careers", href: `${basePath}/careers` },
+  { label: "Publications", href: "/publications" },
+  { label: "People", href: "/people" },
+  { label: "Careers", href: "/careers" },
 ];
