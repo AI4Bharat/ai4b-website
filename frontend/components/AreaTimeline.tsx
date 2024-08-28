@@ -3,7 +3,6 @@ import {
   Box,
   chakra,
   Container,
-  Link,
   Text,
   HStack,
   VStack,
@@ -21,6 +20,7 @@ import {
 import { FaPaperclip, FaGithub, FaArrowDown } from "react-icons/fa";
 import { useState } from "react";
 import { imagePrefix } from "@/app/config";
+import Link from "next/link";
 
 interface Publication {
   title: string;
@@ -173,7 +173,9 @@ const Card = ({
           <chakra.h1
             as={Link}
             href={
-              type === "Model" ? `/areas/model/${area}/${title}` : website_link
+              type === "Model"
+                ? `${imagePrefix}/areas/model/${area}/${title}`
+                : website_link
             }
             fontSize="1xl"
             lineHeight={1.2}
