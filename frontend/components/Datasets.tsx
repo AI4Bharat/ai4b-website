@@ -156,14 +156,10 @@ export default function Datasets() {
         ) : (
           <SimpleGrid columns={{ base: 1, md: 3 }} spacing={10}>
             {datasets.map((dataset: Dataset) => (
-              <Card
-                key={dataset.title}
-                border={"solid"}
-                borderColor={"orange"}
-              >
+              <Card key={dataset.title} border={"solid"} borderColor={"orange"}>
                 <CardBody>
                   <Feature
-                    icon={`${imagePrefix}/assets/icons/${dataset.area.toLowerCase()}.png`}
+                    icon={`${imagePrefix}/assets/icons/llm.png`}
                     title={dataset.title}
                   />
                 </CardBody>
