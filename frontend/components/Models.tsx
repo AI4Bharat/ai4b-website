@@ -142,7 +142,7 @@ export default function ModelView({
                 borderColor={"a4borange"}
               >
                 <Text textColor={"a4borange"}>
-                  Download : {model.hfData.downloads}
+                  Downloads : {model.hfData.downloads}
                 </Text>
               </Box>
             ) : (
