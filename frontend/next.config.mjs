@@ -1,6 +1,11 @@
-/** @type {import('next').NextConfig} */
+const repo = "ai4b-website";
+
+let assetPrefix = `/${repo}/`;
+let basePath = `/${repo}`;
 
 const nextConfig = {
+  assetPrefix: process.env.GITHUB_ACTIONS ? assetPrefix : "",
+  basePath: process.env.GITHUB_ACTIONS ? basePath : "",
   output: "export",
   eslint: {
     ignoreDuringBuilds: true,
