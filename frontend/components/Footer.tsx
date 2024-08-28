@@ -102,19 +102,31 @@ export default function Footer() {
             </Box>
             <Text fontSize={"sm"}>© 2024 AI4Bharat. All rights reserved</Text>
             <Stack direction={"row"} spacing={6}>
-              <SocialButton label={"Twitter"} href={"#"}>
+              <SocialButton label={"Twitter"} href={"https://x.com/ai4bharat"}>
                 <FaTwitter />
               </SocialButton>
-              <SocialButton label={"Twitter"} href={"#"}>
+              <SocialButton
+                label={"Twitter"}
+                href={"https://www.linkedin.com/company/ai4bharat/"}
+              >
                 <FaLinkedin />
               </SocialButton>
-              <SocialButton label={"YouTube"} href={"#"}>
+              <SocialButton
+                label={"YouTube"}
+                href={"https://www.youtube.com/@ai4bharat"}
+              >
                 <FaYoutube />
               </SocialButton>
-              <SocialButton label={"Twitter"} href={"#"}>
+              <SocialButton
+                label={"Twitter"}
+                href={"https://github.com/AI4Bharat"}
+              >
                 <FaGithub />
               </SocialButton>
-              <SocialButton label={"Twitter"} href={"#"}>
+              <SocialButton
+                label={"Twitter"}
+                href={"https://discord.gg/HqJXnJNDaq"}
+              >
                 <FaDiscord />
               </SocialButton>
             </Stack>
