@@ -24,7 +24,7 @@ import { imagePrefix } from "@/app/config";
 
 interface FeatureProps {
   title: string;
-  icon: ReactElement;
+  icon: string;
 }
 
 interface Dataset {
@@ -58,7 +58,7 @@ const Feature = ({ title, icon }: FeatureProps) => {
         bg={"gray.100"}
         mb={1}
       >
-        {icon}
+        <Image src={icon} alt="Icon" width={50} height={50} />
       </Flex>
       <Text fontWeight={600}>{title}</Text>
     </Stack>
@@ -166,14 +166,7 @@ export default function Datasets() {
               >
                 <CardBody>
                   <Feature
-                    icon={
-                      <Image
-                        src={`${imagePrefix}/assets/icons/${dataset.area.toLowerCase()}.png`}
-                        alt="Icon"
-                        width={50}
-                        height={50}
-                      />
-                    }
+                    icon={`${imagePrefix}/assets/icons/${dataset.area.toLowerCase()}.png`}
                     title={dataset.title}
                   />
                 </CardBody>
