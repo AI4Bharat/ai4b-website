@@ -135,7 +135,7 @@ export default function Datasets() {
                 padding={1}
                 w={"100%"}
                 h={"100%"}
-                src={"/assets/data-collection.png"}
+                src={`${imagePrefix}/assets/data-collection.png`}
               />
             </Box>
           </Flex>
