@@ -21,6 +21,15 @@ import axios from "axios";
 import { useQuery } from "react-query";
 import { API_URL } from "@/app/config";
 import { imagePrefix } from "@/app/config";
+import { FaFileAudio, FaFileAlt } from "react-icons/fa";
+
+const datasetIcons: { [key: string]: React.ReactElement } = {
+  nmt: <FaFileAlt color="orange" size={25} />,
+  llm: <FaFileAlt color="orange" size={25} />,
+  asr: <FaFileAudio color="orange" size={25} />,
+  tts: <FaFileAudio color="orange" size={25} />,
+  xlit: <FaFileAlt color="orange" size={25} />,
+};
 
 interface FeatureProps {
   title: string;
@@ -58,7 +67,7 @@ const Feature = ({ title, icon }: FeatureProps) => {
         bg={"gray.100"}
         mb={1}
       >
-        <Image src={icon} alt="Icon" width={50} height={50} />
+        {datasetIcons[icon]}
       </Flex>
       <Text fontWeight={600}>{title}</Text>
     </Stack>
@@ -159,7 +168,7 @@ export default function Datasets() {
               <Card key={dataset.title} border={"solid"} borderColor={"orange"}>
                 <CardBody>
                   <Feature
-                    icon={`${imagePrefix}/assets/icons/llm.png`}
+                    icon={dataset.area.toLowerCase()}
                     title={dataset.title}
                   />
                 </CardBody>
