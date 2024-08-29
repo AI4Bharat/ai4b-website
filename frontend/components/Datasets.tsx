@@ -35,6 +35,7 @@ const datasetIcons: { [key: string]: React.ReactElement } = {
 interface FeatureProps {
   title: string;
   icon: string;
+  dataset_link: string;
 }
 
 interface Dataset {
@@ -55,9 +56,9 @@ interface Dataset {
 //   Aksharantar: { path: "", icon: "/assets/icons/xlit.png" },
 // };
 
-const Feature = ({ title, icon }: FeatureProps) => {
+const Feature = ({ title, icon, dataset_link }: FeatureProps) => {
   return (
-    <Stack>
+    <Stack as={Link} href={dataset_link}>
       <Flex
         w={16}
         h={16}
@@ -192,6 +193,9 @@ export default function Datasets() {
                   <Feature
                     icon={dataset.area.toLowerCase()}
                     title={dataset.title}
+                    dataset_link={
+                      dataset.website_link ? dataset.website_link : ""
+                    }
                   />
                 </CardBody>
               </Card>
