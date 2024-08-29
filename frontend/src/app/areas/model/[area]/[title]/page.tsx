@@ -1,10 +1,6 @@
 import { title } from "process";
 import ModelView from "../../../../../../components/Models";
 
-interface ParamsType {
-  slug: Array<string>;
-}
-
 interface Model {
   area: string;
   title: string;
