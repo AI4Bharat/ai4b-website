@@ -2,6 +2,9 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
 import requests
+import base64 
+import ffmpeg
+import subprocess
 
 # Create your views here.
 from .models import Dataset, Tool, Model,News
@@ -14,6 +17,7 @@ from rest_framework.views import APIView
 
 DHRUVA_MODEL_VIEW_URL = "https://api.dhruva.ekstep.ai/services/details/view_service"
 DHRUVA_API_KEY = "0aaef7ff-86f3-4bb0-a30b-9f50f3de1a52"
+
 
 @permission_classes((permissions.AllowAny,))
 class InferenceView(APIView):
@@ -44,8 +48,60 @@ class InferenceView(APIView):
                                                     }
                                                 ]
                                                 })
+            return Response(inferenceResult.json(),status=status.HTTP_200_OK)
         
-        return Response(inferenceResult.json(),status=status.HTTP_200_OK)
+        elif task == "asr":
+
+            INFERENCE_API = "https://api.dhruva.ekstep.ai/services/inference/asr"
+
+            webm_base64 = body["audioContent"]
+            webm_data = base64.b64decode(webm_base64)
+
+            with open("/tmp/temp.webm", "wb") as webm_file:
+                webm_file.write(webm_data)
+
+            subprocess.run(["ffmpeg","-y", "-i", "/tmp/temp.webm", "/tmp/temp.wav"], check=True)
+
+            with open("/tmp/temp.wav", "rb") as wav_file:
+                wav_data = wav_file.read()
+                wav_base64 = base64.b64encode(wav_data).decode('utf-8')
+
+
+            inferenceResult = requests.post(INFERENCE_API,headers=
+                                       {'x-auth-source': 'API_KEY',
+                                        'Authorization': DHRUVA_API_KEY},
+                                        json={
+                                                "controlConfig": {
+                                                    "dataTracking": True
+                                                },
+                                                "config": {
+                                                    "audioFormat": "wav",
+                                                    "language": {
+                                                    "sourceLanguage": body["sourceLanguage"],
+                                                    "sourceScriptCode": ""
+                                                    },
+                                                    "encoding": "wav",
+                                                    "samplingRate": body["samplingRate"],
+                                                    "serviceId": body["serviceId"],
+                                                    "preProcessors": body["preProcessors"],
+                                                    "postProcessors": body["postProcessors"],
+                                                    "transcriptionFormat": {
+                                                    "value": "transcript"
+                                                    },
+                                                    "bestTokenCount": 0
+                                                },
+                                                "audio": [
+                                                    {
+                                                    "audioContent": wav_base64,
+                                                    }
+                                                ]
+                                            }
+                                            )
+            return Response(inferenceResult.json(),status=status.HTTP_200_OK)
+
+            
+
+        
 
 
 class NewsViewSet(viewsets.ModelViewSet):
