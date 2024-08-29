@@ -17,10 +17,7 @@ import {
 import { LANGUAGE_CODE_NAMES } from "@/app/config";
 import axios from "axios";
 import { API_URL } from "@/app/config";
-const IndicTransliterate =
-  typeof window !== "undefined"
-    ? require("@ai4bharat/indic-transliterate").IndicTransliterate
-    : null;
+import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 
 const fetchTranslation = async ({
   sourceLanguage,
@@ -124,29 +121,23 @@ export default function NMT({
             </VStack>
           </HStack>
           <VStack w={"full"}>
-            {/* <IndicTransliterate
+            <IndicTransliterate
               enabled={sourceLanguage !== "en" && transliteration}
-              renderComponent={(props) => (
-                <Textarea
-                  minWidth={270}
-                  width={{ base: "90%", md: "80%", lg: "100%" }}
-                  {...props}
-                />
-              )}
+              renderComponent={(props) => <Textarea {...props} />}
               value={inputText}
               onChangeText={(text) => {
                 setInputText(text);
               }}
               lang={sourceLanguage}
-            /> */}
-            <Textarea
+            />
+            {/* <Textarea
               minWidth={270}
               width={{ base: "90%", md: "80%", lg: "100%" }}
               value={inputText}
               onChange={(event) => {
                 setInputText(event.target.value);
               }}
-            />
+            /> */}
             <Textarea value={outputText} isReadOnly></Textarea>
             <Button
               onClick={async () => {
