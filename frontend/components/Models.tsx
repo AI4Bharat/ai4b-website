@@ -15,6 +15,7 @@ import { API_URL } from "@/app/config";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import NMT from "./TryOut/NMT";
+import ASR from "./TryOut/ASR";
 import { FaPaperclip, FaGithub } from "react-icons/fa";
 
 const fetchModel = async ({ title }: { title: string }) => {
@@ -49,6 +50,8 @@ const renderTryOut = ({ area, model }: { area: string; model: Model }) => {
           serviceId={model.service_id}
         />
       );
+    case "ASR":
+      return <ASR />;
   }
 };
 
