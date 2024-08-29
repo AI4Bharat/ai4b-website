@@ -24,7 +24,7 @@ export default function ToolInstructions({
   steps: Array<Instruction>;
 }) {
   return (
-    <Container maxW="20xl">
+    <Container borderWidth={3} borderRadius={25} p={5} maxW="20xl">
       <chakra.h2 fontSize="4xl" fontWeight="bold" mb={2}>
         Installation Steps
       </chakra.h2>

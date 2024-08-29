@@ -161,7 +161,7 @@ const Card = ({
       <Box>
         <HStack>
           <HStack spacing={2} mb={1}>
-            <Text fontSize="lg" color={isEvenId ? "teal.400" : "blue.400"}>
+            <Text fontSize="lg" textColor={"a4borange"}>
               {published_on}
             </Text>
             <Text fontSize="sm">{type}</Text>
