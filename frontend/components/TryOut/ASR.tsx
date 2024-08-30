@@ -21,7 +21,7 @@ import { useToast } from "@chakra-ui/react";
 import { FaMicrophone } from "react-icons/fa";
 import { AudioRecorder, useAudioRecorder } from "react-audio-voice-recorder";
 
-const fetchAudio = ({ blob }) => {
+const fetchAudio = ({ blob }: { blob: Blob }) => {
   const reader = new FileReader();
   let base64data: string | ArrayBuffer | null;
   reader.readAsDataURL(blob);
