@@ -1,6 +1,8 @@
 import ToolComponent from "../../../../components/Dynamic/Tool";
 import axios from "axios";
 
+export const dynamicParams = true;
+
 interface ToolType {
   title: string;
 }
@@ -20,7 +22,7 @@ export async function generateStaticParams() {
 
   return params;
 }
-export const dynamicParams = true;
+
 export default function Tool({ params }: { params: { tool: string } }) {
   return <ToolComponent slug={params.tool} />;
 }
