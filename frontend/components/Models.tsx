@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import NMT from "./TryOut/NMT";
 import ASR from "./TryOut/ASR";
+import XLIT from "./TryOut/XLIT";
 import { FaPaperclip, FaGithub } from "react-icons/fa";
 
 const fetchModel = async ({ title }: { title: string }) => {
@@ -57,6 +58,8 @@ const renderTryOut = ({ area, model }: { area: string; model: Model }) => {
           serviceId={model.service_id}
         />
       );
+    case "XLIT":
+      return <XLIT sourceLanguages={model.languageFilters.sourceLanguages} />;
   }
 };
 

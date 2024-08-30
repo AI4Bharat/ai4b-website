@@ -48,14 +48,16 @@ export default function ASR({
     <Card borderWidth={1} borderColor={"a4borange"} boxShadow={"2xl"} p={5}>
       <FormControl isRequired>
         <VStack>
-          <HStack>
-            <FormLabel textColor={"gray.500"}>
-              Select Source Language:
-            </FormLabel>
-            <Select></Select>
-          </HStack>
+          <FormLabel textColor={"gray.500"}>Select Source Language:</FormLabel>
+          <Select></Select>
+          <FormLabel textColor={"gray.500"}>Select Pre Processors:</FormLabel>
+          <Select></Select>
+          <FormLabel textColor={"gray.500"}>Select Post Processors:</FormLabel>
+          <Select></Select>
+          <FormLabel textColor={"gray.500"}>Select Sampling Rate:</FormLabel>
+          <Select></Select>
         </VStack>
-        <VStack w={"full"}>
+        <VStack p={5} w={"full"}>
           <AudioRecorder
             onRecordingComplete={(blob) => fetchAudio({ blob: blob })}
             recorderControls={recorderControls}
