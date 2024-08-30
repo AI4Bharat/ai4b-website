@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import NMT from "./TryOut/NMT";
 import ASR from "./TryOut/ASR";
+import XLIT from "./TryOut/XLIT";
 import { FaPaperclip, FaGithub } from "react-icons/fa";
 
 const fetchModel = async ({ title }: { title: string }) => {
@@ -57,6 +58,8 @@ const renderTryOut = ({ area, model }: { area: string; model: Model }) => {
           serviceId={model.service_id}
         />
       );
+    case "XLIT":
+      return <XLIT sourceLanguages={model.languageFilters.sourceLanguages} />;
   }
 };
 
@@ -132,16 +135,20 @@ export default function ModelView({
             </Text>
           </Heading>
           <HStack>
-            <Box
-              borderRadius={15}
-              p={1}
-              borderWidth={3}
-              borderColor={"a4borange"}
-            >
-              <Text textColor={"a4borange"}>
-                Conference : {model.conference}
-              </Text>
-            </Box>
+            {model.conference ? (
+              <Box
+                borderRadius={15}
+                p={1}
+                borderWidth={3}
+                borderColor={"a4borange"}
+              >
+                <Text textColor={"a4borange"}>
+                  Conference : {model.conference}
+                </Text>
+              </Box>
+            ) : (
+              <></>
+            )}
             {model.hfData.downloads ? (
               <Box
                 borderRadius={15}
@@ -159,22 +166,40 @@ export default function ModelView({
           </HStack>
           <Text color={"gray.500"}>{model.description}</Text>
           <HStack>
-            <Box borderRadius={50} p={1} borderWidth={3} borderColor={"black"}>
-              <Link target="_blank" href={model.github_link}>
-                <HStack>
-                  <FaGithub size={25} />
-                  <Text>Github</Text>
-                </HStack>
-              </Link>
-            </Box>
-            <Box borderRadius={50} p={1} borderWidth={3} borderColor={"black"}>
-              <Link target="_blank" href={model.paper_link}>
-                <HStack>
-                  <FaPaperclip size={25} />
-                  <Text>Paper</Text>
-                </HStack>
-              </Link>
-            </Box>
+            {model.github_link ? (
+              <Box
+                borderRadius={50}
+                p={1}
+                borderWidth={3}
+                borderColor={"black"}
+              >
+                <Link target="_blank" href={model.github_link}>
+                  <HStack>
+                    <FaGithub size={25} />
+                    <Text>Github</Text>
+                  </HStack>
+                </Link>
+              </Box>
+            ) : (
+              <></>
+            )}
+            {model.paper_link ? (
+              <Box
+                borderRadius={50}
+                p={1}
+                borderWidth={3}
+                borderColor={"black"}
+              >
+                <Link target="_blank" href={model.paper_link}>
+                  <HStack>
+                    <FaPaperclip size={25} />
+                    <Text>Paper</Text>
+                  </HStack>
+                </Link>
+              </Box>
+            ) : (
+              <></>
+            )}
           </HStack>
         </Stack>
         <Flex
@@ -184,7 +209,7 @@ export default function ModelView({
           position={"relative"}
           w={"full"}
         >
-          {renderTryOut({ area: area, model: model })}
+          {modelLoading ? <></> : renderTryOut({ area: area, model: model })}
         </Flex>
       </Stack>
     </Container>
