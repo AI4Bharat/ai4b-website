@@ -72,6 +72,7 @@ class News(models.Model):
     description = models.TextField()
     published_on = models.DateField(default=date.today)
     image = models.ImageField(upload_to=image_directory_path,null=True,blank=True)
+    related_link = models.URLField(max_length=500, null=True, blank=True)
 
     def __str__(self) -> str:
         return f"{self.title}"

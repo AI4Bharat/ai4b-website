@@ -226,7 +226,7 @@ class PublicationViewSet(viewsets.ViewSet):
             if publication in model_serializer.data:
                 publication["type"] = "Model"
 
-        publications.sort(key=lambda pub: pub.get("published_on"))
+        publications.sort(key=lambda pub: pub.get("published_on"),reverse=True)
 
         return Response(publications)
 
@@ -251,7 +251,8 @@ class AreaViewSet(viewsets.ViewSet):
             if publication in model_serializer.data:
                 publication["type"] = "Model"
 
-        publications.sort(key=lambda pub: pub.get("published_on"))
+        publications.sort(key=lambda pub: pub.get("published_on"),reverse=True)
+
 
         return Response(publications)
     
