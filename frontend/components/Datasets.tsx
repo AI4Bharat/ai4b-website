@@ -16,6 +16,7 @@ import {
   SkeletonText,
   Link,
   Image as ChakraImage,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import Image from "next/image";
 import axios from "axios";
@@ -87,6 +88,7 @@ const fetchDatasets = async () => {
 };
 
 export default function Datasets() {
+  const isMobile = useBreakpointValue({ base: true, md: false });
   const [datasets, setDatasets] = useState([]);
   const { isLoading, error, data } = useQuery("fetchDatasets", fetchDatasets);
 
@@ -170,7 +172,7 @@ export default function Datasets() {
         </Stack>
         {isLoading ? (
           <SimpleGrid columns={{ base: 1, md: 3 }} spacing={10}>
-            {Array.from({ length: 1 }, (_, index) => (
+            {Array.from({ length: 13 }, (_, index) => (
               <Card
                 key={index}
                 border={"solid"}
@@ -186,7 +188,12 @@ export default function Datasets() {
             ))}
           </SimpleGrid>
         ) : (
-          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={10}>
+          <SimpleGrid
+            height={isMobile ? 500 : "auto"}
+            columns={{ base: 1, md: 3 }}
+            spacing={10}
+            overflowY={"scroll"}
+          >
             {datasets.map((dataset: Dataset) => (
               <Card key={dataset.title} border={"solid"} borderColor={"orange"}>
                 <CardBody>
