@@ -202,15 +202,19 @@ export default function ModelView({
             )}
           </HStack>
         </Stack>
-        <Flex
-          flex={1}
-          justify={"center"}
-          align={"center"}
-          position={"relative"}
-          w={"full"}
-        >
-          {modelLoading ? <></> : renderTryOut({ area: area, model: model })}
-        </Flex>
+        {model.service_id ? (
+          <Flex
+            flex={1}
+            justify={"center"}
+            align={"center"}
+            position={"relative"}
+            w={"full"}
+          >
+            {modelLoading ? <></> : renderTryOut({ area: area, model: model })}
+          </Flex>
+        ) : (
+          <></>
+        )}
       </Stack>
     </Container>
   );
