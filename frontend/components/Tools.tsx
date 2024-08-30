@@ -86,9 +86,7 @@ const ToolsList = () => {
             <chakra.h3 fontWeight="semibold" fontSize="2xl" mt={6}>
               {tool.title}
             </chakra.h3>
-            <Text fontSize="md" mt={4}>
-              {tool.description}
-            </Text>
+            <Text>{tool.description}</Text>
             <br />
             <Link href={`${imagePrefix}/tools/${tool.title}`}>
               Learn more →

@@ -13,6 +13,7 @@ import {
   useColorModeValue,
   Button,
   Stack,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { FaPaperclip, FaGithub } from "react-icons/fa";
 import { useQuery } from "react-query";
@@ -75,6 +76,7 @@ interface Publication {
 }
 
 const Publications = () => {
+  const isMobile = useBreakpointValue({ base: true, md: false });
   const [filters, setFilters] = useState({
     areas: [],
     conferences: [],
@@ -186,21 +188,23 @@ const Publications = () => {
         </Button>
       </Stack>
       <br />
-      {filteredPublications.map((pub, index) => (
-        <Flex key={index} mb="10px">
-          <LineWithDot />
-          <Card
-            title={pub.title}
-            categories={[pub.area, pub.conference]}
-            description={pub.description}
-            date={new Date(pub.published_on).toDateString()}
-            hf_id={pub.hf_id}
-            paper_link={pub.paper_link}
-            github_link={pub.github_link}
-            type={pub.type}
-          />
-        </Flex>
-      ))}
+      <Container height={isMobile ? 500 : "auto"} overflowY={"scroll"}>
+        {filteredPublications.map((pub, index) => (
+          <Flex key={index} mb="10px">
+            <LineWithDot />
+            <Card
+              title={pub.title}
+              categories={[pub.area, pub.conference]}
+              description={pub.description}
+              date={new Date(pub.published_on).toDateString()}
+              hf_id={pub.hf_id}
+              paper_link={pub.paper_link}
+              github_link={pub.github_link}
+              type={pub.type}
+            />
+          </Flex>
+        ))}
+      </Container>
     </Container>
   );
 };
@@ -270,9 +274,13 @@ const Card = ({
           </chakra.h1>
           <ExpandableText noOfLines={2} text={description} />
           <HStack>
-            <Link target="_blank" href={github_link}>
-              <FaGithub size={50} />
-            </Link>
+            {github_link ? (
+              <Link target="_blank" href={github_link}>
+                <FaGithub size={50} />
+              </Link>
+            ) : (
+              <></>
+            )}
             <Link target="_blank" href={paper_link}>
               <FaPaperclip size={50} />
             </Link>
