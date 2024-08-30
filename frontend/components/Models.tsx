@@ -51,7 +51,12 @@ const renderTryOut = ({ area, model }: { area: string; model: Model }) => {
         />
       );
     case "ASR":
-      return <ASR />;
+      return (
+        <ASR
+          sourceLanguages={model.languageFilters.sourceLanguages}
+          serviceId={model.service_id}
+        />
+      );
   }
 };
 
