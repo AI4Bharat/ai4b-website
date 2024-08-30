@@ -3,6 +3,8 @@ from django.contrib import admin
 # Register your models here.
 from .models import Dataset, Tool, Model,News
 
+
+
 class NewsAdmin(admin.ModelAdmin):
     search_fields=["title"]
 

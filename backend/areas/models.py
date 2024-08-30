@@ -2,6 +2,7 @@ from django.db import models
 from datetime import date
 
 
+
 class Area(models.TextChoices):
     ASR = "ASR"
     NMT = "NMT"

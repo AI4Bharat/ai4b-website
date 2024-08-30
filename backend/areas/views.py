@@ -128,25 +128,27 @@ class ModelViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(model)
         modelData = serializer.data
         hfData = requests.get(f"https://huggingface.co/api/models/{modelData['hf_id']}")
-        dhruvaModelData = requests.post(DHRUVA_MODEL_VIEW_URL,
+
+        if "service_id" in modelData and modelData["service_id"]!=None:
+            dhruvaModelData = requests.post(DHRUVA_MODEL_VIEW_URL,
                                        headers=
                                        {'x-auth-source': 'API_KEY',
                                         'Authorization': DHRUVA_API_KEY},
                                         json={'serviceId':modelData["service_id"]}).json()["model"]
         
-        languages = dhruvaModelData["languages"]
-        task = dhruvaModelData["task"]["type"]
+            languages = dhruvaModelData["languages"]
+            task = dhruvaModelData["task"]["type"]
 
-        sourceLanguages = list(set([x["sourceLanguage"] for x in languages]))
-        if "targetLanguage" in languages[0]:
-            targetLanguages = list(set([x["targetLanguage"] for x in languages]))
-        else:
-            targetLanguages = []
+            sourceLanguages = list(set([x["sourceLanguage"] for x in languages]))
+            if "targetLanguage" in languages[0]:
+                targetLanguages = list(set([x["targetLanguage"] for x in languages]))
+            else:
+                targetLanguages = []
+
+            modelData["languageFilters"] = {"sourceLanguages":sourceLanguages,"targetLanguages":targetLanguages}
 
         modelData["hfData"] = hfData.json()
-        modelData["languageFilters"] = {"sourceLanguages":sourceLanguages,"targetLanguages":targetLanguages}
-
-        
+       
         return Response(modelData)
 
 
