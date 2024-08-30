@@ -18,6 +18,7 @@
     "@mui/x-data-grid": "^7.14.0",
     "@types/react-syntax-highlighter": "^15.5.13",
     "axios": "^1.7.4",
+    "ffmpeg": "^0.0.4",
     "framer-motion": "^11.3.28",
     "html-react-parser": "^5.1.12",
     "markdown-to-jsx": "^7.5.0",

@@ -18,6 +18,7 @@ import { LANGUAGE_CODE_NAMES } from "@/app/config";
 import axios from "axios";
 import { API_URL } from "@/app/config";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
+import { useToast } from "@chakra-ui/react";
 
 const fetchTranslation = async ({
   sourceLanguage,
@@ -66,9 +67,11 @@ export default function NMT({
   const [inputText, setInputText] = useState("");
   const [outputText, setOutputText] = useState("");
 
+  const toast = useToast();
+
   return (
     <Card borderWidth={1} borderColor={"a4borange"} boxShadow={"2xl"} p={5}>
-      <FormControl>
+      <FormControl isRequired>
         <VStack>
           <HStack>
             <VStack>
@@ -130,26 +133,36 @@ export default function NMT({
               }}
               lang={sourceLanguage}
             />
-            {/* <Textarea
-              minWidth={270}
-              width={{ base: "90%", md: "80%", lg: "100%" }}
-              value={inputText}
-              onChange={(event) => {
-                setInputText(event.target.value);
-              }}
-            /> */}
             <Textarea value={outputText} isReadOnly></Textarea>
             <Button
               onClick={async () => {
                 setOutputText("");
-                const inferenceResult = await fetchTranslation({
-                  sourceLanguage,
-                  targetLanguage,
-                  input: inputText,
-                  task: "translation",
-                  serviceId,
-                });
-                setOutputText(inferenceResult["output"][0]["target"]);
+                if (inputText === "") {
+                  toast({
+                    title: "Input Error",
+                    description: "Provide text to be translated",
+                    status: "warning",
+                    duration: 5000,
+                    isClosable: true,
+                  });
+                } else {
+                  const inferenceResult = await fetchTranslation({
+                    sourceLanguage,
+                    targetLanguage,
+                    input: inputText,
+                    task: "translation",
+                    serviceId,
+                  });
+
+                  setOutputText(inferenceResult["output"][0]["target"]);
+                  toast({
+                    title: "Success",
+                    description: "Translation Inference Successful",
+                    status: "success",
+                    duration: 5000,
+                    isClosable: true,
+                  });
+                }
               }}
               color={"a4borange"}
             >

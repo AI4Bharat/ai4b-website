@@ -1,6 +1,8 @@
 import { title } from "process";
 import ModelView from "../../../../../../components/Models";
 
+export const dynamicParams = true;
+
 interface Model {
   area: string;
   title: string;
@@ -26,7 +28,6 @@ export async function generateStaticParams() {
   return params;
 }
 
-export const dynamicParams = true;
 export default function Model({
   params,
 }: {
