@@ -135,6 +135,7 @@ class ModelViewSet(viewsets.ModelViewSet):
                                         json={'serviceId':modelData["service_id"]}).json()["model"]
         
         languages = dhruvaModelData["languages"]
+        task = dhruvaModelData["task"]["type"]
 
         sourceLanguages = list(set([x["sourceLanguage"] for x in languages]))
         if "targetLanguage" in languages[0]:
@@ -144,6 +145,8 @@ class ModelViewSet(viewsets.ModelViewSet):
 
         modelData["hfData"] = hfData.json()
         modelData["languageFilters"] = {"sourceLanguages":sourceLanguages,"targetLanguages":targetLanguages}
+
+        
         return Response(modelData)
 
 

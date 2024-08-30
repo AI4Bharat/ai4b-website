@@ -6,7 +6,7 @@ class Area(models.TextChoices):
     ASR = "ASR"
     NMT = "NMT"
     TTS = "TTS"
-    OCR = "OCR"
+    XLIT = "XLIT"
     LLM = "LLM"
 
 
@@ -14,13 +14,13 @@ class Area(models.TextChoices):
 class Dataset(models.Model):
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=500)
-    area = models.CharField(choices=Area.choices, max_length=3)
+    area = models.CharField(choices=Area.choices, max_length=10)
     published_on = models.DateField(default=date.today)
     conference = models.CharField(max_length=20, null=True, blank=True)
     description = models.TextField()
     paper_link = models.URLField(max_length=500)
     website_link = models.URLField(max_length=500, null=True, blank=True)
-    github_link = models.URLField(max_length=500)
+    github_link = models.URLField(max_length=500,null=True,blank=True)
     hf_id = models.CharField(max_length=500,null=True,blank=True)
 
     def __str__(self) -> str:
@@ -30,13 +30,13 @@ class Dataset(models.Model):
 class Model(models.Model):
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=500)
-    area = models.CharField(choices=Area.choices, max_length=3)
+    area = models.CharField(choices=Area.choices, max_length=10)
     published_on = models.DateField(default=date.today)
     conference = models.CharField(max_length=20, null=True, blank=True)
     description = models.TextField()
     paper_link = models.URLField(max_length=500)
     website_link = models.URLField(max_length=500, null=True, blank=True)
-    github_link = models.URLField(max_length=500)
+    github_link = models.URLField(max_length=500,null=True,blank=True)
     hf_id = models.CharField(max_length=500,null=True,blank=True)
     service_id = models.CharField(max_length=500, null=True, blank=True)
 
