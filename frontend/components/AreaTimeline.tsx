@@ -230,7 +230,7 @@ const Card = ({
             color={"a4borange"}
             fontSize={15}
           >
-            Try it Out!
+            Learn More
           </Button>
         ) : (
           <></>

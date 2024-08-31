@@ -17,6 +17,7 @@ import axios from "axios";
 import NMT from "./TryOut/NMT";
 import ASR from "./TryOut/ASR";
 import XLIT from "./TryOut/XLIT";
+import TTS from "./TryOut/TTS";
 import { FaPaperclip, FaGithub } from "react-icons/fa";
 
 const fetchModel = async ({ title }: { title: string }) => {
@@ -39,27 +40,19 @@ interface Model {
   github_link: string | undefined;
   title: string;
   description?: string;
+  services: any;
 }
 
-const renderTryOut = ({ area, model }: { area: string; model: Model }) => {
+const renderTryOut = ({ area, services }: { area: string; services: any }) => {
   switch (area) {
     case "NMT":
-      return (
-        <NMT
-          sourceLanguages={model.languageFilters.sourceLanguages}
-          targetLanguages={model.languageFilters.targetLanguages}
-          serviceId={model.service_id}
-        />
-      );
+      return <NMT services={services} />;
     case "ASR":
-      return (
-        <ASR
-          sourceLanguages={model.languageFilters.sourceLanguages}
-          serviceId={model.service_id}
-        />
-      );
+      return <ASR services={services} />;
     case "XLIT":
-      return <XLIT sourceLanguages={model.languageFilters.sourceLanguages} />;
+      return <XLIT services={services} />;
+    case "TTS":
+      return <TTS services={services} />;
   }
 };
 
@@ -80,6 +73,7 @@ export default function ModelView({
     github_link: string | undefined;
     title: string;
     description?: string;
+    services: any;
   }>({
     title: "",
     description: "",
@@ -90,6 +84,7 @@ export default function ModelView({
     inferenceSchema: {},
     languageFilters: {},
     service_id: "",
+    services: {},
   });
 
   const {
@@ -110,6 +105,7 @@ export default function ModelView({
         inferenceSchema: {},
         languageFilters: {},
         service_id: "",
+        services: {},
       });
     } else {
       setModel(modelData);
@@ -202,15 +198,23 @@ export default function ModelView({
             )}
           </HStack>
         </Stack>
-        <Flex
-          flex={1}
-          justify={"center"}
-          align={"center"}
-          position={"relative"}
-          w={"full"}
-        >
-          {modelLoading ? <></> : renderTryOut({ area: area, model: model })}
-        </Flex>
+        {model.service_id ? (
+          <Flex
+            flex={1}
+            justify={"center"}
+            align={"center"}
+            position={"relative"}
+            w={"full"}
+          >
+            {modelLoading ? (
+              <></>
+            ) : (
+              renderTryOut({ area: area, services: model.services })
+            )}
+          </Flex>
+        ) : (
+          <></>
+        )}
       </Stack>
     </Container>
   );
