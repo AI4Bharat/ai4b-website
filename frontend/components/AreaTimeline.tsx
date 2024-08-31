@@ -40,7 +40,12 @@ const AreaTimeline = ({ data }: { data: Array<Publication> }) => {
   const isDesktop = useBreakpointValue({ base: false, md: true });
 
   return (
-    <Container maxWidth="7xl" p={{ base: 1, sm: 5 }}>
+    <Container
+      height={isMobile ? 500 : "auto"}
+      overflowY={"scroll"}
+      maxWidth="7xl"
+      p={{ base: 1, sm: 5 }}
+    >
       <chakra.h3 fontSize="4xl" fontWeight="bold" mb={18} textAlign="center">
         Timeline
       </chakra.h3>
@@ -186,16 +191,27 @@ const Card = ({
           </chakra.h1>
           <ExpandableText noOfLines={2} text={description} />
           <HStack>
-            <Link target="_blank" href={github_link}>
-              <FaGithub size={25} />
-            </Link>
+            {github_link ? (
+              <Link target="_blank" href={github_link}>
+                <FaGithub size={25} />
+              </Link>
+            ) : (
+              <></>
+            )}
             <Link target="_blank" href={paper_link}>
               <FaPaperclip size={25} />
             </Link>
             {hf_id === null ? (
               <></>
             ) : (
-              <Link target="_blank" href={`https://huggingface.co/${hf_id}`}>
+              <Link
+                target="_blank"
+                href={
+                  type === "Model"
+                    ? `https://huggingface.co/${hf_id}`
+                    : `https://huggingface.co/datasets/${hf_id}`
+                }
+              >
                 <img
                   src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg"
                   alt="Hugging Face"
@@ -214,7 +230,7 @@ const Card = ({
             color={"a4borange"}
             fontSize={15}
           >
-            Try it Out!
+            Learn More
           </Button>
         ) : (
           <></>

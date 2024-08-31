@@ -60,12 +60,6 @@ export default function People() {
         members={members}
         team={"5"}
       />
-      <PeopleSection
-        heading="Meet Our Language Experts at AI4Bharat"
-        description="Our language experts at AI4Bharat, supported by Bhashini's generous funding, are the architects of transformative linguistic solutions. With skilled translators and transcription specialists, they harness the power of language to break barriers and advance AI."
-        members={members}
-        team={"6"}
-      />
     </Stack>
   );
 }
