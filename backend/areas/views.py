@@ -24,7 +24,35 @@ class InferenceView(APIView):
     def post(self, request, format=None):
         body = request.data
         task = body["task"]
-        if task=="translation":
+        if task=="transliteration":
+            INFERENCE_API = "https://api.dhruva.ekstep.ai/services/inference/transliteration"
+            inferenceResult = requests.post(INFERENCE_API,headers=
+                                       {'x-auth-source': 'API_KEY',
+                                        'Authorization': DHRUVA_API_KEY},
+                                        json={
+                                                "controlConfig": {
+                                                    "dataTracking": True
+                                                },
+                                                "config": {
+                                                    "serviceId": body["serviceId"],
+                                                    "language": {
+                                                    "sourceLanguage": body["sourceLanguage"],
+                                                    "sourceScriptCode": "",
+                                                    "targetLanguage": body["targetLanguage"],
+                                                    "targetScriptCode": ""
+                                                    },
+                                                    "isSentence": True,
+                                                    "numSuggestions": 0
+                                                },
+                                                "input": [
+                                                    {
+                                                    "source": body["input"]
+                                                    }
+                                                ]
+                                                })
+            return Response(inferenceResult.json(),status=status.HTTP_200_OK)
+        
+        elif task=="translation":
             INFERENCE_API = "https://api.dhruva.ekstep.ai/services/inference/translation"
             inferenceResult = requests.post(INFERENCE_API,headers=
                                        {'x-auth-source': 'API_KEY',
@@ -49,6 +77,38 @@ class InferenceView(APIView):
                                                 ]
                                                 })
             return Response(inferenceResult.json(),status=status.HTTP_200_OK)
+        
+        elif task == "tts":
+            INFERENCE_API = "https://api.dhruva.ekstep.ai/services/inference/tts"
+
+            inferenceResult = requests.post(INFERENCE_API,headers=
+                                       {'x-auth-source': 'API_KEY',
+                                        'Authorization': DHRUVA_API_KEY},
+                                        json={
+                                                "controlConfig": {
+                                                    "dataTracking": True
+                                                },
+                                                "config": {
+                                                    "serviceId": body["serviceId"],
+                                                    "gender": body["gender"],
+                                                    "samplingRate": body["samplingRate"],
+                                                    "audioFormat": "wav",
+                                                    "language": {
+                                                    "sourceLanguage": body["sourceLanguage"],
+                                                    "sourceScriptCode": ""
+                                                    }
+                                                },
+                                                "input": [
+                                                    {
+                                                    "source": body["input"],
+                                                    "audioDuration": 0
+                                                    }
+                                                ]
+                                                })
+            
+            return Response(inferenceResult.json(),status=status.HTTP_200_OK)
+
+
         
         elif task == "asr":
 
@@ -126,28 +186,57 @@ class ModelViewSet(viewsets.ModelViewSet):
             raise NotFound("Model with the given title does not exist.")
 
         serializer = self.get_serializer(model)
+
         modelData = serializer.data
-        hfData = requests.get(f"https://huggingface.co/api/models/{modelData['hf_id']}")
+        hfData = {}
+        if modelData["hf_id"]!=None:
+            hfData = requests.get(f"https://huggingface.co/api/models/{modelData['hf_id']}")
+            hfData = hfData.json()
 
         if "service_id" in modelData and modelData["service_id"]!=None:
-            dhruvaModelData = requests.post(DHRUVA_MODEL_VIEW_URL,
-                                       headers=
-                                       {'x-auth-source': 'API_KEY',
-                                        'Authorization': DHRUVA_API_KEY},
-                                        json={'serviceId':modelData["service_id"]}).json()["model"]
-        
-            languages = dhruvaModelData["languages"]
-            task = dhruvaModelData["task"]["type"]
+            serviceId = modelData["service_id"]
+            modelData["services"] = {}
+            if "," not in serviceId:
+                dhruvaModelData = requests.post(DHRUVA_MODEL_VIEW_URL,
+                                        headers=
+                                        {'x-auth-source': 'API_KEY',
+                                            'Authorization': DHRUVA_API_KEY},
+                                            json={'serviceId':serviceId}).json()["model"]
+            
+                languages = dhruvaModelData["languages"]
 
-            sourceLanguages = list(set([x["sourceLanguage"] for x in languages]))
-            if "targetLanguage" in languages[0]:
-                targetLanguages = list(set([x["targetLanguage"] for x in languages]))
+                sourceLanguages = list(set([x["sourceLanguage"] for x in languages]))
+                if "targetLanguage" in languages[0]:
+                    targetLanguages = list(set([x["targetLanguage"] for x in languages]))
+                else:
+                    targetLanguages = []
+
+                modelData["services"][serviceId] = {"service_id":serviceId,"languageFilters":{"sourceLanguages":sourceLanguages,"targetLanguages":targetLanguages}}
             else:
-                targetLanguages = []
+                serviceIds = modelData["service_id"].split(",")
+                services = {}
+                for serviceId in serviceIds:
+                    serviceData = {"service_id":serviceId}
 
-            modelData["languageFilters"] = {"sourceLanguages":sourceLanguages,"targetLanguages":targetLanguages}
+                    dhruvaModelData = requests.post(DHRUVA_MODEL_VIEW_URL,
+                                        headers=
+                                        {'x-auth-source': 'API_KEY',
+                                            'Authorization': DHRUVA_API_KEY},
+                                            json={'serviceId':serviceId}).json()["model"]
+            
+                    languages = dhruvaModelData["languages"]
 
-        modelData["hfData"] = hfData.json()
+                    sourceLanguages = list(set([x["sourceLanguage"] for x in languages]))
+                    if "targetLanguage" in languages[0]:
+                        targetLanguages = list(set([x["targetLanguage"] for x in languages]))
+                    else:
+                        targetLanguages = []
+
+                    serviceData["languageFilters"] = {"sourceLanguages":sourceLanguages,"targetLanguages":targetLanguages}
+                    services[serviceId] = serviceData
+                modelData["services"] = services
+
+        modelData["hfData"] = hfData
        
         return Response(modelData)
 
