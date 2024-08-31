@@ -54,8 +54,12 @@ interface LanguageCodeNames {
 
 export default function NMT({ services }: { services: any }) {
   const [service, setService] = useState(Object.keys(services)[0]);
-  const [sourceLanguage, setSourceLanguage] = useState("en");
-  const [targetLanguage, setTargetLanguage] = useState("hi");
+  const [sourceLanguage, setSourceLanguage] = useState(
+    services[Object.keys(services)[0]]["languageFilters"]["sourceLanguages"][0]
+  );
+  const [targetLanguage, setTargetLanguage] = useState(
+    services[Object.keys(services)[0]]["languageFilters"]["targetLanguages"][0]
+  );
   const [transliteration, setTransliteration] = useState(true);
   const [inputText, setInputText] = useState("");
   const [outputText, setOutputText] = useState("");
@@ -97,9 +101,7 @@ export default function NMT({ services }: { services: any }) {
                   .sourceLanguages.length === 0 ? (
                   <></>
                 ) : (
-                  services[
-                    Object.keys(services)[0]
-                  ].languageFilters.sourceLanguages.map(
+                  services[service].languageFilters.sourceLanguages.map(
                     (language: string, index: number) => (
                       <option key={index} value={language}>
                         {(LANGUAGE_CODE_NAMES as LanguageCodeNames)[language]}
@@ -121,9 +123,7 @@ export default function NMT({ services }: { services: any }) {
                   .targetLanguages.length === 0 ? (
                   <></>
                 ) : (
-                  services[
-                    Object.keys(services)[0]
-                  ].languageFilters.targetLanguages.map(
+                  services[service].languageFilters.targetLanguages.map(
                     (language: string, index: number) => (
                       <option key={index} value={language}>
                         {(LANGUAGE_CODE_NAMES as LanguageCodeNames)[language]}
@@ -168,8 +168,8 @@ export default function NMT({ services }: { services: any }) {
                   });
                 } else {
                   const inferenceResult = await fetchTranslation({
-                    sourceLanguage,
-                    targetLanguage,
+                    sourceLanguage: sourceLanguage,
+                    targetLanguage: targetLanguage,
                     input: inputText,
                     task: "translation",
                     serviceId: service,

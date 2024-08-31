@@ -17,6 +17,7 @@ import axios from "axios";
 import NMT from "./TryOut/NMT";
 import ASR from "./TryOut/ASR";
 import XLIT from "./TryOut/XLIT";
+import TTS from "./TryOut/TTS";
 import { FaPaperclip, FaGithub } from "react-icons/fa";
 
 const fetchModel = async ({ title }: { title: string }) => {
@@ -50,6 +51,8 @@ const renderTryOut = ({ area, services }: { area: string; services: any }) => {
       return <ASR services={services} />;
     case "XLIT":
       return <XLIT services={services} />;
+    case "TTS":
+      return <TTS services={services} />;
   }
 };
 

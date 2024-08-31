@@ -28,40 +28,6 @@ import { headers } from "next/headers";
 const preProcessors = ["vad"];
 const postProcessors = ["itn", "punctuation"];
 
-const fetchAudioTranscription = async ({
-  sourceLanguage,
-  audioContent,
-  task,
-  serviceId,
-  samplingRate,
-  preProcessors,
-  postProcessors,
-}: {
-  sourceLanguage: string;
-  audioContent: string;
-  task: string;
-  serviceId: string;
-  samplingRate: number;
-  preProcessors: Array<string>;
-  postProcessors: Array<string>;
-}) => {
-  try {
-    const response = await axios.post(`${API_URL}/inference/`, {
-      sourceLanguage: sourceLanguage,
-      audioContent: audioContent,
-      task: task,
-      serviceId: serviceId,
-      samplingRate: samplingRate,
-      preProcessors: preProcessors,
-      postProcessors: postProcessors,
-    });
-    console.log(response.data);
-  } catch (error) {
-    console.error("Error fetching inference:", error);
-    return {};
-  }
-};
-
 interface LanguageCodeNames {
   [key: string]: string;
 }
@@ -77,7 +43,9 @@ export default function ASR({ services }: { services: any }) {
   );
   const [outputText, setOutputText] = useState("");
 
-  const fetchAudio = async ({ blob }: { blob: Blob }) => {
+  const toast = useToast();
+
+  const fetchTranscription = async ({ blob }: { blob: Blob }) => {
     const reader = new FileReader();
     let base64data: string | ArrayBuffer | null;
     reader.readAsDataURL(blob);
@@ -180,6 +148,7 @@ export default function ASR({ services }: { services: any }) {
           </Box>
           <FormLabel textColor={"gray.500"}>Select Sampling Rate:</FormLabel>
           <Select
+            value={samplingRate}
             onChange={(event) => setSamplingRate(parseInt(event.target.value))}
           >
             <option value={8000}>8000</option>
@@ -191,7 +160,14 @@ export default function ASR({ services }: { services: any }) {
           <AudioRecorder
             onRecordingComplete={(blob) => {
               setOutputText("");
-              fetchAudio({ blob: blob });
+              fetchTranscription({ blob: blob });
+              toast({
+                title: "Success",
+                description: "Audio Inference Successful",
+                status: "success",
+                duration: 5000,
+                isClosable: true,
+              });
             }}
             recorderControls={recorderControls}
           />

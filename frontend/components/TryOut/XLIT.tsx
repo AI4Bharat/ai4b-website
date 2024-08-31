@@ -95,9 +95,7 @@ export default function XLIT({ services }: { services: any }) {
                 .sourceLanguages.length === 0 ? (
                 <></>
               ) : (
-                services[
-                  Object.keys(services)[0]
-                ].languageFilters.sourceLanguages.map(
+                services[service].languageFilters.sourceLanguages.map(
                   (language: string, index: number) => (
                     <option key={index} value={language}>
                       {(LANGUAGE_CODE_NAMES as LanguageCodeNames)[language]}
