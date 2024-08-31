@@ -16,6 +16,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import NMT from "./TryOut/NMT";
 import ASR from "./TryOut/ASR";
+import XLIT from "./TryOut/XLIT";
+import TTS from "./TryOut/TTS";
 import { FaPaperclip, FaGithub } from "react-icons/fa";
 
 const fetchModel = async ({ title }: { title: string }) => {
@@ -38,25 +40,19 @@ interface Model {
   github_link: string | undefined;
   title: string;
   description?: string;
+  services: any;
 }
 
-const renderTryOut = ({ area, model }: { area: string; model: Model }) => {
+const renderTryOut = ({ area, services }: { area: string; services: any }) => {
   switch (area) {
     case "NMT":
-      return (
-        <NMT
-          sourceLanguages={model.languageFilters.sourceLanguages}
-          targetLanguages={model.languageFilters.targetLanguages}
-          serviceId={model.service_id}
-        />
-      );
+      return <NMT services={services} />;
     case "ASR":
-      return (
-        <ASR
-          sourceLanguages={model.languageFilters.sourceLanguages}
-          serviceId={model.service_id}
-        />
-      );
+      return <ASR services={services} />;
+    case "XLIT":
+      return <XLIT services={services} />;
+    case "TTS":
+      return <TTS services={services} />;
   }
 };
 
@@ -77,6 +73,7 @@ export default function ModelView({
     github_link: string | undefined;
     title: string;
     description?: string;
+    services: any;
   }>({
     title: "",
     description: "",
@@ -87,6 +84,7 @@ export default function ModelView({
     inferenceSchema: {},
     languageFilters: {},
     service_id: "",
+    services: {},
   });
 
   const {
@@ -107,6 +105,7 @@ export default function ModelView({
         inferenceSchema: {},
         languageFilters: {},
         service_id: "",
+        services: {},
       });
     } else {
       setModel(modelData);
@@ -132,16 +131,20 @@ export default function ModelView({
             </Text>
           </Heading>
           <HStack>
-            <Box
-              borderRadius={15}
-              p={1}
-              borderWidth={3}
-              borderColor={"a4borange"}
-            >
-              <Text textColor={"a4borange"}>
-                Conference : {model.conference}
-              </Text>
-            </Box>
+            {model.conference ? (
+              <Box
+                borderRadius={15}
+                p={1}
+                borderWidth={3}
+                borderColor={"a4borange"}
+              >
+                <Text textColor={"a4borange"}>
+                  Conference : {model.conference}
+                </Text>
+              </Box>
+            ) : (
+              <></>
+            )}
             {model.hfData.downloads ? (
               <Box
                 borderRadius={15}
@@ -159,33 +162,59 @@ export default function ModelView({
           </HStack>
           <Text color={"gray.500"}>{model.description}</Text>
           <HStack>
-            <Box borderRadius={50} p={1} borderWidth={3} borderColor={"black"}>
-              <Link target="_blank" href={model.github_link}>
-                <HStack>
-                  <FaGithub size={25} />
-                  <Text>Github</Text>
-                </HStack>
-              </Link>
-            </Box>
-            <Box borderRadius={50} p={1} borderWidth={3} borderColor={"black"}>
-              <Link target="_blank" href={model.paper_link}>
-                <HStack>
-                  <FaPaperclip size={25} />
-                  <Text>Paper</Text>
-                </HStack>
-              </Link>
-            </Box>
+            {model.github_link ? (
+              <Box
+                borderRadius={50}
+                p={1}
+                borderWidth={3}
+                borderColor={"black"}
+              >
+                <Link target="_blank" href={model.github_link}>
+                  <HStack>
+                    <FaGithub size={25} />
+                    <Text>Github</Text>
+                  </HStack>
+                </Link>
+              </Box>
+            ) : (
+              <></>
+            )}
+            {model.paper_link ? (
+              <Box
+                borderRadius={50}
+                p={1}
+                borderWidth={3}
+                borderColor={"black"}
+              >
+                <Link target="_blank" href={model.paper_link}>
+                  <HStack>
+                    <FaPaperclip size={25} />
+                    <Text>Paper</Text>
+                  </HStack>
+                </Link>
+              </Box>
+            ) : (
+              <></>
+            )}
           </HStack>
         </Stack>
-        <Flex
-          flex={1}
-          justify={"center"}
-          align={"center"}
-          position={"relative"}
-          w={"full"}
-        >
-          {renderTryOut({ area: area, model: model })}
-        </Flex>
+        {model.service_id ? (
+          <Flex
+            flex={1}
+            justify={"center"}
+            align={"center"}
+            position={"relative"}
+            w={"full"}
+          >
+            {modelLoading ? (
+              <></>
+            ) : (
+              renderTryOut({ area: area, services: model.services })
+            )}
+          </Flex>
+        ) : (
+          <></>
+        )}
       </Stack>
     </Container>
   );

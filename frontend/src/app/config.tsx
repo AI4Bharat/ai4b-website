@@ -23,6 +23,7 @@ export const LANGUAGE_CODE_NAMES = {
   bn: "Bengali",
   mr: "Marathi",
   mni: "Meitei (Manipuri)",
+  raj: "Rajasthani",
 };
 
 export const imagePrefix = process.env.BASE_PATH || "";
