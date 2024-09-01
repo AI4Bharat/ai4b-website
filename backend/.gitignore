@@ -32,3 +32,4 @@ Caddyfile
 /static/
 
 data_dump.json
+db_bkp.json

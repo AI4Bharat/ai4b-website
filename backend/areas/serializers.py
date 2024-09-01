@@ -64,5 +64,6 @@ class NewsSerializer(ModelSerializer):
             "description",
             "published_on",
             "image",
-            "related_link"
+            "related_link",
+            "markdown_content"
         ]
