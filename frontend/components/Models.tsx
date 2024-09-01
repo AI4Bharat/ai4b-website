@@ -9,6 +9,7 @@ import {
   Text,
   Link,
   HStack,
+  Divider,
 } from "@chakra-ui/react";
 import { useQuery } from "react-query";
 import { API_URL } from "@/app/config";
@@ -19,6 +20,7 @@ import ASR from "./TryOut/ASR";
 import XLIT from "./TryOut/XLIT";
 import TTS from "./TryOut/TTS";
 import { FaPaperclip, FaGithub } from "react-icons/fa";
+import ToolInstructions from "./ToolInstructionComponent";
 
 const fetchModel = async ({ title }: { title: string }) => {
   try {
@@ -41,6 +43,8 @@ interface Model {
   title: string;
   description?: string;
   services: any;
+  installation_steps_json: Array<any>;
+  usage_steps_json: Array<any>;
 }
 
 const renderTryOut = ({ area, services }: { area: string; services: any }) => {
@@ -74,6 +78,8 @@ export default function ModelView({
     title: string;
     description?: string;
     services: any;
+    installation_steps_json: Array<any>;
+    usage_steps_json: Array<any>;
   }>({
     title: "",
     description: "",
@@ -85,6 +91,8 @@ export default function ModelView({
     languageFilters: {},
     service_id: "",
     services: {},
+    installation_steps_json: [],
+    usage_steps_json: [],
   });
 
   const {
@@ -106,6 +114,8 @@ export default function ModelView({
         languageFilters: {},
         service_id: "",
         services: {},
+        installation_steps_json: [],
+        usage_steps_json: [],
       });
     } else {
       setModel(modelData);
@@ -216,6 +226,33 @@ export default function ModelView({
           <></>
         )}
       </Stack>
+      {modelLoading ? (
+        <></>
+      ) : (
+        <>
+          {model.installation_steps_json === null ? (
+            <></>
+          ) : (
+            <ToolInstructions
+              title="Installation"
+              steps={model.installation_steps_json}
+            />
+          )}
+        </>
+      )}
+      <Divider m={3} />
+      {modelLoading ? (
+        <></>
+      ) : (
+        <>
+          {model.usage_steps_json === null ? (
+            <></>
+          ) : (
+            <ToolInstructions title="Usage" steps={model.usage_steps_json} />
+          )}
+        </>
+      )}
+      <br />
     </Container>
   );
 }

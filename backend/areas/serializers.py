@@ -34,6 +34,9 @@ class ModelSerializer(ModelSerializer):
             "github_link",
             "service_id",
             "hf_id",
+            "installation_steps_json",
+            "usage_steps_json",
+            "testimonials_json",
         ]
 
 
@@ -60,5 +63,7 @@ class NewsSerializer(ModelSerializer):
             "title",
             "description",
             "published_on",
-            "image"
+            "image",
+            "related_link",
+            "markdown_content"
         ]

@@ -40,6 +40,9 @@ class Model(models.Model):
     github_link = models.URLField(max_length=500,null=True,blank=True)
     hf_id = models.CharField(max_length=500,null=True,blank=True)
     service_id = models.CharField(max_length=500, null=True, blank=True)
+    installation_steps_json = models.JSONField(null=True,blank=True)
+    usage_steps_json = models.JSONField(null=True,blank=True)
+    testimonials_json = models.JSONField(null=True,blank=True)
 
     def __str__(self) -> str:
         return f"{self.title}"
@@ -74,6 +77,7 @@ class News(models.Model):
     published_on = models.DateField(default=date.today)
     image = models.ImageField(upload_to=image_directory_path,null=True,blank=True)
     related_link = models.URLField(max_length=500, null=True, blank=True)
+    markdown_content = models.TextField(null=True,blank=True)
 
     def __str__(self) -> str:
         return f"{self.title}"

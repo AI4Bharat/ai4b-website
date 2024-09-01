@@ -84,9 +84,9 @@ export default function PeopleSection({
         <Heading fontSize={{ base: "2xl", sm: "4xl" }} fontWeight={"bold"}>
           {heading}
         </Heading>
-        <Text color={"gray.600"} fontSize={{ base: "sm", sm: "lg" }}>
+        {/* <Text color={"gray.600"} fontSize={{ base: "sm", sm: "lg" }}>
           {description}
-        </Text>
+        </Text> */}
       </Stack>
 
       <Container maxW={"5xl"} mt={12}>
