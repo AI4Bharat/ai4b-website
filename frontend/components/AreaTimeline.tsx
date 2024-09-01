@@ -16,11 +16,25 @@ import {
   AccordionIcon,
   AccordionItem,
 } from "@chakra-ui/react";
-// Here we have used react-icons package for the icons
 import { FaPaperclip, FaGithub, FaArrowDown } from "react-icons/fa";
 import { useState } from "react";
 import { imagePrefix } from "@/app/config";
 import Link from "next/link";
+
+const monthNames = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
 interface Publication {
   title: string;
@@ -143,6 +157,7 @@ const Card = ({
   type,
   index,
 }: CardProps) => {
+  const dateObject = new Date(published_on);
   const isEvenId = index % 2 == 0;
   let borderWidthValue = isEvenId ? "15px 15px 15px 0" : "15px 0 15px 15px";
   let leftValue = isEvenId ? "-15px" : "unset";
@@ -164,13 +179,28 @@ const Card = ({
       borderRadius={type === "Model" ? undefined : 30}
     >
       <Box>
-        <HStack>
+        <HStack mb={3}>
           <HStack spacing={2} mb={1}>
-            <Text fontSize="lg" textColor={"a4borange"}>
-              {published_on}
-            </Text>
-            <Text fontSize="sm">{type}</Text>
-            <Text fontSize="sm">{conference}</Text>
+            <Box p={2} bg="a4borange" borderRadius={15}>
+              <HStack>
+                <Text fontSize="sm" textColor={"white"}>
+                  {monthNames[dateObject.getMonth()]}
+                </Text>
+                <Text fontSize="sm" textColor={"white"}>
+                  {dateObject.getFullYear()}
+                </Text>
+              </HStack>
+            </Box>
+            <Box p={2} bg="a4borange" borderRadius={15}>
+              <Text textColor={"white"} fontSize="sm">
+                {type}
+              </Text>
+            </Box>
+            <Box p={2} bg="a4borange" borderRadius={15}>
+              <Text textColor={"white"} fontSize="sm">
+                {conference}
+              </Text>
+            </Box>
           </HStack>
         </HStack>
 
