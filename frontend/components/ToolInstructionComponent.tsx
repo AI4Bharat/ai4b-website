@@ -35,7 +35,12 @@ export default function ToolInstructions({
         direction={{ base: "column", md: "row" }}
         spacing={{ base: 0, md: 3 }}
       >
-        <VStack spacing={4} alignItems="flex-start" mb={{ base: 5, md: 0 }}>
+        <VStack
+          overflowY={"scroll"}
+          spacing={4}
+          alignItems="flex-start"
+          mb={{ base: 5, md: 0 }}
+        >
           {steps.map((data, index) => (
             <Box key={index}>
               <HStack spacing={2}>
@@ -60,6 +65,7 @@ export default function ToolInstructions({
                   p={5}
                   fontSize="sm"
                   color="gray.500"
+                  textOverflow={"clip"}
                 >
                   {data.codeString}
                 </Code>
