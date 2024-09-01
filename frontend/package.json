@@ -18,6 +18,8 @@
     "@mui/x-data-grid": "^7.14.0",
     "@types/react-syntax-highlighter": "^15.5.13",
     "axios": "^1.7.4",
+    "chakra-ui-markdown-renderer": "^4.1.0",
+    "dompurify": "^3.1.6",
     "ffmpeg": "^0.0.4",
     "framer-motion": "^11.3.28",
     "html-react-parser": "^5.1.12",
@@ -30,6 +32,7 @@
     "react-markdown": "^9.0.1",
     "react-player": "^2.16.0",
     "react-query": "^3.39.3",
+    "react-render-html": "^0.6.0",
     "react-slick": "^0.30.2",
     "react-syntax-highlighter": "^15.5.0",
     "react-youtube": "^10.1.0",
@@ -38,6 +41,7 @@
     "remark-gfm": "^4.0.0"
   },
   "devDependencies": {
+    "@types/dompurify": "^3.0.5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

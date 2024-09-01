@@ -1,10 +1,11 @@
 import React from "react";
-import { Box, Flex, Text, Heading, VStack } from "@chakra-ui/react";
+import { Box, Flex, Text, Heading, VStack, Link } from "@chakra-ui/react";
 import { useQuery } from "react-query";
 import { API_URL } from "@/app/config";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { imagePrefix } from "@/app/config";
 
 const fetchNews = async () => {
   try {
@@ -19,6 +20,7 @@ const fetchNews = async () => {
 const News = () => {
   const [news, setNews] = useState<
     {
+      id: number;
       image: string;
       title: string;
       description: string;
@@ -62,7 +64,13 @@ const News = () => {
               />
               <Box p={4}>
                 <Text fontWeight="bold">{card.title}</Text>
-                <Text>{card.description}</Text>
+                <Text noOfLines={4}>{card.description}</Text>
+                <Link
+                  href={`${imagePrefix}/news/${card.id}`}
+                  color={"a4borange"}
+                >
+                  Read More
+                </Link>
               </Box>
             </Box>
           ))}

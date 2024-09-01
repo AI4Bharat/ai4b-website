@@ -19,14 +19,16 @@ interface Instruction {
 }
 
 export default function ToolInstructions({
+  title,
   steps,
 }: {
+  title: string;
   steps: Array<Instruction>;
 }) {
   return (
     <Container borderWidth={3} borderRadius={25} p={5} maxW="20xl">
-      <chakra.h2 fontSize="4xl" fontWeight="bold" mb={2}>
-        Installation Steps
+      <chakra.h2 fontSize="2xl" fontWeight="bold" mb={2}>
+        {title}
       </chakra.h2>
       <br />
       <Stack
@@ -38,15 +40,27 @@ export default function ToolInstructions({
             <Box key={index}>
               <HStack spacing={2}>
                 {data.type === "instruction" ? (
-                  <Text fontSize="xl">{data.instruction}</Text>
+                  <>
+                    {data.instruction === "" ? (
+                      <></>
+                    ) : (
+                      <Text fontSize="1xl">{data.instruction}</Text>
+                    )}
+                  </>
                 ) : (
-                  <Heading>{data.instruction}</Heading>
+                  <Heading fontSize="2xl">{data.instruction}</Heading>
                 )}
               </HStack>
               {data.codeString === null ? (
                 <></>
               ) : (
-                <Code borderRadius={15} p={5} fontSize="md" color="gray.500">
+                <Code
+                  whiteSpace={"pre-wrap"}
+                  borderRadius={15}
+                  p={5}
+                  fontSize="sm"
+                  color="gray.500"
+                >
                   {data.codeString}
                 </Code>
               )}
