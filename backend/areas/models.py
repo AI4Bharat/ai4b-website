@@ -40,6 +40,9 @@ class Model(models.Model):
     github_link = models.URLField(max_length=500,null=True,blank=True)
     hf_id = models.CharField(max_length=500,null=True,blank=True)
     service_id = models.CharField(max_length=500, null=True, blank=True)
+    installation_steps_json = models.JSONField(null=True,blank=True)
+    usage_steps_json = models.JSONField(null=True,blank=True)
+    testimonials_json = models.JSONField(null=True,blank=True)
 
     def __str__(self) -> str:
         return f"{self.title}"
