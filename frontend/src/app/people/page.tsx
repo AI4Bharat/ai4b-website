@@ -9,9 +9,11 @@ import {
   VStack,
   useBreakpointValue,
   Flex,
+  ResponsiveValue,
 } from "@chakra-ui/react";
 import { useQuery } from "react-query";
 import { API_URL } from "../config";
+import { Property } from "csstype";
 
 const fetchMembers = async () => {
   try {
@@ -108,7 +110,7 @@ export default function People() {
         p={5}
         justifyContent={"center"}
         gap={2}
-        direction={direction}
+        direction={direction as ResponsiveValue<Property.FlexDirection>}
         mt={10}
       >
         <Button
