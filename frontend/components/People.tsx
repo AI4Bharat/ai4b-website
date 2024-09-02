@@ -95,6 +95,7 @@ export default function PeopleSection({
             {members.map((member) =>
               member.team === team ? (
                 <Card
+                  key={`${member.first_name}_${member.last_name}`}
                   first_name={member.first_name}
                   last_name={member.last_name}
                   role={member.role}

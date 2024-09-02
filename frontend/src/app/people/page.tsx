@@ -2,7 +2,14 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import PeopleSection from "../../../components/People";
-import { Stack, HStack, Button } from "@chakra-ui/react";
+import {
+  Stack,
+  HStack,
+  Button,
+  VStack,
+  useBreakpointValue,
+  Flex,
+} from "@chakra-ui/react";
 import { useQuery } from "react-query";
 import { API_URL } from "../config";
 
@@ -85,6 +92,7 @@ export default function People() {
   const [members, setMembers] = useState([]);
   const [section, setSection] = useState("fdr");
   const { isLoading, error, data } = useQuery("fetchMembers", fetchMembers);
+  const direction = useBreakpointValue({ base: "column", md: "row" });
 
   useEffect(() => {
     if (error || isLoading) {
@@ -95,8 +103,14 @@ export default function People() {
   }, [error, data, isLoading]);
 
   return (
-    <Stack alignItems={"center"}>
-      <HStack p={5}>
+    <Stack>
+      <Flex
+        p={5}
+        justifyContent={"center"}
+        gap={2}
+        direction={direction}
+        mt={10}
+      >
         <Button
           onClick={(event) => setSection("fdr")}
           value={"fdr"}
@@ -139,7 +153,7 @@ export default function People() {
         >
           Alumni
         </Button>
-      </HStack>
+      </Flex>
       {renderSection({ members, section })}
     </Stack>
   );
