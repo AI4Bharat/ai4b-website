@@ -160,7 +160,7 @@ export default function Features() {
             heading={"OCR"}
             icon={
               <Image
-                src="/assets/icons/ocr.png"
+                src={`${imagePrefix}/assets/icons/ocr.png`}
                 alt="OCR"
                 width={100}
                 height={100}
