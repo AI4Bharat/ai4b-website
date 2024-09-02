@@ -176,7 +176,9 @@ const Card = ({
       bg={useColorModeValue("gray.100", "gray.800")}
       alignItems="center"
       pos="relative"
-      borderRadius={type === "Model" ? undefined : 30}
+      borderRadius={30}
+      left={leftValue}
+      right={rightValue}
     >
       <Box>
         <HStack mb={3}>
