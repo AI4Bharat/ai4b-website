@@ -1,4 +1,3 @@
-import { title } from "process";
 import ModelView from "../../../../../../components/Models";
 
 export const dynamicParams = true;
