@@ -7,7 +7,8 @@ class Team(models.TextChoices):
     VISITING = 3
     DATALEAD = 4
     OPERATIONS = 5
-    LANGUAGE = 6
+    ALUMNI = 6
+    LANGUAGE = 7
 
 
 class Language(models.TextChoices):
@@ -50,7 +51,7 @@ class Member(models.Model):
     last_name = models.CharField(max_length=200)
     team = models.CharField(max_length=50, choices=Team.choices)
     role = models.CharField(max_length=100)
-    photo = models.ImageField(upload_to=user_directory_path)
+    photo = models.ImageField(upload_to=user_directory_path,null=True,blank=True)
     language = models.CharField(
         max_length=50, choices=Language.choices, null=True, blank=True
     )

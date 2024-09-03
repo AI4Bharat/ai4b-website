@@ -30,6 +30,7 @@ class ModelSerializer(ModelSerializer):
             "conference",
             "description",
             "paper_link",
+            "colab_link",
             "website_link",
             "github_link",
             "service_id",

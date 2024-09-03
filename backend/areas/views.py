@@ -3,7 +3,6 @@ from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
 import requests
 import base64 
-import ffmpeg
 import subprocess
 
 # Create your views here.
@@ -14,10 +13,11 @@ from rest_framework.decorators import permission_classes
 from rest_framework import permissions
 
 from rest_framework.views import APIView
+from django_ratelimit.decorators import ratelimit
+from django.utils.decorators import method_decorator
 
 DHRUVA_MODEL_VIEW_URL = "https://api.dhruva.ekstep.ai/services/details/view_service"
 DHRUVA_API_KEY = "0aaef7ff-86f3-4bb0-a30b-9f50f3de1a52"
-
 
 @permission_classes((permissions.AllowAny,))
 class InferenceView(APIView):
@@ -50,7 +50,7 @@ class InferenceView(APIView):
                                                     }
                                                 ]
                                                 })
-            return Response(inferenceResult.json(),status=status.HTTP_200_OK)
+
         
         elif task=="translation":
             INFERENCE_API = "https://api.dhruva.ekstep.ai/services/inference/translation"
@@ -76,7 +76,7 @@ class InferenceView(APIView):
                                                     }
                                                 ]
                                                 })
-            return Response(inferenceResult.json(),status=status.HTTP_200_OK)
+
         
         elif task == "tts":
             INFERENCE_API = "https://api.dhruva.ekstep.ai/services/inference/tts"
@@ -106,7 +106,6 @@ class InferenceView(APIView):
                                                 ]
                                                 })
             
-            return Response(inferenceResult.json(),status=status.HTTP_200_OK)
 
 
         
@@ -157,7 +156,8 @@ class InferenceView(APIView):
                                                 ]
                                             }
                                             )
-            return Response(inferenceResult.json(),status=status.HTTP_200_OK)
+        inferenceResult = inferenceResult.json()
+        return Response(inferenceResult,status=status.HTTP_200_OK)
 
             
 
@@ -346,5 +346,6 @@ class AreaViewSet(viewsets.ViewSet):
 
 
         return Response(publications)
+    
     
 

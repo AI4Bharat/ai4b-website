@@ -12,7 +12,7 @@ import {
   Divider,
 } from "@chakra-ui/react";
 import { useQuery } from "react-query";
-import { API_URL } from "@/app/config";
+import { API_URL, imagePrefix } from "@/app/config";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import NMT from "./TryOut/NMT";
@@ -21,6 +21,7 @@ import XLIT from "./TryOut/XLIT";
 import TTS from "./TryOut/TTS";
 import { FaPaperclip, FaGithub } from "react-icons/fa";
 import ToolInstructions from "./ToolInstructionComponent";
+import Image from "next/image";
 
 const fetchModel = async ({ title }: { title: string }) => {
   try {
@@ -75,6 +76,7 @@ export default function ModelView({
     conference: string;
     paper_link: string | undefined;
     github_link: string | undefined;
+    colab_link: string | undefined;
     title: string;
     description?: string;
     services: any;
@@ -85,6 +87,7 @@ export default function ModelView({
     description: "",
     github_link: "",
     paper_link: "",
+    colab_link: "",
     conference: "",
     hfData: {},
     inferenceSchema: {},
@@ -108,6 +111,7 @@ export default function ModelView({
         description: "",
         github_link: "",
         paper_link: "",
+        colab_link: "",
         conference: "",
         hfData: {},
         inferenceSchema: {},
@@ -200,6 +204,28 @@ export default function ModelView({
                   <HStack>
                     <FaPaperclip size={25} />
                     <Text>Paper</Text>
+                  </HStack>
+                </Link>
+              </Box>
+            ) : (
+              <></>
+            )}
+            {model.colab_link ? (
+              <Box
+                borderRadius={50}
+                p={1}
+                borderWidth={3}
+                borderColor={"black"}
+              >
+                <Link target="_blank" href={model.colab_link}>
+                  <HStack>
+                    <Image
+                      alt="colab"
+                      width={25}
+                      height={25}
+                      src={`${imagePrefix}/assets/icons/colab.png`}
+                    />
+                    <Text>Colab</Text>
                   </HStack>
                 </Link>
               </Box>
