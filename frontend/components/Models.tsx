@@ -19,7 +19,7 @@ import NMT from "./TryOut/NMT";
 import ASR from "./TryOut/ASR";
 import XLIT from "./TryOut/XLIT";
 import TTS from "./TryOut/TTS";
-import { FaPaperclip, FaGithub } from "react-icons/fa";
+import { FaPaperclip, FaGithub, FaCode } from "react-icons/fa";
 import ToolInstructions from "./ToolInstructionComponent";
 import Image from "next/image";
 
@@ -219,12 +219,7 @@ export default function ModelView({
               >
                 <Link target="_blank" href={model.colab_link}>
                   <HStack>
-                    <Image
-                      alt="colab"
-                      width={25}
-                      height={25}
-                      src={`${imagePrefix}/assets/icons/colab.png`}
-                    />
+                    <FaCode size={50} />
                     <Text>Colab</Text>
                   </HStack>
                 </Link>

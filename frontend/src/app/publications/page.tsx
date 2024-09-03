@@ -17,7 +17,7 @@ import {
   Divider,
   SimpleGrid,
 } from "@chakra-ui/react";
-import { FaPaperclip, FaGithub } from "react-icons/fa";
+import { FaPaperclip, FaGithub, FaCode } from "react-icons/fa";
 import { useQuery } from "react-query";
 import axios from "axios";
 import { API_URL } from "../config";
@@ -310,12 +310,7 @@ const Card = ({
             )}
             {colab_link ? (
               <Link target="_blank" href={colab_link}>
-                <Image
-                  alt="colab"
-                  width={50}
-                  height={50}
-                  src={`${imagePrefix}/assets/icons/colab.png`}
-                />
+                <FaCode size={50} />
               </Link>
             ) : (
               <></>
