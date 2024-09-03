@@ -47,15 +47,19 @@ const Card = ({ first_name, last_name, role, photo }: CardProps) => {
       p={5}
     >
       <Stack align={"start"} spacing={2}>
-        <Image
-          src={photo}
-          borderRadius="full"
-          objectFit="cover"
-          boxSize="200px"
-          bgColor={"a4borange"}
-          alt="Profile Photo"
-          width={200}
-        />
+        {photo !== null ? (
+          <Image
+            src={photo}
+            borderRadius="full"
+            objectFit="cover"
+            boxSize="200px"
+            bgColor={"a4borange"}
+            alt="Profile Photo"
+            width={200}
+          />
+        ) : (
+          <></>
+        )}
         <Box mt={2}>
           <Heading size="md">{first_name + " " + last_name}</Heading>
           <Text mt={1} fontSize={"sm"}>
