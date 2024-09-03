@@ -7,6 +7,7 @@ import {
   Heading,
   SimpleGrid,
   Stack,
+  Wrap,
 } from "@chakra-ui/react";
 import Image from "next/image";
 
@@ -23,7 +24,7 @@ export default function Sponsors() {
       </Stack>
 
       <Box mt={12}>
-        <SimpleGrid gap={10} columns={4}>
+        <Wrap justify={"center"} gap={10}>
           <Card w={300} h={100}>
             <Image
               src={`${imagePrefix}/assets/logos/meity.svg`}
@@ -73,7 +74,7 @@ export default function Sponsors() {
               fill={true}
             />
           </Card>
-        </SimpleGrid>
+        </Wrap>
       </Box>
     </Box>
   );
