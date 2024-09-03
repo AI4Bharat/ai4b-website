@@ -212,7 +212,7 @@ const Card = ({
             href={
               type === "Model"
                 ? `${imagePrefix}/areas/model/${area}/${title}`
-                : website_link
+                : website_link || `${imagePrefix}`
             }
             fontSize="1xl"
             lineHeight={1.2}
