@@ -5,6 +5,8 @@ from django.conf.urls.static import static
 from django.conf import settings
 from .views import PublicationViewSet, PublicationFilterOptions, AreaViewSet,InferenceView
 
+
+
 router = DefaultRouter()
 router.register(r"datasets", views.DatasetViewSet)
 router.register(r"news",views.NewsViewSet)
