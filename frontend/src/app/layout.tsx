@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Layout from "../../components/Layout";
+import "./global.css";
 
 export const metadata: Metadata = {
   title: "AI4Bharat",
