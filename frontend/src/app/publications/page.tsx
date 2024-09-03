@@ -145,7 +145,9 @@ const Publications = () => {
               minWidth={"max-content"}
               p={2}
               value={area}
-              onClick={(event) => setFilterArea(event.target.value)}
+              onClick={(event) =>
+                setFilterArea((event.target as HTMLInputElement).value)
+              }
               colorScheme="orange"
               key={area}
             >
@@ -163,7 +165,9 @@ const Publications = () => {
                 minWidth={"max-content"}
                 p={2}
                 value={conference}
-                onClick={(event) => setFilterConference(event.target.value)}
+                onClick={(event) =>
+                  setFilterConference((event.target as HTMLInputElement).value)
+                }
                 colorScheme="orange"
                 key={conference}
               >
@@ -181,7 +185,9 @@ const Publications = () => {
               minWidth={"max-content"}
               p={2}
               value={year}
-              onClick={(event) => setFilterYear(event.target.value)}
+              onClick={(event) =>
+                setFilterYear((event.target as HTMLInputElement).value)
+              }
               colorScheme="orange"
               key={year}
             >
