@@ -219,7 +219,7 @@ export default function ModelView({
               >
                 <Link target="_blank" href={model.colab_link}>
                   <HStack>
-                    <FaCode size={50} />
+                    <FaCode size={25} />
                     <Text>Colab</Text>
                   </HStack>
                 </Link>
