@@ -169,7 +169,10 @@ export default function ToolComponent({ slug }: { slug: string }) {
         backgroundRepeat="no-repeat"
         minH={{ base: "unset", md: "450px" }}
       >
-        <ToolInstructions steps={tool.installation_steps_json} />
+        <ToolInstructions
+          title={"Installation"}
+          steps={tool.installation_steps_json}
+        />
       </Stack>
     </Container>
   );

@@ -14,11 +14,15 @@ import {
   Button,
   Stack,
   useBreakpointValue,
+  Divider,
+  SimpleGrid,
 } from "@chakra-ui/react";
 import { FaPaperclip, FaGithub } from "react-icons/fa";
 import { useQuery } from "react-query";
 import axios from "axios";
 import { API_URL } from "../config";
+import Image from "next/image";
+import { imagePrefix } from "../config";
 
 const ExpandableText = ({
   text,
@@ -69,6 +73,7 @@ interface Publication {
   area: string;
   conference: string;
   published_on: string;
+  colab_link: string;
   hf_id: string;
   paper_link: string;
   github_link: string;
@@ -129,54 +134,72 @@ const Publications = () => {
   }, [filterArea, filterYear, filterConference, publications]);
 
   return (
-    <Container maxWidth="4xl" p={{ base: 2, sm: 10 }}>
+    <Box p={5}>
       <chakra.h3 fontSize="4xl" fontWeight="bold" mb={18} textAlign="center">
         Publications
       </chakra.h3>
       <Stack>
-        <HStack>
-          <Text>Area: </Text>
-          <Select
-            value={filterArea}
-            onChange={(event) => setFilterArea(event.target.value)}
-          >
-            <option value="All">All</option>
-            {(filters.areas as string[]).map((area) => (
-              <option key={area} value={area}>
-                {area.toUpperCase()}
-              </option>
-            ))}
-          </Select>
+        <HStack p={3}>
+          <Text fontSize={"lg"} as="b">
+            Area:{" "}
+          </Text>
+          {filters.areas.map((area) => (
+            <Button
+              minWidth={"max-content"}
+              p={2}
+              value={area}
+              onClick={(event) =>
+                setFilterArea((event.target as HTMLInputElement).value)
+              }
+              colorScheme="orange"
+              key={area}
+            >
+              {area}
+            </Button>
+          ))}
         </HStack>
         <HStack>
-          <Text>Conference: </Text>
-          <Select
-            value={filterConference}
-            onChange={(event) => setFilterConference(event.target.value)}
-          >
-            <option value="All">All</option>
-            {(filters.conferences as string[]).map((conference) => (
-              <option key={conference} value={conference}>
-                {conference.toUpperCase()}
-              </option>
+          <Text fontSize={"lg"} as="b">
+            Conference:{" "}
+          </Text>
+          <SimpleGrid gap={3} columns={[2, 5, 6, 7]}>
+            {filters.conferences.map((conference) => (
+              <Button
+                minWidth={"max-content"}
+                p={2}
+                value={conference}
+                onClick={(event) =>
+                  setFilterConference((event.target as HTMLInputElement).value)
+                }
+                colorScheme="orange"
+                key={conference}
+              >
+                {conference}
+              </Button>
             ))}
-          </Select>
+          </SimpleGrid>
         </HStack>
-        <HStack>
-          <Text>Year: </Text>
-          <Select
-            value={filterYear}
-            onChange={(event) => setFilterYear(event.target.value)}
-          >
-            <option value="All">All</option>
-            {filters.years.map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </Select>
+        <HStack p={3}>
+          <Text fontSize={"lg"} as="b">
+            Year:{" "}
+          </Text>
+          {filters.years.map((year) => (
+            <Button
+              minWidth={"max-content"}
+              p={2}
+              value={year}
+              onClick={(event) =>
+                setFilterYear((event.target as HTMLInputElement).value)
+              }
+              colorScheme="orange"
+              key={year}
+            >
+              {year}
+            </Button>
+          ))}
         </HStack>
         <Button
+          width={"fit-content"}
           color={"a4borange"}
           onClick={() => {
             setFilterArea("All");
@@ -187,6 +210,7 @@ const Publications = () => {
           Reset Filters
         </Button>
       </Stack>
+      <Divider m={5} />
       <br />
       <Container height={isMobile ? 500 : "auto"} overflowY={"scroll"}>
         {filteredPublications.map((pub, index) => (
@@ -200,12 +224,13 @@ const Publications = () => {
               hf_id={pub.hf_id}
               paper_link={pub.paper_link}
               github_link={pub.github_link}
+              colab_link={pub.colab_link}
               type={pub.type}
             />
           </Flex>
         ))}
       </Container>
-    </Container>
+    </Box>
   );
 };
 
@@ -217,6 +242,7 @@ interface CardProps {
   hf_id: string;
   paper_link: string;
   github_link: string;
+  colab_link: string;
   type: string;
 }
 
@@ -228,6 +254,7 @@ const Card = ({
   hf_id,
   paper_link,
   github_link,
+  colab_link,
   type,
 }: CardProps) => {
   return (
@@ -277,6 +304,18 @@ const Card = ({
             {github_link ? (
               <Link target="_blank" href={github_link}>
                 <FaGithub size={50} />
+              </Link>
+            ) : (
+              <></>
+            )}
+            {colab_link ? (
+              <Link target="_blank" href={colab_link}>
+                <Image
+                  alt="colab"
+                  width={50}
+                  height={50}
+                  src={`${imagePrefix}/assets/icons/colab.png`}
+                />
               </Link>
             ) : (
               <></>

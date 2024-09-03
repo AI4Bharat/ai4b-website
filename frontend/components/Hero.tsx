@@ -144,8 +144,8 @@ export default function Hero() {
           </Box>
         </Flex>
       </Stack>
-      <Divider colorScheme="orange" variant={"solid"} />
-      <News />
+      {/* <Divider colorScheme="orange" variant={"solid"} />
+      <News /> */}
       <Divider colorScheme="orange" variant={"solid"} />
       <Features />
       <Divider colorScheme="orange" variant={"solid"} />

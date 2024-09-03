@@ -5,6 +5,8 @@ import { API_URL } from "@/app/config";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { imagePrefix } from "@/app/config";
+import Link from "next/link";
 
 const fetchNews = async () => {
   try {
@@ -19,6 +21,7 @@ const fetchNews = async () => {
 const News = () => {
   const [news, setNews] = useState<
     {
+      id: number;
       image: string;
       title: string;
       description: string;
@@ -62,7 +65,10 @@ const News = () => {
               />
               <Box p={4}>
                 <Text fontWeight="bold">{card.title}</Text>
-                <Text>{card.description}</Text>
+                <Text noOfLines={4}>{card.description}</Text>
+                <Link href={`${imagePrefix}/news/${card.id}`}>
+                  <Text textColor={"a4borange"}>Read More</Text>
+                </Link>
               </Box>
             </Box>
           ))}

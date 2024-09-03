@@ -42,7 +42,6 @@ const Card = ({ heading, description, icon, href }: CardProps) => {
           justify={"center"}
           color={"white"}
           rounded={"full"}
-          bg={useColorModeValue("gray.100", "gray.700")}
         >
           {icon}
         </Flex>
@@ -53,9 +52,13 @@ const Card = ({ heading, description, icon, href }: CardProps) => {
           </Text>
         </Box>
         <Link href={href}>
-          <Button variant={"link"} colorScheme={"blue"} size={"sm"}>
-            Learn more
-          </Button>
+          {href !== "" ? (
+            <Button variant={"link"} colorScheme={"orange"}>
+              Learn more
+            </Button>
+          ) : (
+            <Text textColor={"a4borange"}>Coming Soon</Text>
+          )}
         </Link>
       </Stack>
     </Box>
@@ -97,7 +100,7 @@ export default function Features() {
             icon={
               <Image
                 src={`${imagePrefix}/assets/icons/nmt.png`}
-                alt="LLM"
+                alt="NMT"
                 width={100}
                 height={100}
               />
@@ -112,7 +115,7 @@ export default function Features() {
             icon={
               <Image
                 src={`${imagePrefix}/assets/icons/xlit.png`}
-                alt="LLM"
+                alt="XLIT"
                 width={100}
                 height={100}
               />
@@ -127,7 +130,7 @@ export default function Features() {
             icon={
               <Image
                 src={`${imagePrefix}/assets/icons/asr.png`}
-                alt="LLM"
+                alt="ASR"
                 width={100}
                 height={100}
               />
@@ -142,7 +145,7 @@ export default function Features() {
             icon={
               <Image
                 src={`${imagePrefix}/assets/icons/tts.png`}
-                alt="LLM"
+                alt="TTS"
                 width={100}
                 height={100}
               />
@@ -152,21 +155,21 @@ export default function Features() {
             }
             href={`${imagePrefix}/areas/tts`}
           />
-          {/* <Card
+          <Card
             heading={"OCR"}
             icon={
               <Image
-                src="/assets/icons/ocr.png"
-                alt="LLM"
+                src={`${imagePrefix}/assets/icons/ocr.png`}
+                alt="OCR"
                 width={100}
                 height={100}
               />
             }
             description={
-              "AI4Bharat has pioneered the development of multilingual LLMs tailored for Indian languages, such as IndicBERT, IndicBART, and Airavata trained on extensive, diverse datasets like IndicCorpora and Sangraha."
+              "We are in the early stages of developing models and datasets for advancing Document Layout Parsing and OCR technologies to support the wide range of Indian scripts."
             }
-            href={"#"}
-          /> */}
+            href={""}
+          />
         </Flex>
       </Container>
     </Box>

@@ -9,9 +9,10 @@ import {
   Text,
   Link,
   HStack,
+  Divider,
 } from "@chakra-ui/react";
 import { useQuery } from "react-query";
-import { API_URL } from "@/app/config";
+import { API_URL, imagePrefix } from "@/app/config";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import NMT from "./TryOut/NMT";
@@ -19,6 +20,8 @@ import ASR from "./TryOut/ASR";
 import XLIT from "./TryOut/XLIT";
 import TTS from "./TryOut/TTS";
 import { FaPaperclip, FaGithub } from "react-icons/fa";
+import ToolInstructions from "./ToolInstructionComponent";
+import Image from "next/image";
 
 const fetchModel = async ({ title }: { title: string }) => {
   try {
@@ -41,6 +44,8 @@ interface Model {
   title: string;
   description?: string;
   services: any;
+  installation_steps_json: Array<any>;
+  usage_steps_json: Array<any>;
 }
 
 const renderTryOut = ({ area, services }: { area: string; services: any }) => {
@@ -71,20 +76,26 @@ export default function ModelView({
     conference: string;
     paper_link: string | undefined;
     github_link: string | undefined;
+    colab_link: string | undefined;
     title: string;
     description?: string;
     services: any;
+    installation_steps_json: Array<any>;
+    usage_steps_json: Array<any>;
   }>({
     title: "",
     description: "",
     github_link: "",
     paper_link: "",
+    colab_link: "",
     conference: "",
     hfData: {},
     inferenceSchema: {},
     languageFilters: {},
     service_id: "",
     services: {},
+    installation_steps_json: [],
+    usage_steps_json: [],
   });
 
   const {
@@ -100,12 +111,15 @@ export default function ModelView({
         description: "",
         github_link: "",
         paper_link: "",
+        colab_link: "",
         conference: "",
         hfData: {},
         inferenceSchema: {},
         languageFilters: {},
         service_id: "",
         services: {},
+        installation_steps_json: [],
+        usage_steps_json: [],
       });
     } else {
       setModel(modelData);
@@ -196,6 +210,28 @@ export default function ModelView({
             ) : (
               <></>
             )}
+            {model.colab_link ? (
+              <Box
+                borderRadius={50}
+                p={1}
+                borderWidth={3}
+                borderColor={"black"}
+              >
+                <Link target="_blank" href={model.colab_link}>
+                  <HStack>
+                    <Image
+                      alt="colab"
+                      width={25}
+                      height={25}
+                      src={`${imagePrefix}/assets/icons/colab.png`}
+                    />
+                    <Text>Colab</Text>
+                  </HStack>
+                </Link>
+              </Box>
+            ) : (
+              <></>
+            )}
           </HStack>
         </Stack>
         {model.service_id ? (
@@ -216,6 +252,33 @@ export default function ModelView({
           <></>
         )}
       </Stack>
+      {modelLoading ? (
+        <></>
+      ) : (
+        <>
+          {model.installation_steps_json === null ? (
+            <></>
+          ) : (
+            <ToolInstructions
+              title="Installation"
+              steps={model.installation_steps_json}
+            />
+          )}
+        </>
+      )}
+      <Divider m={3} />
+      {modelLoading ? (
+        <></>
+      ) : (
+        <>
+          {model.usage_steps_json === null ? (
+            <></>
+          ) : (
+            <ToolInstructions title="Usage" steps={model.usage_steps_json} />
+          )}
+        </>
+      )}
+      <br />
     </Container>
   );
 }
