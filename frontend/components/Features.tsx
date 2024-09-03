@@ -42,7 +42,6 @@ const Card = ({ heading, description, icon, href }: CardProps) => {
           justify={"center"}
           color={"white"}
           rounded={"full"}
-          bg={useColorModeValue("gray.100", "gray.700")}
         >
           {icon}
         </Flex>

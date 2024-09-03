@@ -21,6 +21,8 @@ import { FaPaperclip, FaGithub } from "react-icons/fa";
 import { useQuery } from "react-query";
 import axios from "axios";
 import { API_URL } from "../config";
+import Image from "next/image";
+import { imagePrefix } from "../config";
 
 const ExpandableText = ({
   text,
@@ -71,6 +73,7 @@ interface Publication {
   area: string;
   conference: string;
   published_on: string;
+  colab_link: string;
   hf_id: string;
   paper_link: string;
   github_link: string;
@@ -221,6 +224,7 @@ const Publications = () => {
               hf_id={pub.hf_id}
               paper_link={pub.paper_link}
               github_link={pub.github_link}
+              colab_link={pub.colab_link}
               type={pub.type}
             />
           </Flex>
@@ -238,6 +242,7 @@ interface CardProps {
   hf_id: string;
   paper_link: string;
   github_link: string;
+  colab_link: string;
   type: string;
 }
 
@@ -249,6 +254,7 @@ const Card = ({
   hf_id,
   paper_link,
   github_link,
+  colab_link,
   type,
 }: CardProps) => {
   return (
@@ -298,6 +304,18 @@ const Card = ({
             {github_link ? (
               <Link target="_blank" href={github_link}>
                 <FaGithub size={50} />
+              </Link>
+            ) : (
+              <></>
+            )}
+            {colab_link ? (
+              <Link target="_blank" href={colab_link}>
+                <Image
+                  alt="colab"
+                  width={50}
+                  height={50}
+                  src={`${imagePrefix}/assets/icons/colab.png`}
+                />
               </Link>
             ) : (
               <></>

@@ -20,6 +20,7 @@ import { FaPaperclip, FaGithub, FaArrowDown } from "react-icons/fa";
 import { useState } from "react";
 import { imagePrefix } from "@/app/config";
 import Link from "next/link";
+import Image from "next/image";
 
 const monthNames = [
   "January",
@@ -45,6 +46,7 @@ interface Publication {
   hf_id: string;
   paper_link: string;
   github_link: string;
+  colab_link: string;
   website_link: string;
   type: string;
 }
@@ -107,6 +109,7 @@ interface CardProps {
   paper_link: string;
   github_link: string;
   website_link: string;
+  colab_link: string;
   type: string;
   index: number;
 }
@@ -154,6 +157,7 @@ const Card = ({
   paper_link,
   github_link,
   website_link,
+  colab_link,
   type,
   index,
 }: CardProps) => {
@@ -226,6 +230,18 @@ const Card = ({
             {github_link ? (
               <Link target="_blank" href={github_link}>
                 <FaGithub size={25} />
+              </Link>
+            ) : (
+              <></>
+            )}
+            {colab_link ? (
+              <Link target="_blank" href={colab_link}>
+                <Image
+                  alt="colab"
+                  width={25}
+                  height={25}
+                  src={`${imagePrefix}/assets/icons/colab.png`}
+                />
               </Link>
             ) : (
               <></>
