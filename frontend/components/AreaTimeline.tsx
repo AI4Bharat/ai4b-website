@@ -236,7 +236,7 @@ const Card = ({
             )}
             {colab_link ? (
               <Link target="_blank" href={colab_link}>
-                <FaCode size={50} />
+                <FaCode size={25} />
               </Link>
             ) : (
               <></>
