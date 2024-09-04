@@ -46,6 +46,8 @@ interface Model {
   services: any;
   installation_steps_json: Array<any>;
   usage_steps_json: Array<any>;
+  type: string;
+  hf_id: string;
 }
 
 const renderTryOut = ({ area, services }: { area: string; services: any }) => {
@@ -82,6 +84,8 @@ export default function ModelView({
     services: any;
     installation_steps_json: Array<any>;
     usage_steps_json: Array<any>;
+    type: string;
+    hf_id: string;
   }>({
     title: "",
     description: "",
@@ -96,6 +100,8 @@ export default function ModelView({
     services: {},
     installation_steps_json: [],
     usage_steps_json: [],
+    type: "",
+    hf_id: "",
   });
 
   const {
@@ -120,6 +126,8 @@ export default function ModelView({
         services: {},
         installation_steps_json: [],
         usage_steps_json: [],
+        type: "",
+        hf_id: "",
       });
     } else {
       setModel(modelData);
@@ -221,6 +229,34 @@ export default function ModelView({
                   <HStack>
                     <FaCode size={25} />
                     <Text>Colab</Text>
+                  </HStack>
+                </Link>
+              </Box>
+            ) : (
+              <></>
+            )}
+            {model.hf_id !== "" ? (
+              <Box
+                borderRadius={50}
+                p={1}
+                borderWidth={3}
+                borderColor={"black"}
+              >
+                <Link
+                  target="_blank"
+                  href={
+                    model.type === "Model"
+                      ? `https://huggingface.co/${model.hf_id}`
+                      : `https://huggingface.co/datasets/${model.hf_id}`
+                  }
+                >
+                  <HStack>
+                    <img
+                      src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg"
+                      alt="Hugging Face"
+                      style={{ width: "25px", height: "25px" }}
+                    />
+                    <Text>Huggingface</Text>
                   </HStack>
                 </Link>
               </Box>
