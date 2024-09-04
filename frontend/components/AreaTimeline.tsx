@@ -267,6 +267,7 @@ const Card = ({
         {type === "Model" ? (
           <Button
             as={Link}
+            target="_blank"
             href={`${imagePrefix}/areas/model/${area}/${title}`}
             borderColor={"a4borange"}
             variant={"outline"}
