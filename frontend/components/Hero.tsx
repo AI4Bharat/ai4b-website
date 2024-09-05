@@ -61,71 +61,71 @@ export default function Hero() {
             academia, industry, and government sectors.
           </Text>
           <Wrap>
-            <Link href={`${imagePrefix}/areas/xlit`}>
-              <Button
-                rounded={"full"}
-                size={"lg"}
-                fontWeight={"normal"}
-                px={6}
-                colorScheme={"red"}
-                bg={"red.400"}
-                _hover={{ bg: "red.500" }}
-              >
-                XLIT
-              </Button>
-            </Link>
-            <Link href={`${imagePrefix}/areas/nmt`}>
-              <Button
-                rounded={"full"}
-                size={"lg"}
-                fontWeight={"normal"}
-                px={6}
-                colorScheme={"red"}
-                bg={"red.400"}
-                _hover={{ bg: "red.500" }}
-              >
-                NMT
-              </Button>
-            </Link>
-            <Link href={`${imagePrefix}/areas/asr`}>
-              <Button
-                rounded={"full"}
-                size={"lg"}
-                fontWeight={"normal"}
-                px={6}
-                colorScheme={"red"}
-                bg={"red.400"}
-                _hover={{ bg: "red.500" }}
-              >
-                ASR
-              </Button>
-            </Link>
-            <Link href={`${imagePrefix}/areas/tts`}>
-              <Button
-                rounded={"full"}
-                size={"lg"}
-                fontWeight={"normal"}
-                px={6}
-                colorScheme={"red"}
-                bg={"red.400"}
-                _hover={{ bg: "red.500" }}
-              >
-                TTS
-              </Button>
-            </Link>
-            <Link href={`${imagePrefix}/areas/llm`}>
-              <Button
-                rounded={"full"}
-                size={"lg"}
-                fontWeight={"normal"}
-                px={6}
-                colorScheme={"red"}
-                bg={"red.400"}
-                _hover={{ bg: "red.500" }}
-              >
-                LLMs
-              </Button>
-            </Link>
+            <Button
+              as="a"
+              href={`${imagePrefix}/areas/xlit`}
+              rounded={"full"}
+              size={"lg"}
+              fontWeight={"normal"}
+              px={6}
+              colorScheme={"red"}
+              bg={"red.400"}
+              _hover={{ bg: "red.500" }}
+            >
+              XLIT
+            </Button>
+            <Button
+              as="a"
+              href={`${imagePrefix}/areas/nmt`}
+              rounded={"full"}
+              size={"lg"}
+              fontWeight={"normal"}
+              px={6}
+              colorScheme={"red"}
+              bg={"red.400"}
+              _hover={{ bg: "red.500" }}
+            >
+              NMT
+            </Button>
+            <Button
+              as="a"
+              href={`${imagePrefix}/areas/asr`}
+              rounded={"full"}
+              size={"lg"}
+              fontWeight={"normal"}
+              px={6}
+              colorScheme={"red"}
+              bg={"red.400"}
+              _hover={{ bg: "red.500" }}
+            >
+              ASR
+            </Button>
+            <Button
+              as="a"
+              href={`${imagePrefix}/areas/tts`}
+              rounded={"full"}
+              size={"lg"}
+              fontWeight={"normal"}
+              px={6}
+              colorScheme={"red"}
+              bg={"red.400"}
+              _hover={{ bg: "red.500" }}
+            >
+              TTS
+            </Button>
+            <Button
+              as="a"
+              href={`${imagePrefix}/areas/llm`}
+              rounded={"full"}
+              size={"lg"}
+              fontWeight={"normal"}
+              px={6}
+              colorScheme={"red"}
+              bg={"red.400"}
+              _hover={{ bg: "red.500" }}
+            >
+              LLMs
+            </Button>
           </Wrap>
         </Stack>
         <Flex
