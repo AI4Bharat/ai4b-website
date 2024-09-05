@@ -16,6 +16,8 @@ import {
   useColorModeValue,
   Divider,
 } from "@chakra-ui/react";
+import Link from "next/link";
+import { imagePrefix } from "@/app/config";
 
 import Features from "./Features";
 import Datasets from "./Datasets";
@@ -57,66 +59,76 @@ export default function Hero() {
             in real-world use cases, making a significant impact across
             academia, industry, and government sectors.
           </Text>
-          {/* <Stack
+          <Stack
             spacing={{ base: 4, sm: 6 }}
             direction={{ base: "column", sm: "row" }}
           >
-            <Button
-              rounded={"full"}
-              size={"lg"}
-              fontWeight={"normal"}
-              px={6}
-              colorScheme={"red"}
-              bg={"red.400"}
-              _hover={{ bg: "red.500" }}
-            >
-              XLIT
-            </Button>
-            <Button
-              rounded={"full"}
-              size={"lg"}
-              fontWeight={"normal"}
-              px={6}
-              colorScheme={"red"}
-              bg={"red.400"}
-              _hover={{ bg: "red.500" }}
-            >
-              MT
-            </Button>
-            <Button
-              rounded={"full"}
-              size={"lg"}
-              fontWeight={"normal"}
-              px={6}
-              colorScheme={"red"}
-              bg={"red.400"}
-              _hover={{ bg: "red.500" }}
-            >
-              ASR
-            </Button>
-            <Button
-              rounded={"full"}
-              size={"lg"}
-              fontWeight={"normal"}
-              px={6}
-              colorScheme={"red"}
-              bg={"red.400"}
-              _hover={{ bg: "red.500" }}
-            >
-              TTS
-            </Button>
-            <Button
-              rounded={"full"}
-              size={"lg"}
-              fontWeight={"normal"}
-              px={6}
-              colorScheme={"red"}
-              bg={"red.400"}
-              _hover={{ bg: "red.500" }}
-            >
-              LLMs
-            </Button>
-          </Stack> */}
+            <Link href={`${imagePrefix}/areas/xlit`}>
+              <Button
+                rounded={"full"}
+                size={"lg"}
+                fontWeight={"normal"}
+                px={6}
+                colorScheme={"red"}
+                bg={"red.400"}
+                _hover={{ bg: "red.500" }}
+              >
+                XLIT
+              </Button>
+            </Link>
+            <Link href={`${imagePrefix}/areas/nmt`}>
+              <Button
+                rounded={"full"}
+                size={"lg"}
+                fontWeight={"normal"}
+                px={6}
+                colorScheme={"red"}
+                bg={"red.400"}
+                _hover={{ bg: "red.500" }}
+              >
+                NMT
+              </Button>
+            </Link>
+            <Link href={`${imagePrefix}/areas/asr`}>
+              <Button
+                rounded={"full"}
+                size={"lg"}
+                fontWeight={"normal"}
+                px={6}
+                colorScheme={"red"}
+                bg={"red.400"}
+                _hover={{ bg: "red.500" }}
+              >
+                ASR
+              </Button>
+            </Link>
+            <Link href={`${imagePrefix}/areas/tts`}>
+              <Button
+                rounded={"full"}
+                size={"lg"}
+                fontWeight={"normal"}
+                px={6}
+                colorScheme={"red"}
+                bg={"red.400"}
+                _hover={{ bg: "red.500" }}
+              >
+                TTS
+              </Button>
+            </Link>
+            <Link href={`${imagePrefix}/areas/llm`}>
+              <Button
+                rounded={"full"}
+                size={"lg"}
+                fontWeight={"normal"}
+                px={6}
+                colorScheme={"red"}
+                bg={"red.400"}
+                _hover={{ bg: "red.500" }}
+              >
+                LLMs
+              </Button>
+            </Link>
+          </Stack>
         </Stack>
         <Flex
           flex={1}

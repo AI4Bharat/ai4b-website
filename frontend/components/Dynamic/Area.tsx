@@ -1,7 +1,6 @@
 "use client";
 import {
   chakra,
-  Link,
   Stack,
   Box,
   Button,
@@ -17,7 +16,8 @@ import axios from "axios";
 import { API_URL } from "@/app/config";
 import { useEffect, useState } from "react";
 import AreaTimeline from "../AreaTimeline";
-import { title } from "process";
+import Link from "next/link";
+import { imagePrefix } from "@/app/config";
 
 const areaInfo: { [key: string]: { title: string; description: string } } = {
   nmt: {
@@ -74,6 +74,7 @@ const fetchAreaData = async (slug: string) => {
 
 export default function AreaComponent({ slug }: { slug: string }) {
   const [areaData, setAreaData] = useState([]);
+  const [latest, setLatest] = useState("");
 
   const { data, isLoading, error } = useQuery("fetchAreaData", () =>
     fetchAreaData(slug.toUpperCase())
@@ -82,8 +83,13 @@ export default function AreaComponent({ slug }: { slug: string }) {
   useEffect(() => {
     if (!isLoading && !error) {
       setAreaData(data);
+      data.forEach((element: any) => {
+        if (element.latest) {
+          setLatest(element.title);
+          console.log(element.title);
+        }
+      });
     }
-    console.log(data);
   }, [data, isLoading, error]);
 
   return (
@@ -105,6 +111,25 @@ export default function AreaComponent({ slug }: { slug: string }) {
                 {areaInfo[slug].title}
               </Text>
             </Heading>
+            {latest !== "" ? (
+              <Link
+                href={`${imagePrefix}/areas/model/${slug.toUpperCase()}/${latest}`}
+              >
+                <Button
+                  rounded={"full"}
+                  size={"lg"}
+                  fontWeight={"normal"}
+                  px={6}
+                  textColor={"white"}
+                  bg={"a4borange"}
+                  _hover={{ bg: "red.500" }}
+                >
+                  Try Out the Latest Model
+                </Button>
+              </Link>
+            ) : (
+              <></>
+            )}
             <Text textColor={"a4borange"}>
               To know more about our contributions over the years see the
               timeline below!
