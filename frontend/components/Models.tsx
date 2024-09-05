@@ -135,7 +135,7 @@ export default function ModelView({
   }, [modelError, modelLoading, modelData]);
 
   return (
-    <Container maxW={"7xl"}>
+    <Container paddingLeft={20} maxW={"7xl"}>
       <Stack
         align={"center"}
         spacing={{ base: 8, md: 10 }}
@@ -236,30 +236,29 @@ export default function ModelView({
               <></>
             )}
             {model.hf_id ? (
-              <Box
-                borderRadius={50}
-                p={1}
-                borderWidth={3}
-                borderColor={"black"}
+              <Link
+                target="_blank"
+                href={
+                  model.type === "Model"
+                    ? `https://huggingface.co/${model.hf_id}`
+                    : `https://huggingface.co/datasets/${model.hf_id}`
+                }
               >
-                <Link
-                  target="_blank"
-                  href={
-                    model.type === "Model"
-                      ? `https://huggingface.co/${model.hf_id}`
-                      : `https://huggingface.co/datasets/${model.hf_id}`
-                  }
+                <HStack
+                  borderRadius={50}
+                  p={1}
+                  borderWidth={3}
+                  borderColor={"black"}
+                  width={"max-content"}
                 >
-                  <HStack>
-                    <img
-                      src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg"
-                      alt="Hugging Face"
-                      style={{ width: "25px", height: "25px" }}
-                    />
-                    <Text>Huggingface</Text>
-                  </HStack>
-                </Link>
-              </Box>
+                  <img
+                    src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg"
+                    alt="Hugging Face"
+                    style={{ width: "25px", height: "25px" }}
+                  />
+                  <Text>Huggingface</Text>
+                </HStack>
+              </Link>
             ) : (
               <></>
             )}
