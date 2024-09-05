@@ -235,7 +235,7 @@ export default function ModelView({
             ) : (
               <></>
             )}
-            {model.hf_id !== "" ? (
+            {model.hf_id ? (
               <Box
                 borderRadius={50}
                 p={1}
