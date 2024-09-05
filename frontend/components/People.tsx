@@ -11,6 +11,7 @@ import {
   useColorModeValue,
   Skeleton,
   Image,
+  Divider,
 } from "@chakra-ui/react";
 import { ReactElement } from "react";
 import {
@@ -114,6 +115,80 @@ export default function PeopleSection({
           <Skeleton height={300} />
         )}
       </Container>
+    </Box>
+  );
+}
+
+export function TabbedPeopleSection({
+  heading,
+  description,
+  team,
+  members,
+}: {
+  heading: string;
+  description: string;
+  team: string;
+  members: Array<Member>;
+}) {
+  const sections = ["MS", "MTech", "BTech", "Research", "Development"];
+  return (
+    <Box p={4}>
+      <Stack spacing={4} as={Container} maxW={"3xl"} textAlign={"center"}>
+        <Heading fontSize={{ base: "2xl", sm: "4xl" }} fontWeight={"bold"}>
+          {heading}
+        </Heading>
+      </Stack>
+      {sections.map((section, index) => (
+        <Container key={index} maxW={"5xl"} mt={12}>
+          <Heading fontSize="2xl" fontWeight={"bold"}>
+            {section}
+          </Heading>
+          <br />
+          {Object.keys(members).length > 0 ? (
+            <Flex flexWrap="wrap" gridGap={6} justify="center">
+              {members.map((member) =>
+                member.team === team &&
+                member.role.split(",")[1] === section ? (
+                  <Card
+                    key={`${member.first_name}_${member.last_name}`}
+                    first_name={member.first_name}
+                    last_name={member.last_name}
+                    role={member.role}
+                    photo={member.photo}
+                  />
+                ) : (
+                  <></>
+                )
+              )}
+            </Flex>
+          ) : (
+            <Skeleton height={300} />
+          )}
+          <Divider variant={"solid"} colorScheme="black" m={5} />
+        </Container>
+      ))}
+
+      {/* <Container maxW={"5xl"} mt={12}>
+        {Object.keys(members).length > 0 ? (
+          <Flex flexWrap="wrap" gridGap={6} justify="center">
+            {members.map((member) =>
+              member.team === team ? (
+                <Card
+                  key={`${member.first_name}_${member.last_name}`}
+                  first_name={member.first_name}
+                  last_name={member.last_name}
+                  role={member.role}
+                  photo={member.photo}
+                />
+              ) : (
+                <></>
+              )
+            )}
+          </Flex>
+        ) : (
+          <Skeleton height={300} />
+        )}
+      </Container> */}
     </Box>
   );
 }
