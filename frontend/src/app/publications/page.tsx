@@ -51,7 +51,7 @@ function RadioCard(props: any) {
         }}
         p={1}
       >
-        {props.children}
+        {props.children.toString()}
       </Box>
     </Box>
   );
