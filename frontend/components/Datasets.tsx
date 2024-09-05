@@ -13,6 +13,7 @@ import {
   CardBody,
   useColorModeValue,
   SkeletonCircle,
+  HStack,
   SkeletonText,
   Link,
   Image as ChakraImage,
@@ -176,6 +177,28 @@ export default function Datasets() {
             efforts not only within India but also in multilingual regions
             across the globe.
           </Text>
+          <HStack p={5}>
+            <HStack>
+              <FaMicrophone color="orange" size={25} />
+              <Text as="b">ASR</Text>
+            </HStack>
+            <HStack>
+              <FaFileAlt color="orange" size={25} />
+              <Text as="b">LLM</Text>
+            </HStack>
+            <HStack>
+              <FaLanguage color="orange" size={25} />
+              <Text as="b">NMT</Text>
+            </HStack>
+            <HStack>
+              <FaVolumeUp color="orange" size={25} />
+              <Text as="b">TTS</Text>
+            </HStack>
+            <HStack>
+              <FaKeyboard color="orange" size={25} />
+              <Text as="b">XLIT</Text>
+            </HStack>
+          </HStack>
         </Stack>
         {isLoading ? (
           <SimpleGrid columns={{ base: 1, md: 3 }} spacing={10}>
