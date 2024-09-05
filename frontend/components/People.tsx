@@ -153,7 +153,7 @@ export function TabbedPeopleSection({
                     key={`${member.first_name}_${member.last_name}`}
                     first_name={member.first_name}
                     last_name={member.last_name}
-                    role={member.role}
+                    role={member.role.split(",")[0]}
                     photo={member.photo}
                   />
                 ) : (
