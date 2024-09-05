@@ -15,6 +15,7 @@ import {
   IconProps,
   useColorModeValue,
   Divider,
+  Wrap,
 } from "@chakra-ui/react";
 import Link from "next/link";
 import { imagePrefix } from "@/app/config";
@@ -59,10 +60,7 @@ export default function Hero() {
             in real-world use cases, making a significant impact across
             academia, industry, and government sectors.
           </Text>
-          <Stack
-            spacing={{ base: 4, sm: 6 }}
-            direction={{ base: "column", sm: "row" }}
-          >
+          <Wrap>
             <Link href={`${imagePrefix}/areas/xlit`}>
               <Button
                 rounded={"full"}
@@ -128,7 +126,7 @@ export default function Hero() {
                 LLMs
               </Button>
             </Link>
-          </Stack>
+          </Wrap>
         </Stack>
         <Flex
           flex={1}
