@@ -37,6 +37,36 @@ interface Member {
   photo: string;
 }
 
+const TabbedCard = ({ first_name, last_name, role, photo }: CardProps) => {
+  return (
+    <Box
+      maxW={{ base: "full", md: "max-content" }}
+      w={"full"}
+      borderWidth="1px"
+      borderRadius="lg"
+      overflow="hidden"
+      p={3}
+    >
+      <Stack align={"start"} spacing={2}>
+        {photo !== null ? (
+          <Image
+            src={photo}
+            borderRadius="full"
+            objectFit="cover"
+            boxSize="200px"
+            bgColor={"a4borange"}
+            alt="Profile Photo"
+            width={200}
+          />
+        ) : (
+          <></>
+        )}
+        <Heading size="sm">{first_name + " " + last_name}</Heading>
+      </Stack>
+    </Box>
+  );
+};
+
 const Card = ({ first_name, last_name, role, photo }: CardProps) => {
   return (
     <Box
@@ -145,11 +175,11 @@ export function TabbedPeopleSection({
           </Heading>
           <br />
           {Object.keys(members).length > 0 ? (
-            <Flex flexWrap="wrap" gridGap={6} justify="center">
+            <Flex flexWrap="wrap" gridGap={6}>
               {members.map((member) =>
                 member.team === team &&
                 member.role.split(",")[1] === section ? (
-                  <Card
+                  <TabbedCard
                     key={`${member.first_name}_${member.last_name}`}
                     first_name={member.first_name}
                     last_name={member.last_name}
