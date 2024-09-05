@@ -13,6 +13,7 @@ import {
   CardBody,
   useColorModeValue,
   SkeletonCircle,
+  HStack,
   SkeletonText,
   Link,
   Image as ChakraImage,
@@ -23,14 +24,21 @@ import axios from "axios";
 import { useQuery } from "react-query";
 import { API_URL } from "@/app/config";
 import { imagePrefix } from "@/app/config";
-import { FaFileAudio, FaFileAlt } from "react-icons/fa";
+import {
+  FaFileAudio,
+  FaFileAlt,
+  FaMicrophone,
+  FaVolumeUp,
+  FaLanguage,
+  FaKeyboard,
+} from "react-icons/fa";
 
 const datasetIcons: { [key: string]: React.ReactElement } = {
-  nmt: <FaFileAlt color="orange" size={25} />,
-  llm: <FaFileAlt color="orange" size={25} />,
-  asr: <FaFileAudio color="orange" size={25} />,
-  tts: <FaFileAudio color="orange" size={25} />,
-  xlit: <FaFileAlt color="orange" size={25} />,
+  nmt: <FaLanguage color="orange" size={35} />,
+  llm: <FaFileAlt color="orange" size={35} />,
+  asr: <FaMicrophone color="orange" size={35} />,
+  tts: <FaVolumeUp color="orange" size={35} />,
+  xlit: <FaKeyboard color="orange" size={35} />,
 };
 
 interface FeatureProps {
@@ -67,7 +75,7 @@ const Feature = ({ title, icon, dataset_link }: FeatureProps) => {
         justify={"center"}
         color={"white"}
         rounded={"full"}
-        bg={"gray.100"}
+        // bg={"gray.100"}
         mb={1}
       >
         {datasetIcons[icon]}
@@ -169,6 +177,28 @@ export default function Datasets() {
             efforts not only within India but also in multilingual regions
             across the globe.
           </Text>
+          <HStack p={5}>
+            <HStack>
+              <FaMicrophone color="orange" size={25} />
+              <Text as="b">ASR</Text>
+            </HStack>
+            <HStack>
+              <FaFileAlt color="orange" size={25} />
+              <Text as="b">LLM</Text>
+            </HStack>
+            <HStack>
+              <FaLanguage color="orange" size={25} />
+              <Text as="b">NMT</Text>
+            </HStack>
+            <HStack>
+              <FaVolumeUp color="orange" size={25} />
+              <Text as="b">TTS</Text>
+            </HStack>
+            <HStack>
+              <FaKeyboard color="orange" size={25} />
+              <Text as="b">XLIT</Text>
+            </HStack>
+          </HStack>
         </Stack>
         {isLoading ? (
           <SimpleGrid columns={{ base: 1, md: 3 }} spacing={10}>
