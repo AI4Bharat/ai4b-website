@@ -34,6 +34,7 @@ interface Member {
   last_name: string;
   role: string;
   team: string;
+  prevRol: string;
   photo: string;
 }
 
@@ -177,8 +178,7 @@ export function TabbedPeopleSection({
           {Object.keys(members).length > 0 ? (
             <Flex flexWrap="wrap" gridGap={6}>
               {members.map((member) =>
-                member.team === team &&
-                member.role.split(",")[1] === section ? (
+                member.team === team && member.prevRol === section ? (
                   <TabbedCard
                     key={`${member.first_name}_${member.last_name}`}
                     first_name={member.first_name}
