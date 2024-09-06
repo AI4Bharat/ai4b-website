@@ -5,4 +5,4 @@ from .models import Member
 class MemberSerializer(ModelSerializer):
     class Meta:
         model = Member
-        fields = ["id", "first_name", "last_name", "team", "role", "photo", "language"]
+        fields = ["id", "first_name", "last_name", "team", "role","prevRol", "photo", "language"]

@@ -1,6 +1,11 @@
 from django.db import models
 from datetime import date
+from django.dispatch import receiver
+import os
+import github
+from dotenv import load_dotenv
 
+load_dotenv(dotenv_path="/home/ai4bharat/ai4b-website/backend/.env")
 
 
 class Area(models.TextChoices):
@@ -33,6 +38,7 @@ class Model(models.Model):
     title = models.CharField(max_length=500)
     area = models.CharField(choices=Area.choices, max_length=10)
     published_on = models.DateField(default=date.today)
+    latest = models.BooleanField(default=False)
     conference = models.CharField(max_length=20, null=True, blank=True)
     description = models.TextField()
     paper_link = models.URLField(max_length=500)
@@ -47,6 +53,20 @@ class Model(models.Model):
 
     def __str__(self) -> str:
         return f"{self.title}"
+    
+@receiver(models.signals.post_save, sender=Model)
+def execute_after_model_save(sender, instance, created, *args, **kwargs):
+    if created:
+        g = github.Github(login_or_token=os.getenv("GITHUB_WORKFLOW_TOKEN"))
+        repo = g.get_repo("AI4Bharat/ai4b-website")
+        workflow_name = "nextjs.yml"
+        workflow = repo.get_workflow(workflow_name)
+        ref = repo.get_branch("master")
+        workflow.create_dispatch(ref=ref)
+        print("New Model Deploy Triggered")
+    else:
+        print("Model Updated")
+    
 
 
 class Tool(models.Model):
@@ -58,10 +78,23 @@ class Tool(models.Model):
     release_timeline_json = models.JSONField()
     feature_cards_json = models.JSONField()
     contributor_cards_json = models.JSONField()
-    installation_steps_json = models.JSONField()
+    installation_steps_json = models.JSONField(null=True,blank=True)
 
     def __str__(self) -> str:
         return f"{self.title}"
+    
+@receiver(models.signals.post_save, sender=Tool)
+def execute_after_tool_save(sender, instance, created, *args, **kwargs):
+    if created:
+        g = github.Github(login_or_token=os.getenv("GITHUB_WORKFLOW_TOKEN"))
+        repo = g.get_repo("AI4Bharat/ai4b-website")
+        workflow_name = "nextjs.yml"
+        workflow = repo.get_workflow(workflow_name)
+        ref = repo.get_branch("master")
+        workflow.create_dispatch(ref=ref)
+        print("New Tool Deploy Triggered")
+    else:
+        print("Tool Updated")
     
 
 def image_directory_path(instance, filename):

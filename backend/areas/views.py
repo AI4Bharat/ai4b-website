@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
+
+import os
 import requests
 import base64 
 import subprocess
@@ -16,8 +18,9 @@ from rest_framework.views import APIView
 from django_ratelimit.decorators import ratelimit
 from django.utils.decorators import method_decorator
 
-DHRUVA_MODEL_VIEW_URL = "https://api.dhruva.ekstep.ai/services/details/view_service"
-DHRUVA_API_KEY = "0aaef7ff-86f3-4bb0-a30b-9f50f3de1a52"
+from dotenv import load_dotenv
+
+load_dotenv()
 
 @permission_classes((permissions.AllowAny,))
 class InferenceView(APIView):
@@ -28,7 +31,7 @@ class InferenceView(APIView):
             INFERENCE_API = "https://api.dhruva.ekstep.ai/services/inference/transliteration"
             inferenceResult = requests.post(INFERENCE_API,headers=
                                        {'x-auth-source': 'API_KEY',
-                                        'Authorization': DHRUVA_API_KEY},
+                                        'Authorization': os.getenv('DHRUVA_API_KEY')},
                                         json={
                                                 "controlConfig": {
                                                     "dataTracking": True
@@ -56,7 +59,7 @@ class InferenceView(APIView):
             INFERENCE_API = "https://api.dhruva.ekstep.ai/services/inference/translation"
             inferenceResult = requests.post(INFERENCE_API,headers=
                                        {'x-auth-source': 'API_KEY',
-                                        'Authorization': DHRUVA_API_KEY},
+                                        'Authorization': os.getenv('DHRUVA_API_KEY')},
                                         json={
                                                 "controlConfig": {
                                                     "dataTracking": True
@@ -83,7 +86,7 @@ class InferenceView(APIView):
 
             inferenceResult = requests.post(INFERENCE_API,headers=
                                        {'x-auth-source': 'API_KEY',
-                                        'Authorization': DHRUVA_API_KEY},
+                                        'Authorization': os.getenv('DHRUVA_API_KEY')},
                                         json={
                                                 "controlConfig": {
                                                     "dataTracking": True
@@ -128,7 +131,7 @@ class InferenceView(APIView):
 
             inferenceResult = requests.post(INFERENCE_API,headers=
                                        {'x-auth-source': 'API_KEY',
-                                        'Authorization': DHRUVA_API_KEY},
+                                        'Authorization': os.getenv('DHRUVA_API_KEY')},
                                         json={
                                                 "controlConfig": {
                                                     "dataTracking": True
@@ -173,6 +176,13 @@ class DatasetViewSet(viewsets.ModelViewSet):
     queryset = Dataset.objects.all()
     serializer_class = DatasetSerializer
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        datasets = serializer.data
+        datasets.sort(key=lambda dataset: dataset.get("area"))
+        return Response(datasets)
+
 
 class ModelViewSet(viewsets.ModelViewSet):
     queryset = Model.objects.all()
@@ -197,10 +207,10 @@ class ModelViewSet(viewsets.ModelViewSet):
             serviceId = modelData["service_id"]
             modelData["services"] = {}
             if "," not in serviceId:
-                dhruvaModelData = requests.post(DHRUVA_MODEL_VIEW_URL,
+                dhruvaModelData = requests.post(os.getenv("DHRUVA_MODEL_VIEW_URL"),
                                         headers=
                                         {'x-auth-source': 'API_KEY',
-                                            'Authorization': DHRUVA_API_KEY},
+                                            'Authorization': os.getenv('DHRUVA_API_KEY')},
                                             json={'serviceId':serviceId}).json()["model"]
             
                 languages = dhruvaModelData["languages"]
@@ -218,10 +228,10 @@ class ModelViewSet(viewsets.ModelViewSet):
                 for serviceId in serviceIds:
                     serviceData = {"service_id":serviceId}
 
-                    dhruvaModelData = requests.post(DHRUVA_MODEL_VIEW_URL,
+                    dhruvaModelData = requests.post(os.getenv("DHRUVA_MODEL_VIEW_URL"),
                                         headers=
                                         {'x-auth-source': 'API_KEY',
-                                            'Authorization': DHRUVA_API_KEY},
+                                            'Authorization': os.getenv('DHRUVA_API_KEY')},
                                             json={'serviceId':serviceId}).json()["model"]
             
                     languages = dhruvaModelData["languages"]
@@ -237,6 +247,7 @@ class ModelViewSet(viewsets.ModelViewSet):
                 modelData["services"] = services
 
         modelData["hfData"] = hfData
+        modelData["type"] = "Model"
        
         return Response(modelData)
 
@@ -286,13 +297,14 @@ class PublicationFilterOptions(viewsets.ViewSet):
 
         years += Dataset.objects.values_list("published_on", flat=True).distinct()
         years += Model.objects.values_list("published_on", flat=True).distinct()
-
         years = [x.year for x in years]
+        years = sorted(list(set(years)))
+        years = [str(x) for x in years]
 
         return Response(
             {
                 "areas": list(set(areas)),
-                "years": list(set(years)),
+                "years": years,
                 "conferences": list(set(conferences)),
             }
         )
