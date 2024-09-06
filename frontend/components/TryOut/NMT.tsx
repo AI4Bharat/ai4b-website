@@ -180,7 +180,7 @@ export default function NMT({ services }: { services: any }) {
                     title: "Success",
                     description: "Translation Inference Successful",
                     status: "success",
-                    duration: 5000,
+                    duration: 4000,
                     isClosable: true,
                   });
                 }
