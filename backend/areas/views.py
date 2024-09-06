@@ -173,6 +173,13 @@ class DatasetViewSet(viewsets.ModelViewSet):
     queryset = Dataset.objects.all()
     serializer_class = DatasetSerializer
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        datasets = serializer.data
+        datasets.sort(key=lambda dataset: dataset.get("area"))
+        return Response(datasets)
+
 
 class ModelViewSet(viewsets.ModelViewSet):
     queryset = Model.objects.all()
@@ -237,6 +244,7 @@ class ModelViewSet(viewsets.ModelViewSet):
                 modelData["services"] = services
 
         modelData["hfData"] = hfData
+        modelData["type"] = "Model"
        
         return Response(modelData)
 
@@ -286,13 +294,14 @@ class PublicationFilterOptions(viewsets.ViewSet):
 
         years += Dataset.objects.values_list("published_on", flat=True).distinct()
         years += Model.objects.values_list("published_on", flat=True).distinct()
-
         years = [x.year for x in years]
+        years = sorted(list(set(years)))
+        years = [str(x) for x in years]
 
         return Response(
             {
                 "areas": list(set(areas)),
-                "years": list(set(years)),
+                "years": years,
                 "conferences": list(set(conferences)),
             }
         )

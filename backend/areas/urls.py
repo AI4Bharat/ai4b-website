@@ -4,6 +4,7 @@ from areas import views
 from django.conf.urls.static import static
 from django.conf import settings
 from .views import PublicationViewSet, PublicationFilterOptions, AreaViewSet,InferenceView
+from django_ratelimit.decorators import ratelimit
 
 
 

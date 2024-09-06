@@ -10,6 +10,14 @@ class Team(models.TextChoices):
     ALUMNI = 6
     LANGUAGE = 7
 
+class Role(models.TextChoices):
+    PHD = "PhD"
+    MS = "MS"
+    MTECH = "MTech"
+    BTECH = "BTech"
+    RESEARCH = "Research"
+    DEVELOPMENT = "Development"
+
 
 class Language(models.TextChoices):
     ASSAMESE = "as", "Assamese"
@@ -51,6 +59,7 @@ class Member(models.Model):
     last_name = models.CharField(max_length=200)
     team = models.CharField(max_length=50, choices=Team.choices)
     role = models.CharField(max_length=100)
+    prevRol = models.CharField(max_length=20,choices=Role.choices,null=True,blank=True)
     photo = models.ImageField(upload_to=user_directory_path,null=True,blank=True)
     language = models.CharField(
         max_length=50, choices=Language.choices, null=True, blank=True

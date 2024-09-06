@@ -38,6 +38,7 @@ class ModelSerializer(ModelSerializer):
             "installation_steps_json",
             "usage_steps_json",
             "testimonials_json",
+            "latest"
         ]
 
 
