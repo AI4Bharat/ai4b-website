@@ -14,6 +14,7 @@ import {
 import { useQuery } from "react-query";
 import { API_URL } from "../config";
 import { Property } from "csstype";
+import { TabbedPeopleSection } from "../../../components/People";
 
 const fetchMembers = async () => {
   try {
@@ -80,7 +81,7 @@ const renderSection = ({
       );
     case "al":
       return (
-        <PeopleSection
+        <TabbedPeopleSection
           heading="Alumni"
           description=""
           members={members}

@@ -16,7 +16,7 @@ import {
   AccordionIcon,
   AccordionItem,
 } from "@chakra-ui/react";
-import { FaPaperclip, FaGithub, FaArrowDown } from "react-icons/fa";
+import { FaPaperclip, FaGithub, FaCode } from "react-icons/fa";
 import { useState } from "react";
 import { imagePrefix } from "@/app/config";
 import Link from "next/link";
@@ -236,12 +236,7 @@ const Card = ({
             )}
             {colab_link ? (
               <Link target="_blank" href={colab_link}>
-                <Image
-                  alt="colab"
-                  width={25}
-                  height={25}
-                  src={`${imagePrefix}/assets/icons/colab.png`}
-                />
+                <FaCode size={25} />
               </Link>
             ) : (
               <></>
@@ -272,6 +267,7 @@ const Card = ({
         {type === "Model" ? (
           <Button
             as={Link}
+            target="_blank"
             href={`${imagePrefix}/areas/model/${area}/${title}`}
             borderColor={"a4borange"}
             variant={"outline"}

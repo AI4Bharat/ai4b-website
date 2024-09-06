@@ -15,7 +15,10 @@ import {
   IconProps,
   useColorModeValue,
   Divider,
+  Wrap,
 } from "@chakra-ui/react";
+import Link from "next/link";
+import { imagePrefix } from "@/app/config";
 
 import Features from "./Features";
 import Datasets from "./Datasets";
@@ -57,11 +60,10 @@ export default function Hero() {
             in real-world use cases, making a significant impact across
             academia, industry, and government sectors.
           </Text>
-          {/* <Stack
-            spacing={{ base: 4, sm: 6 }}
-            direction={{ base: "column", sm: "row" }}
-          >
+          <Wrap>
             <Button
+              as="a"
+              href={`${imagePrefix}/areas/xlit`}
               rounded={"full"}
               size={"lg"}
               fontWeight={"normal"}
@@ -73,6 +75,8 @@ export default function Hero() {
               XLIT
             </Button>
             <Button
+              as="a"
+              href={`${imagePrefix}/areas/nmt`}
               rounded={"full"}
               size={"lg"}
               fontWeight={"normal"}
@@ -81,9 +85,11 @@ export default function Hero() {
               bg={"red.400"}
               _hover={{ bg: "red.500" }}
             >
-              MT
+              NMT
             </Button>
             <Button
+              as="a"
+              href={`${imagePrefix}/areas/asr`}
               rounded={"full"}
               size={"lg"}
               fontWeight={"normal"}
@@ -95,6 +101,8 @@ export default function Hero() {
               ASR
             </Button>
             <Button
+              as="a"
+              href={`${imagePrefix}/areas/tts`}
               rounded={"full"}
               size={"lg"}
               fontWeight={"normal"}
@@ -106,6 +114,8 @@ export default function Hero() {
               TTS
             </Button>
             <Button
+              as="a"
+              href={`${imagePrefix}/areas/llm`}
               rounded={"full"}
               size={"lg"}
               fontWeight={"normal"}
@@ -116,7 +126,7 @@ export default function Hero() {
             >
               LLMs
             </Button>
-          </Stack> */}
+          </Wrap>
         </Stack>
         <Flex
           flex={1}

@@ -10,7 +10,10 @@ import {
   Box,
   Code,
   Heading,
+  Button,
+  useToast,
 } from "@chakra-ui/react";
+import { FaCopy } from "react-icons/fa";
 
 interface Instruction {
   instruction: string;
@@ -25,6 +28,7 @@ export default function ToolInstructions({
   title: string;
   steps: Array<Instruction>;
 }) {
+  const toast = useToast();
   return (
     <Container borderWidth={3} borderRadius={25} p={5} maxW="20xl">
       <chakra.h2 fontSize="2xl" fontWeight="bold" mb={2}>
@@ -66,8 +70,26 @@ export default function ToolInstructions({
                   fontSize="sm"
                   color="gray.500"
                   textOverflow={"clip"}
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  gap={5}
                 >
                   {data.codeString}
+                  <Box
+                    as={Button}
+                    onClick={() => {
+                      navigator.clipboard.writeText(data.codeString);
+                      toast({
+                        title: "Copied Snippet",
+                        status: "success",
+                        duration: 3000,
+                        isClosable: true,
+                      });
+                    }}
+                  >
+                    <FaCopy color="gray" />
+                  </Box>
                 </Code>
               )}
             </Box>

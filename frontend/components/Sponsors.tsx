@@ -1,19 +1,15 @@
 "use client";
-import Image from "next/image";
+import { imagePrefix } from "@/app/config";
 import {
   Box,
-  Button,
-  Container,
-  Flex,
-  Heading,
-  Icon,
-  Stack,
-  Text,
   Card,
-  useColorModeValue,
+  Container,
+  Heading,
   SimpleGrid,
+  Stack,
+  Wrap,
 } from "@chakra-ui/react";
-import { imagePrefix } from "@/app/config";
+import Image from "next/image";
 
 export default function Sponsors() {
   return (
@@ -27,59 +23,59 @@ export default function Sponsors() {
         </Heading>
       </Stack>
 
-      <Container maxW={"5xl"} mt={12}>
-        <SimpleGrid columns={{ base: 1, md: 4 }} spacing={10}>
-          <Card w={150} h={50}>
+      <Box mt={12}>
+        <Wrap justify={"center"} gap={10}>
+          <Card w={300} h={100}>
             <Image
               src={`${imagePrefix}/assets/logos/meity.svg`}
               alt="LLM"
               fill={true}
             />
           </Card>
-          <Card w={150} h={50}>
+          <Card w={300} h={100}>
             <Image
               src={`${imagePrefix}/assets/logos/nilekani.png`}
               alt="LLM"
               fill={true}
             />
           </Card>
-          <Card w={150} h={50}>
+          <Card w={300} h={100}>
             <Image
               src={`${imagePrefix}/assets/logos/C-DAC.png`}
               alt="LLM"
               fill={true}
             />
           </Card>
-          <Card w={150} h={50}>
+          <Card w={300} h={100}>
             <Image
               src={`${imagePrefix}/assets/logos/microsoft.png`}
               alt="LLM"
               fill={true}
             />
           </Card>
-          <Card w={150} h={50}>
+          <Card w={300} h={100}>
             <Image
               src={`${imagePrefix}/assets/logos/google.png`}
               alt="LLM"
               fill={true}
             />
           </Card>
-          <Card w={150} h={50}>
+          <Card w={300} h={100}>
             <Image
               src={`${imagePrefix}/assets/logos/yotta.png`}
               alt="LLM"
               fill={true}
             />
           </Card>
-          <Card w={150} h={50}>
+          <Card w={300} h={100}>
             <Image
               src={`${imagePrefix}/assets/logos/ekstep.png`}
               alt="LLM"
               fill={true}
             />
           </Card>
-        </SimpleGrid>
-      </Container>
+        </Wrap>
+      </Box>
     </Box>
   );
 }

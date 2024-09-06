@@ -9,20 +9,53 @@ import {
   VStack,
   Flex,
   Link,
-  Select,
   useColorModeValue,
   Button,
   Stack,
+  Wrap,
   useBreakpointValue,
   Divider,
-  SimpleGrid,
+  useRadio,
+  useRadioGroup,
 } from "@chakra-ui/react";
-import { FaPaperclip, FaGithub } from "react-icons/fa";
+import { FaPaperclip, FaGithub, FaCode } from "react-icons/fa";
 import { useQuery } from "react-query";
 import axios from "axios";
 import { API_URL } from "../config";
 import Image from "next/image";
 import { imagePrefix } from "../config";
+
+// 1. Create a component that consumes the `useRadio` hook
+function RadioCard(props: any) {
+  const { getInputProps, getRadioProps } = useRadio(props);
+
+  const input = getInputProps();
+  const checkbox = getRadioProps();
+
+  return (
+    <Box as="label">
+      <input {...input} />
+      <Box
+        {...checkbox}
+        cursor="pointer"
+        borderWidth="1px"
+        borderRadius="md"
+        borderColor={"orange"}
+        boxShadow="md"
+        width={"fit-content"}
+        fontWeight={"bold"}
+        _checked={{
+          bg: "a4borange",
+          color: "white",
+          borderColor: "white",
+        }}
+        p={1}
+      >
+        {props.children.toString()}
+      </Box>
+    </Box>
+  );
+}
 
 const ExpandableText = ({
   text,
@@ -133,72 +166,90 @@ const Publications = () => {
     setFilteredPublications(filtered);
   }, [filterArea, filterYear, filterConference, publications]);
 
+  const { getRootProps: areaRootProps, getRadioProps: areaRadioProps } =
+    useRadioGroup({
+      name: "areaGroup",
+      defaultValue: filterArea,
+      value: filterArea,
+      onChange: setFilterArea,
+    });
+
+  const areaGroup = areaRootProps();
+
+  const { getRootProps: yearRootProps, getRadioProps: yearRadioProps } =
+    useRadioGroup({
+      name: "yearGroup",
+      defaultValue: filterYear,
+      value: filterYear,
+      onChange: setFilterYear,
+    });
+
+  const yearGroup = yearRootProps();
+
+  const { getRootProps: confRootProps, getRadioProps: confRadioProps } =
+    useRadioGroup({
+      name: "confGroup",
+      defaultValue: filterConference,
+      value: filterConference,
+      onChange: setFilterConference,
+    });
+
+  const confGroup = confRootProps();
+
   return (
     <Box p={5}>
       <chakra.h3 fontSize="4xl" fontWeight="bold" mb={18} textAlign="center">
         Publications
       </chakra.h3>
-      <Stack>
-        <HStack p={3}>
+      <Stack ml={5}>
+        <HStack>
           <Text fontSize={"lg"} as="b">
             Area:{" "}
           </Text>
-          {filters.areas.map((area) => (
-            <Button
-              minWidth={"max-content"}
-              p={2}
-              value={area}
-              onClick={(event) =>
-                setFilterArea((event.target as HTMLInputElement).value)
-              }
-              colorScheme="orange"
-              key={area}
-            >
-              {area}
-            </Button>
-          ))}
+          <HStack {...areaGroup}>
+            {filters.areas.map((value) => {
+              const radio = areaRadioProps({ value });
+              return (
+                <RadioCard key={value} {...radio}>
+                  {value}
+                </RadioCard>
+              );
+            })}
+          </HStack>
+        </HStack>
+        <HStack>
+          <Text fontSize={"lg"} as="b">
+            Year:{" "}
+          </Text>
+          <HStack {...yearGroup}>
+            {filters.years.map((value) => {
+              const radio = yearRadioProps({ value });
+              return (
+                <RadioCard key={value} {...radio}>
+                  {value}
+                </RadioCard>
+              );
+            })}
+          </HStack>
         </HStack>
         <HStack>
           <Text fontSize={"lg"} as="b">
             Conference:{" "}
           </Text>
-          <SimpleGrid gap={3} columns={[2, 5, 6, 7]}>
-            {filters.conferences.map((conference) => (
-              <Button
-                minWidth={"max-content"}
-                p={2}
-                value={conference}
-                onClick={(event) =>
-                  setFilterConference((event.target as HTMLInputElement).value)
-                }
-                colorScheme="orange"
-                key={conference}
-              >
-                {conference}
-              </Button>
-            ))}
-          </SimpleGrid>
-        </HStack>
-        <HStack p={3}>
-          <Text fontSize={"lg"} as="b">
-            Year:{" "}
-          </Text>
-          {filters.years.map((year) => (
-            <Button
-              minWidth={"max-content"}
-              p={2}
-              value={year}
-              onClick={(event) =>
-                setFilterYear((event.target as HTMLInputElement).value)
-              }
-              colorScheme="orange"
-              key={year}
-            >
-              {year}
-            </Button>
-          ))}
+          <Wrap {...confGroup}>
+            {filters.conferences.map((value) => {
+              const radio = confRadioProps({ value });
+              return (
+                <RadioCard key={value} {...radio}>
+                  {value}
+                </RadioCard>
+              );
+            })}
+          </Wrap>
         </HStack>
         <Button
+          mt={7}
+          alignSelf={"center"}
           width={"fit-content"}
           color={"a4borange"}
           onClick={() => {
@@ -310,12 +361,7 @@ const Card = ({
             )}
             {colab_link ? (
               <Link target="_blank" href={colab_link}>
-                <Image
-                  alt="colab"
-                  width={50}
-                  height={50}
-                  src={`${imagePrefix}/assets/icons/colab.png`}
-                />
+                <FaCode size={50} />
               </Link>
             ) : (
               <></>
