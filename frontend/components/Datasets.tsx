@@ -67,7 +67,7 @@ interface Dataset {
 
 const Feature = ({ title, icon, dataset_link }: FeatureProps) => {
   return (
-    <Stack as={Link} href={dataset_link}>
+    <HStack as={Link} href={dataset_link}>
       <Flex
         w={16}
         h={16}
@@ -81,7 +81,7 @@ const Feature = ({ title, icon, dataset_link }: FeatureProps) => {
         {datasetIcons[icon]}
       </Flex>
       <Text fontWeight={600}>{title}</Text>
-    </Stack>
+    </HStack>
   );
 };
 
@@ -221,7 +221,7 @@ export default function Datasets() {
           <SimpleGrid
             height={isMobile ? 500 : "auto"}
             columns={{ base: 1, md: 3 }}
-            spacing={10}
+            spacing={5}
             overflowY={"scroll"}
           >
             {datasets.map((dataset: Dataset) => (
