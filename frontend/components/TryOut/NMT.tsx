@@ -15,7 +15,7 @@ import {
   Switch,
 } from "@chakra-ui/react";
 import { LANGUAGE_CODE_NAMES } from "@/app/config";
-import axios from "axios";
+import axios, { AxiosError, AxiosPromise } from "axios";
 import { API_URL } from "@/app/config";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import { useToast } from "@chakra-ui/react";
@@ -34,17 +34,16 @@ const fetchTranslation = async ({
   serviceId: string;
 }) => {
   try {
-    const response = await axios.post(`${API_URL}/inference/`, {
+    const response = await axios.post(`${API_URL}/inference/translate`, {
       sourceLanguage: sourceLanguage,
       targetLanguage: targetLanguage,
       input: input,
       task: task,
       serviceId: serviceId,
     });
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching inference:", error);
-    return {};
+    return response;
+  } catch (error: any) {
+    return error.response;
   }
 };
 
@@ -167,22 +166,43 @@ export default function NMT({ services }: { services: any }) {
                     isClosable: true,
                   });
                 } else {
-                  const inferenceResult = await fetchTranslation({
+                  const response = await fetchTranslation({
                     sourceLanguage: sourceLanguage,
                     targetLanguage: targetLanguage,
                     input: inputText,
                     task: "translation",
                     serviceId: service,
                   });
-
-                  setOutputText(inferenceResult["output"][0]["target"]);
-                  toast({
-                    title: "Success",
-                    description: "Translation Inference Successful",
-                    status: "success",
-                    duration: 4000,
-                    isClosable: true,
-                  });
+                  if (response.status === 200) {
+                    setOutputText(response.data["output"][0]["target"]);
+                    toast({
+                      title: "Success",
+                      description: "Translation Inference Successful",
+                      status: "success",
+                      duration: 4000,
+                      isClosable: true,
+                    });
+                  } else if (response.status === 403) {
+                    setOutputText("");
+                    toast({
+                      title: "Warning",
+                      description:
+                        "You have reached maximum trials in a minute",
+                      status: "warning",
+                      duration: 4000,
+                      isClosable: true,
+                    });
+                  } else if (response.status === 503) {
+                    setOutputText("");
+                    toast({
+                      title: "Warning",
+                      description:
+                        "Service Currently Unavailable, Please Try Again Later",
+                      status: "warning",
+                      duration: 4000,
+                      isClosable: true,
+                    });
+                  }
                 }
               }}
               color={"a4borange"}

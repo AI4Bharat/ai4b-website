@@ -49,21 +49,52 @@ export default function ASR({ services }: { services: any }) {
     const reader = new FileReader();
     let base64data: string | ArrayBuffer | null;
     reader.readAsDataURL(blob);
+    let response: any;
     reader.onloadend = async function () {
       base64data = reader.result;
       const audioString = (base64data as string).split(",")[1];
-      const response = await axios.post(`${API_URL}/inference/`, {
-        sourceLanguage: sourceLanguage,
-        audioContent: audioString,
-        task: "asr",
-        serviceId: service,
-        samplingRate: samplingRate,
-        preProcessors: preProcessor,
-        postProcessors: postProcessor,
-      });
-      const result = response.data;
-      if ("output" in result) {
-        setOutputText(result["output"][0]["source"]);
+      try {
+        const response = await axios.post(`${API_URL}/inference/transcribe`, {
+          sourceLanguage: sourceLanguage,
+          audioContent: audioString,
+          task: "asr",
+          serviceId: service,
+          samplingRate: samplingRate,
+          preProcessors: preProcessor,
+          postProcessors: postProcessor,
+        });
+        if (response.status === 200) {
+          setOutputText(response.data["output"][0]["source"]);
+          toast({
+            title: "Success",
+            description: "Translation Inference Successful",
+            status: "success",
+            duration: 4000,
+            isClosable: true,
+          });
+        }
+      } catch (error: any) {
+        const response = error.response;
+        if (response.status === 403) {
+          setOutputText("");
+          toast({
+            title: "Warning",
+            description: "You have reached maximum trials in a minute",
+            status: "warning",
+            duration: 4000,
+            isClosable: true,
+          });
+        } else if (response.status === 503) {
+          setOutputText("");
+          toast({
+            title: "Warning",
+            description:
+              "Service Currently Unavailable, Please Try Again Later",
+            status: "warning",
+            duration: 4000,
+            isClosable: true,
+          });
+        }
       }
     };
   };
@@ -161,13 +192,6 @@ export default function ASR({ services }: { services: any }) {
             onRecordingComplete={(blob) => {
               setOutputText("");
               fetchTranscription({ blob: blob });
-              toast({
-                title: "Success",
-                description: "Audio Inference Successful",
-                status: "success",
-                duration: 5000,
-                isClosable: true,
-              });
             }}
             recorderControls={recorderControls}
           />

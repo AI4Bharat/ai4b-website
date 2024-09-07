@@ -241,9 +241,13 @@ const Card = ({
             ) : (
               <></>
             )}
-            <Link target="_blank" href={paper_link}>
-              <FaPaperclip size={25} />
-            </Link>
+            {paper_link ? (
+              <Link target="_blank" href={paper_link}>
+                <FaPaperclip size={25} />
+              </Link>
+            ) : (
+              <></>
+            )}
             {hf_id === null ? (
               <></>
             ) : (
