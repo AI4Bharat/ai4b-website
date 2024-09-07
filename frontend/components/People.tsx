@@ -226,7 +226,14 @@ export function TabbedPeopleSection({
   team: string;
   members: Array<Member>;
 }) {
-  const sections = ["MS", "MTech", "BTech", "Research", "Development"];
+  const sections = [
+    "MS",
+    "MTech",
+    "Dual Degree",
+    "BTech",
+    "Research",
+    "Development",
+  ];
 
   // Sort members by gradYear in ascending order
   const sortedMembers = [...members].sort((a, b) => a.gradYear - b.gradYear);
