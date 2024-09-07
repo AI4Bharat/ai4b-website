@@ -264,22 +264,26 @@ const Publications = () => {
       <Divider m={5} />
       <br />
       <Container height={isMobile ? 500 : "auto"} overflowY={"scroll"}>
-        {filteredPublications.map((pub, index) => (
-          <Flex key={index} mb="10px">
-            <LineWithDot />
-            <Card
-              title={pub.title}
-              categories={[pub.area, pub.conference]}
-              description={pub.description}
-              date={new Date(pub.published_on).toDateString()}
-              hf_id={pub.hf_id}
-              paper_link={pub.paper_link}
-              github_link={pub.github_link}
-              colab_link={pub.colab_link}
-              type={pub.type}
-            />
-          </Flex>
-        ))}
+        {filteredPublications.map((pub, index) =>
+          pub.paper_link ? (
+            <Flex key={index} mb="10px">
+              <LineWithDot />
+              <Card
+                title={pub.title}
+                categories={[pub.area, pub.conference]}
+                description={pub.description}
+                date={new Date(pub.published_on).toDateString()}
+                hf_id={pub.hf_id}
+                paper_link={pub.paper_link}
+                github_link={pub.github_link}
+                colab_link={pub.colab_link}
+                type={pub.type}
+              />
+            </Flex>
+          ) : (
+            <></>
+          )
+        )}
       </Container>
     </Box>
   );
@@ -366,9 +370,13 @@ const Card = ({
             ) : (
               <></>
             )}
-            <Link target="_blank" href={paper_link}>
-              <FaPaperclip size={50} />
-            </Link>
+            {paper_link ? (
+              <Link target="_blank" href={paper_link}>
+                <FaPaperclip size={50} />
+              </Link>
+            ) : (
+              <></>
+            )}
             {hf_id === null ? (
               <></>
             ) : (
