@@ -1,35 +1,89 @@
 "use client";
-import React from "react";
-import { useState } from "react";
+import { API_URL, LANGUAGE_CODE_NAMES } from "@/app/config";
 import {
-  FormControl,
-  FormLabel,
-  FormErrorMessage,
-  FormHelperText,
-  Select,
-  Textarea,
+  Box,
   Button,
   Card,
-  HStack,
-  VStack,
-  Switch,
   Checkbox,
-  Box,
-  Stack,
+  FormControl,
+  FormHelperText,
+  FormLabel,
+  HStack,
+  Input,
+  Select,
+  Textarea,
+  useToast,
+  VStack,
 } from "@chakra-ui/react";
-import { LANGUAGE_CODE_NAMES } from "@/app/config";
 import axios from "axios";
-import { API_URL } from "@/app/config";
-import { useToast } from "@chakra-ui/react";
-import { FaMicrophone } from "react-icons/fa";
+import { ChangeEventHandler, useRef, useState } from "react";
 import { AudioRecorder, useAudioRecorder } from "react-audio-voice-recorder";
-import { headers } from "next/headers";
+import { FaUpload } from "react-icons/fa";
 
 const preProcessors = ["vad"];
 const postProcessors = ["itn", "punctuation"];
+const domains = {
+  General: "general",
+  "Digital payments": "digital_payments",
+  "Bigbasket commands": "bigbasket_commands",
+  "Umang commands": "umang_commands",
+  Digilocker: "digilocker",
+  "Passport Seva": "passport_seva",
+  "Crop insurance": "crop_insurance",
+  "Electricity bill payments": "electricity_bill_payments",
+  "Gas booking": "gas_booking",
+  Aadhaar: "aadhaar",
+  "Clothe Shopping": "clothe_shopping",
+  "Electronic Shopping": "electronic_shopping",
+  EPFO: "epfo",
+  "Pan Services": "pan_services",
+  PMKVY: "pmkvy",
+  "Health services": "health_services",
+  "Parivahan (Transport)": "parivahan_transport",
+  Startups: "startups",
+  "Flight Booking": "flight_booking",
+  Garbage: "garbage",
+  GST: "gst",
+  "Landline Bill Payment": "landline_bill_payment",
+  ITR: "itr",
+  "Mobile recharge and bill Payment": "mobile_recharge_and_bill_payment",
+  "Movie, Shows": "movie_shows",
+  NPS: "nps",
+  "ORS (Birth/Death)": "ors_birth_death",
+  "Railway Booking": "railway_booking",
+  "Water Services": "water_services",
+};
 
 interface LanguageCodeNames {
   [key: string]: string;
+}
+function FileUploadButton({
+  handleFileChange,
+}: {
+  handleFileChange: ChangeEventHandler;
+}) {
+  const inputRef = useRef(null);
+
+  const handleButtonClick = () => {
+    (inputRef as any).current.click();
+  };
+
+  return (
+    <>
+      <Input
+        type="file"
+        ref={inputRef}
+        onChange={handleFileChange}
+        display="none"
+        onClick={(event: any) => {
+          event.target.value = null;
+        }}
+      />
+      <Button onClick={handleButtonClick} bg="a4borange">
+        <FaUpload color="white" />
+      </Button>
+    </>
+  );
 }
 
 export default function ASR({ services }: { services: any }) {
@@ -42,6 +96,7 @@ export default function ASR({ services }: { services: any }) {
     services[Object.keys(services)[0]]["languageFilters"]["sourceLanguages"][0]
   );
   const [outputText, setOutputText] = useState("");
+  const [domain, setDomain] = useState("general");
 
   const toast = useToast();
 
@@ -58,6 +113,7 @@ export default function ASR({ services }: { services: any }) {
           sourceLanguage: sourceLanguage,
           audioContent: audioString,
           task: "asr",
+          domain: domain,
           serviceId: service,
           samplingRate: samplingRate,
           preProcessors: preProcessor,
@@ -115,6 +171,66 @@ export default function ASR({ services }: { services: any }) {
         : [...prev, value]
     );
     console.log(postProcessor);
+  };
+
+  const handleFileChange = (event: any) => {
+    const file = event.target.files[0];
+    if (file) {
+      const fileURL = URL.createObjectURL(file);
+      const audio = new Audio(fileURL);
+      audio.play();
+      const selectedAudioReader = new FileReader();
+      selectedAudioReader.readAsDataURL(file);
+      selectedAudioReader.onloadend = async () => {
+        const audioString = (selectedAudioReader.result as string).split(
+          ","
+        )[1];
+        try {
+          const response = await axios.post(`${API_URL}/inference/transcribe`, {
+            sourceLanguage: sourceLanguage,
+            audioContent: audioString,
+            task: "asr",
+            serviceId: service,
+            domain: domain,
+            samplingRate: samplingRate,
+            preProcessors: preProcessor,
+            postProcessors: postProcessor,
+          });
+          if (response.status === 200) {
+            setOutputText(response.data["output"][0]["source"]);
+            toast({
+              title: "Success",
+              description: "Translation Inference Successful",
+              status: "success",
+              duration: 4000,
+              isClosable: true,
+            });
+          }
+        } catch (error: any) {
+          const response = error.response;
+          if (response.status === 403) {
+            setOutputText("");
+            toast({
+              title: "Warning",
+              description: "You have reached maximum trials in a minute",
+              status: "warning",
+              duration: 4000,
+              isClosable: true,
+            });
+          } else if (response.status === 503) {
+            setOutputText("");
+            toast({
+              title: "Warning",
+              description:
+                "Service Currently Unavailable, Please Try Again Later",
+              status: "warning",
+              duration: 4000,
+              isClosable: true,
+            });
+          }
+        }
+      };
+    }
   };
 
   return (
@@ -186,16 +302,33 @@ export default function ASR({ services }: { services: any }) {
             <option value={16000}>16000</option>
             <option value={48000}>48000</option>
           </Select>
+          <FormLabel textColor={"gray.500"}>Domain:</FormLabel>
+          <Select
+            value={domain}
+            onChange={(event) => setDomain(event.target.value)}
+          >
+            {Object.entries(domains).map(([key, val]) => (
+              <option key={val} value={val}>
+                {key}
+              </option>
+            ))}
+          </Select>
+          <FormHelperText>
+            Please Choose a domain for your audio. (For evaluation purposes)
+          </FormHelperText>
         </VStack>
         <VStack p={5} w={"full"}>
-          <AudioRecorder
-            onRecordingComplete={(blob) => {
-              setOutputText("");
-              fetchTranscription({ blob: blob });
-            }}
-            recorderControls={recorderControls}
-          />
-          <Textarea width={344} value={outputText} isReadOnly></Textarea>
+          <HStack>
+            <AudioRecorder
+              onRecordingComplete={(blob) => {
+                setOutputText("");
+                fetchTranscription({ blob: blob });
+              }}
+              recorderControls={recorderControls}
+            />
+            <FileUploadButton handleFileChange={handleFileChange} />
+          </HStack>
+          <Textarea  value={outputText} isReadOnly></Textarea>
         </VStack>
       </FormControl>
     </Card>

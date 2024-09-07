@@ -79,6 +79,7 @@ const ToolsList = () => {
             key={index}
             bg={useColorModeValue("gray.100", "gray.700")}
             p={6}
+            height={300}
             rounded="lg"
             textAlign="center"
             pos="relative"
@@ -86,7 +87,7 @@ const ToolsList = () => {
             <chakra.h3 fontWeight="semibold" fontSize="2xl" mt={6}>
               {tool.title}
             </chakra.h3>
-            <Text>{tool.description}</Text>
+            <Text noOfLines={5}>{tool.description}</Text>
             <br />
             <Link href={`${imagePrefix}/tools/${tool.title}`}>
               Learn more →
