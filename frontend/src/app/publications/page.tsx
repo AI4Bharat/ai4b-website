@@ -25,7 +25,21 @@ import { API_URL } from "../config";
 import Image from "next/image";
 import { imagePrefix } from "../config";
 
-// 1. Create a component that consumes the `useRadio` hook
+const monthNames = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
 function RadioCard(props: any) {
   const { getInputProps, getRadioProps } = useRadio(props);
 
@@ -272,7 +286,7 @@ const Publications = () => {
                 title={pub.title}
                 categories={[pub.area, pub.conference]}
                 description={pub.description}
-                date={new Date(pub.published_on).toDateString()}
+                date={new Date(pub.published_on)}
                 hf_id={pub.hf_id}
                 paper_link={pub.paper_link}
                 github_link={pub.github_link}
@@ -293,7 +307,7 @@ interface CardProps {
   title: string;
   categories: string[];
   description: string;
-  date: string;
+  date: Date;
   hf_id: string;
   paper_link: string;
   github_link: string;
@@ -397,7 +411,16 @@ const Card = ({
             )}
           </HStack>
         </VStack>
-        <Text fontSize="sm">{date}</Text>
+        <Box width={"fit-content"} p={2} bg="a4borange" borderRadius={15}>
+          <HStack>
+            <Text fontSize="sm" textColor={"white"}>
+              {monthNames[date.getMonth()]}
+            </Text>
+            <Text fontSize="sm" textColor={"white"}>
+              {date.getFullYear()}
+            </Text>
+          </HStack>
+        </Box>
       </Box>
     </HStack>
   );

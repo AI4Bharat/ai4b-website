@@ -10,8 +10,10 @@ import {
   Text,
   useColorModeValue,
   Skeleton,
+  Wrap,
   Image,
   Divider,
+  SimpleGrid,
 } from "@chakra-ui/react";
 import { ReactElement } from "react";
 import {
@@ -84,10 +86,9 @@ const Card = ({ first_name, last_name, role, photo }: CardProps) => {
             src={photo}
             borderRadius="full"
             objectFit="cover"
-            boxSize="200px"
+            boxSize="150px"
             bgColor={"a4borange"}
             alt="Profile Photo"
-            width={200}
           />
         ) : (
           <></>
@@ -125,9 +126,9 @@ export default function PeopleSection({
         </Text> */}
       </Stack>
 
-      <Container maxW={"5xl"} mt={12}>
+      <Box m={12}>
         {Object.keys(members).length > 0 ? (
-          <Flex flexWrap="wrap" gridGap={6} justify="center">
+          <Wrap gridGap={3} justify={"center"}>
             {members.map((member) =>
               member.team === team ? (
                 <Card
@@ -141,11 +142,11 @@ export default function PeopleSection({
                 <></>
               )
             )}
-          </Flex>
+          </Wrap>
         ) : (
           <Skeleton height={300} />
         )}
-      </Container>
+      </Box>
     </Box>
   );
 }
@@ -176,7 +177,7 @@ export function TabbedPeopleSection({
           </Heading>
           <br />
           {Object.keys(members).length > 0 ? (
-            <Flex flexWrap="wrap" gridGap={6}>
+            <Flex flexWrap="wrap" gridGap={3}>
               {members.map((member) =>
                 member.team === team && member.prevRol === section ? (
                   <TabbedCard
