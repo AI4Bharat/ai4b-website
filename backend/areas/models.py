@@ -56,16 +56,13 @@ class Model(models.Model):
     
 @receiver(models.signals.post_save, sender=Model)
 def execute_after_model_save(sender, instance, created, *args, **kwargs):
-    if created:
-        g = github.Github(login_or_token=os.getenv("GITHUB_WORKFLOW_TOKEN"))
-        repo = g.get_repo("AI4Bharat/ai4b-website")
-        workflow_name = "nextjs.yml"
-        workflow = repo.get_workflow(workflow_name)
-        ref = repo.get_branch("master")
-        workflow.create_dispatch(ref=ref)
-        print("New Model Deploy Triggered")
-    else:
-        print("Model Updated")
+    g = github.Github(login_or_token=os.getenv("GITHUB_WORKFLOW_TOKEN"))
+    repo = g.get_repo("AI4Bharat/ai4b-website")
+    workflow_name = "nextjs.yml"
+    workflow = repo.get_workflow(workflow_name)
+    ref = repo.get_branch("master")
+    workflow.create_dispatch(ref=ref)
+    print("New Model Deploy Triggered")
     
 
 

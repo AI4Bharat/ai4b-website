@@ -25,51 +25,51 @@ export default function Sponsors() {
 
       <Box mt={12}>
         <Wrap justify={"center"} gap={10}>
-          <Card w={300} h={100}>
+          <Card w={200} h={75}>
             <Image
               src={`${imagePrefix}/assets/logos/meity.svg`}
               alt="LLM"
               fill={true}
             />
           </Card>
-          <Card w={300} h={100}>
+          <Card w={200} h={75}>
             <Image
               src={`${imagePrefix}/assets/logos/nilekani.png`}
               alt="LLM"
               fill={true}
             />
           </Card>
-          <Card w={300} h={100}>
+          <Card w={200} h={75}>
+            <Image
+              src={`${imagePrefix}/assets/logos/ekstep.png`}
+              alt="LLM"
+              fill={true}
+            />
+          </Card>
+          <Card w={200} h={75}>
             <Image
               src={`${imagePrefix}/assets/logos/C-DAC.png`}
               alt="LLM"
               fill={true}
             />
           </Card>
-          <Card w={300} h={100}>
+          <Card w={200} h={75}>
             <Image
               src={`${imagePrefix}/assets/logos/microsoft.png`}
               alt="LLM"
               fill={true}
             />
           </Card>
-          <Card w={300} h={100}>
+          <Card w={200} h={75}>
             <Image
               src={`${imagePrefix}/assets/logos/google.png`}
               alt="LLM"
               fill={true}
             />
           </Card>
-          <Card w={300} h={100}>
+          <Card w={200} h={75}>
             <Image
               src={`${imagePrefix}/assets/logos/yotta.png`}
-              alt="LLM"
-              fill={true}
-            />
-          </Card>
-          <Card w={300} h={100}>
-            <Image
-              src={`${imagePrefix}/assets/logos/ekstep.png`}
               alt="LLM"
               fill={true}
             />

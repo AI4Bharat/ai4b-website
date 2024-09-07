@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, ReactNode } from "react";
 import {
   Box,
   chakra,
@@ -17,6 +17,11 @@ import {
   Divider,
   useRadio,
   useRadioGroup,
+  CheckboxGroup,
+  Checkbox,
+  useCheckbox,
+  useCheckboxGroup,
+  UseCheckboxProps,
 } from "@chakra-ui/react";
 import { FaPaperclip, FaGithub, FaCode } from "react-icons/fa";
 import { useQuery } from "react-query";
@@ -25,7 +30,21 @@ import { API_URL } from "../config";
 import Image from "next/image";
 import { imagePrefix } from "../config";
 
-// 1. Create a component that consumes the `useRadio` hook
+const monthNames = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
 function RadioCard(props: any) {
   const { getInputProps, getRadioProps } = useRadio(props);
 
@@ -113,6 +132,207 @@ interface Publication {
   type: string;
 }
 
+// const Publications = () => {
+//   const isMobile = useBreakpointValue({ base: true, md: false });
+//   const [filters, setFilters] = useState({
+//     areas: [],
+//     conferences: [],
+//     years: [],
+//   });
+
+//   const [publications, setPublications] = useState<Array<Publication>>([]);
+//   const [filteredPublications, setFilteredPublications] = useState<
+//     Publication[]
+//   >([]);
+
+//   const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
+//   const [selectedYears, setSelectedYears] = useState<string[]>([]);
+//   const [selectedConferences, setSelectedConferences] = useState<string[]>([]);
+
+//   const {
+//     data: filterData,
+//     isLoading: filterLoading,
+//     error: filterError,
+//   } = useQuery("fetchFilters", fetchPubFilters);
+//   const {
+//     data: pubData,
+//     isLoading: pubLoading,
+//     error: pubError,
+//   } = useQuery("fetchPublications", fetchPublications);
+
+//   useEffect(() => {
+//     if (!filterLoading && !filterError) {
+//       setFilters(filterData);
+//     }
+
+//     if (!pubLoading && !pubError) {
+//       setPublications(pubData);
+//       setFilteredPublications(pubData);
+//     }
+//   }, [filterLoading, filterError, filterData, pubLoading, pubError, pubData]);
+
+//   useEffect(() => {
+//     const filtered = publications.filter((pub) => {
+//       const matchesArea =
+//         selectedAreas.length === 0 || selectedAreas.includes(pub.area);
+//       const matchesConference =
+//         selectedConferences.length === 0 ||
+//         selectedConferences.includes(pub.conference);
+//       const matchesYear =
+//         selectedYears.length === 0 ||
+//         selectedYears.includes(
+//           new Date(pub.published_on).getFullYear().toString()
+//         );
+//       return matchesArea && matchesConference && matchesYear;
+//     });
+
+//     setFilteredPublications(filtered);
+//   }, [selectedAreas, selectedConferences, selectedYears, publications]);
+
+//   const handleSelect = (setter: any) => (value: any) => {
+//     setter((prev: any) =>
+//       prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
+//     );
+//   };
+
+//   return (
+//     <Box p={5}>
+//       <chakra.h3 fontSize="4xl" fontWeight="bold" mb={18} textAlign="center">
+//         Publications
+//       </chakra.h3>
+//       <Stack ml={5}>
+//         <HStack>
+//           <Text fontSize={"lg"} as="b">
+//             Area:{" "}
+//           </Text>
+//           <CheckboxGroup value={selectedAreas}>
+//             <Wrap>
+//               {filters.areas.map((value) => (
+//                 <Checkbox
+//                   colorScheme="orange"
+//                   key={value}
+//                   value={value}
+//                   onChange={() => handleSelect(setSelectedAreas)(value)}
+//                 >
+//                   {value}
+//                 </Checkbox>
+//               ))}
+//             </Wrap>
+//           </CheckboxGroup>
+//         </HStack>
+//         <HStack>
+//           <Text fontSize={"lg"} as="b">
+//             Year:{" "}
+//           </Text>
+//           <CheckboxGroup value={selectedYears}>
+//             <Wrap>
+//               {filters.years.map((value) => (
+//                 <Checkbox
+//                   colorScheme="orange"
+//                   key={value}
+//                   value={value}
+//                   onChange={() => handleSelect(setSelectedYears)(value)}
+//                 >
+//                   {value}
+//                 </Checkbox>
+//               ))}
+//             </Wrap>
+//           </CheckboxGroup>
+//         </HStack>
+//         <HStack>
+//           <Text fontSize={"lg"} as="b">
+//             Conference:{" "}
+//           </Text>
+//           <CheckboxGroup value={selectedConferences}>
+//             <Wrap>
+//               {filters.conferences.map((value) => (
+//                 <Checkbox
+//                   colorScheme="orange"
+//                   key={value}
+//                   value={value}
+//                   onChange={() => handleSelect(setSelectedConferences)(value)}
+//                 >
+//                   {value}
+//                 </Checkbox>
+//               ))}
+//             </Wrap>
+//           </CheckboxGroup>
+//         </HStack>
+//         <Button
+//           mt={7}
+//           alignSelf={"center"}
+//           width={"fit-content"}
+//           color={"a4borange"}
+//           onClick={() => {
+//             setSelectedAreas([]);
+//             setSelectedConferences([]);
+//             setSelectedYears([]);
+//           }}
+//         >
+//           Reset Filters
+//         </Button>
+//       </Stack>
+//       <Divider m={5} />
+//       <br />
+//       <Container height={isMobile ? 500 : "auto"} overflowY={"scroll"}>
+//         {filteredPublications.map((pub, index) =>
+//           pub.paper_link ? (
+//             <Flex key={index} mb="10px">
+//               <LineWithDot />
+//               <Card
+//                 title={pub.title}
+//                 categories={[pub.area, pub.conference]}
+//                 description={pub.description}
+//                 date={new Date(pub.published_on)}
+//                 hf_id={pub.hf_id}
+//                 paper_link={pub.paper_link}
+//                 github_link={pub.github_link}
+//                 colab_link={pub.colab_link}
+//                 type={pub.type}
+//               />
+//             </Flex>
+//           ) : (
+//             <></>
+//           )
+//         )}
+//       </Container>
+//     </Box>
+//   );
+// };
+
+interface CheckboxButtonProps extends UseCheckboxProps {
+  children: ReactNode;
+}
+
+const CheckboxButton = (props: CheckboxButtonProps) => {
+  const { getInputProps, getCheckboxProps } = useCheckbox(props);
+
+  const input = getInputProps();
+  const checkbox = getCheckboxProps();
+
+  return (
+    <Box as="label">
+      <input {...input} />
+      <Box
+        {...checkbox}
+        cursor="pointer"
+        borderRadius="md"
+        fontSize={15}
+        borderWidth={2}
+        _checked={{
+          bg: "a4borange",
+          color: "white",
+          borderColor: "a4borange",
+        }}
+        px={5}
+        py={2}
+      >
+        {props.children}
+      </Box>
+    </Box>
+  );
+};
+
 const Publications = () => {
   const isMobile = useBreakpointValue({ base: true, md: false });
   const [filters, setFilters] = useState({
@@ -126,9 +346,9 @@ const Publications = () => {
     Publication[]
   >([]);
 
-  const [filterArea, setFilterArea] = useState("All");
-  const [filterYear, setFilterYear] = useState("All");
-  const [filterConference, setFilterConference] = useState("All");
+  const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
+  const [selectedYears, setSelectedYears] = useState<string[]>([]);
+  const [selectedConferences, setSelectedConferences] = useState<string[]>([]);
 
   const {
     data: filterData,
@@ -154,47 +374,29 @@ const Publications = () => {
 
   useEffect(() => {
     const filtered = publications.filter((pub) => {
-      const matchesArea = filterArea === "All" || pub.area === filterArea;
+      const matchesArea =
+        selectedAreas.length === 0 || selectedAreas.includes(pub.area);
       const matchesConference =
-        filterConference === "All" || pub.conference === filterConference;
+        selectedConferences.length === 0 ||
+        selectedConferences.includes(pub.conference);
       const matchesYear =
-        filterYear === "All" ||
-        new Date(pub.published_on).getFullYear().toString() === filterYear;
+        selectedYears.length === 0 ||
+        selectedYears.includes(
+          new Date(pub.published_on).getFullYear().toString()
+        );
       return matchesArea && matchesConference && matchesYear;
     });
 
     setFilteredPublications(filtered);
-  }, [filterArea, filterYear, filterConference, publications]);
+  }, [selectedAreas, selectedConferences, selectedYears, publications]);
 
-  const { getRootProps: areaRootProps, getRadioProps: areaRadioProps } =
-    useRadioGroup({
-      name: "areaGroup",
-      defaultValue: filterArea,
-      value: filterArea,
-      onChange: setFilterArea,
-    });
-
-  const areaGroup = areaRootProps();
-
-  const { getRootProps: yearRootProps, getRadioProps: yearRadioProps } =
-    useRadioGroup({
-      name: "yearGroup",
-      defaultValue: filterYear,
-      value: filterYear,
-      onChange: setFilterYear,
-    });
-
-  const yearGroup = yearRootProps();
-
-  const { getRootProps: confRootProps, getRadioProps: confRadioProps } =
-    useRadioGroup({
-      name: "confGroup",
-      defaultValue: filterConference,
-      value: filterConference,
-      onChange: setFilterConference,
-    });
-
-  const confGroup = confRootProps();
+  const handleSelect = (setter: any) => (value: any) => {
+    setter((prev: any) =>
+      prev.includes(value)
+        ? prev.filter((v: any) => v !== value)
+        : [...prev, value]
+    );
+  };
 
   return (
     <Box p={5}>
@@ -206,45 +408,51 @@ const Publications = () => {
           <Text fontSize={"lg"} as="b">
             Area:{" "}
           </Text>
-          <HStack {...areaGroup}>
-            {filters.areas.map((value) => {
-              const radio = areaRadioProps({ value });
-              return (
-                <RadioCard key={value} {...radio}>
-                  {value}
-                </RadioCard>
-              );
-            })}
-          </HStack>
+          <Wrap>
+            {filters.areas.map((value) => (
+              <CheckboxButton
+                key={value}
+                value={value}
+                onChange={() => handleSelect(setSelectedAreas)(value)}
+                isChecked={selectedAreas.includes(value)}
+              >
+                {value}
+              </CheckboxButton>
+            ))}
+          </Wrap>
         </HStack>
         <HStack>
           <Text fontSize={"lg"} as="b">
             Year:{" "}
           </Text>
-          <HStack {...yearGroup}>
-            {filters.years.map((value) => {
-              const radio = yearRadioProps({ value });
-              return (
-                <RadioCard key={value} {...radio}>
-                  {value}
-                </RadioCard>
-              );
-            })}
-          </HStack>
+          <Wrap>
+            {filters.years.map((value) => (
+              <CheckboxButton
+                key={value}
+                value={value}
+                onChange={() => handleSelect(setSelectedYears)(value)}
+                isChecked={selectedYears.includes(value)}
+              >
+                {value}
+              </CheckboxButton>
+            ))}
+          </Wrap>
         </HStack>
         <HStack>
           <Text fontSize={"lg"} as="b">
             Conference:{" "}
           </Text>
-          <Wrap {...confGroup}>
-            {filters.conferences.map((value) => {
-              const radio = confRadioProps({ value });
-              return (
-                <RadioCard key={value} {...radio}>
-                  {value}
-                </RadioCard>
-              );
-            })}
+          <Wrap>
+            {filters.conferences.map((value) => (
+              <CheckboxButton
+                key={value}
+                value={value}
+                onChange={() => handleSelect(setSelectedConferences)(value)}
+                isChecked={selectedConferences.includes(value)}
+              >
+                {value}
+              </CheckboxButton>
+            ))}
           </Wrap>
         </HStack>
         <Button
@@ -253,9 +461,9 @@ const Publications = () => {
           width={"fit-content"}
           color={"a4borange"}
           onClick={() => {
-            setFilterArea("All");
-            setFilterConference("All");
-            setFilterYear("All");
+            setSelectedAreas([]);
+            setSelectedConferences([]);
+            setSelectedYears([]);
           }}
         >
           Reset Filters
@@ -272,7 +480,7 @@ const Publications = () => {
                 title={pub.title}
                 categories={[pub.area, pub.conference]}
                 description={pub.description}
-                date={new Date(pub.published_on).toDateString()}
+                date={new Date(pub.published_on)}
                 hf_id={pub.hf_id}
                 paper_link={pub.paper_link}
                 github_link={pub.github_link}
@@ -293,7 +501,7 @@ interface CardProps {
   title: string;
   categories: string[];
   description: string;
-  date: string;
+  date: Date;
   hf_id: string;
   paper_link: string;
   github_link: string;
@@ -397,7 +605,16 @@ const Card = ({
             )}
           </HStack>
         </VStack>
-        <Text fontSize="sm">{date}</Text>
+        <Box width={"fit-content"} p={2} bg="a4borange" borderRadius={15}>
+          <HStack>
+            <Text fontSize="sm" textColor={"white"}>
+              {monthNames[date.getMonth()]}
+            </Text>
+            <Text fontSize="sm" textColor={"white"}>
+              {date.getFullYear()}
+            </Text>
+          </HStack>
+        </Box>
       </Box>
     </HStack>
   );

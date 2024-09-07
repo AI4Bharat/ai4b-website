@@ -10,8 +10,10 @@ import {
   Text,
   useColorModeValue,
   Skeleton,
+  Wrap,
   Image,
   Divider,
+  SimpleGrid,
 } from "@chakra-ui/react";
 import { ReactElement } from "react";
 import {
@@ -27,6 +29,7 @@ interface CardProps {
   last_name: string;
   role: string;
   photo: string;
+  gradYear: number;
 }
 
 interface Member {
@@ -36,9 +39,16 @@ interface Member {
   team: string;
   prevRol: string;
   photo: string;
+  gradYear: number;
 }
 
-const TabbedCard = ({ first_name, last_name, role, photo }: CardProps) => {
+const TabbedCard = ({
+  first_name,
+  last_name,
+  role,
+  gradYear,
+  photo,
+}: CardProps) => {
   return (
     <Box
       maxW={{ base: "full", md: "max-content" }}
@@ -62,13 +72,16 @@ const TabbedCard = ({ first_name, last_name, role, photo }: CardProps) => {
         ) : (
           <></>
         )}
-        <Heading size="sm">{first_name + " " + last_name}</Heading>
+        <Heading size="sm">
+          {first_name + " " + last_name}
+          {gradYear ? ` (${gradYear})` : ""}
+        </Heading>
       </Stack>
     </Box>
   );
 };
 
-const Card = ({ first_name, last_name, role, photo }: CardProps) => {
+const Card = ({ first_name, last_name, role, gradYear, photo }: CardProps) => {
   return (
     <Box
       maxW={{ base: "full", md: "275px" }}
@@ -84,10 +97,9 @@ const Card = ({ first_name, last_name, role, photo }: CardProps) => {
             src={photo}
             borderRadius="full"
             objectFit="cover"
-            boxSize="200px"
+            boxSize="150px"
             bgColor={"a4borange"}
             alt="Profile Photo"
-            width={200}
           />
         ) : (
           <></>
@@ -125,9 +137,9 @@ export default function PeopleSection({
         </Text> */}
       </Stack>
 
-      <Container maxW={"5xl"} mt={12}>
+      <Box m={12}>
         {Object.keys(members).length > 0 ? (
-          <Flex flexWrap="wrap" gridGap={6} justify="center">
+          <Wrap gridGap={3} justify={"center"}>
             {members.map((member) =>
               member.team === team ? (
                 <Card
@@ -135,20 +147,73 @@ export default function PeopleSection({
                   first_name={member.first_name}
                   last_name={member.last_name}
                   role={member.role}
+                  gradYear={member.gradYear}
                   photo={member.photo}
                 />
               ) : (
                 <></>
               )
             )}
-          </Flex>
+          </Wrap>
         ) : (
           <Skeleton height={300} />
         )}
-      </Container>
+      </Box>
     </Box>
   );
 }
+
+// export function TabbedPeopleSection({
+//   heading,
+//   description,
+//   team,
+//   members,
+// }: {
+//   heading: string;
+//   description: string;
+//   team: string;
+//   members: Array<Member>;
+// }) {
+//   const sections = ["MS", "MTech", "BTech", "Research", "Development"];
+//   return (
+//     <Box p={4}>
+//       <Stack spacing={4} as={Container} maxW={"3xl"} textAlign={"center"}>
+//         <Heading fontSize={{ base: "2xl", sm: "4xl" }} fontWeight={"bold"}>
+//           {heading}
+//         </Heading>
+//       </Stack>
+//       {sections.map((section, index) => (
+//         <Container key={index} maxW={"5xl"} mt={12}>
+//           <Heading fontSize="2xl" fontWeight={"bold"}>
+//             {section}
+//           </Heading>
+//           <br />
+//           {Object.keys(members).length > 0 ? (
+//             <Flex flexWrap="wrap" gridGap={3}>
+//               {members.map((member) =>
+//                 member.team === team && member.prevRol === section ? (
+//                   <TabbedCard
+//                     key={`${member.first_name}_${member.last_name}`}
+//                     first_name={member.first_name}
+//                     last_name={member.last_name}
+//                     gradYear={member.gradYear}
+//                     role={member.role.split(",")[0]}
+//                     photo={member.photo}
+//                   />
+//                 ) : (
+//                   <></>
+//                 )
+//               )}
+//             </Flex>
+//           ) : (
+//             <Skeleton height={300} />
+//           )}
+//           <Divider variant={"solid"} colorScheme="black" m={5} />
+//         </Container>
+//       ))}
+//     </Box>
+//   );
+// }
 
 export function TabbedPeopleSection({
   heading,
@@ -162,6 +227,10 @@ export function TabbedPeopleSection({
   members: Array<Member>;
 }) {
   const sections = ["MS", "MTech", "BTech", "Research", "Development"];
+
+  // Sort members by gradYear in ascending order
+  const sortedMembers = [...members].sort((a, b) => a.gradYear - b.gradYear);
+
   return (
     <Box p={4}>
       <Stack spacing={4} as={Container} maxW={"3xl"} textAlign={"center"}>
@@ -175,14 +244,15 @@ export function TabbedPeopleSection({
             {section}
           </Heading>
           <br />
-          {Object.keys(members).length > 0 ? (
-            <Flex flexWrap="wrap" gridGap={6}>
-              {members.map((member) =>
+          {Object.keys(sortedMembers).length > 0 ? (
+            <Flex flexWrap="wrap" gridGap={3}>
+              {sortedMembers.map((member) =>
                 member.team === team && member.prevRol === section ? (
                   <TabbedCard
                     key={`${member.first_name}_${member.last_name}`}
                     first_name={member.first_name}
                     last_name={member.last_name}
+                    gradYear={member.gradYear}
                     role={member.role.split(",")[0]}
                     photo={member.photo}
                   />
@@ -197,28 +267,6 @@ export function TabbedPeopleSection({
           <Divider variant={"solid"} colorScheme="black" m={5} />
         </Container>
       ))}
-
-      {/* <Container maxW={"5xl"} mt={12}>
-        {Object.keys(members).length > 0 ? (
-          <Flex flexWrap="wrap" gridGap={6} justify="center">
-            {members.map((member) =>
-              member.team === team ? (
-                <Card
-                  key={`${member.first_name}_${member.last_name}`}
-                  first_name={member.first_name}
-                  last_name={member.last_name}
-                  role={member.role}
-                  photo={member.photo}
-                />
-              ) : (
-                <></>
-              )
-            )}
-          </Flex>
-        ) : (
-          <Skeleton height={300} />
-        )}
-      </Container> */}
     </Box>
   );
 }
