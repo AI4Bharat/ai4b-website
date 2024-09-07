@@ -1,35 +1,65 @@
 "use client";
-import React from "react";
-import { useState } from "react";
+import { API_URL, LANGUAGE_CODE_NAMES } from "@/app/config";
 import {
+  Box,
+  Card,
+  Checkbox,
   FormControl,
   FormLabel,
-  FormErrorMessage,
-  FormHelperText,
+  HStack,
   Select,
   Textarea,
-  Button,
-  Card,
-  HStack,
+  useToast,
   VStack,
-  Switch,
-  Checkbox,
-  Box,
-  Stack,
+  Input,
+  Button,
+  Text,
+  IconButton,
 } from "@chakra-ui/react";
-import { LANGUAGE_CODE_NAMES } from "@/app/config";
 import axios from "axios";
-import { API_URL } from "@/app/config";
-import { useToast } from "@chakra-ui/react";
-import { FaMicrophone } from "react-icons/fa";
+import {
+  useState,
+  useRef,
+  MutableRefObject,
+  EventHandler,
+  ChangeEventHandler,
+} from "react";
 import { AudioRecorder, useAudioRecorder } from "react-audio-voice-recorder";
-import { headers } from "next/headers";
+import { FaUpload } from "react-icons/fa";
 
 const preProcessors = ["vad"];
 const postProcessors = ["itn", "punctuation"];
 
 interface LanguageCodeNames {
   [key: string]: string;
+}
+function FileUploadButton({
+  handleFileChange,
+}: {
+  handleFileChange: ChangeEventHandler;
+}) {
+  const inputRef = useRef(null);
+
+  const handleButtonClick = () => {
+    (inputRef as any).current.click();
+  };
+
+  return (
+    <>
+      <Input
+        type="file"
+        ref={inputRef}
+        onChange={handleFileChange}
+        display="none"
+        onClick={(event: any) => {
+          event.target.value = null;
+        }}
+      />
+      <Button onClick={handleButtonClick} bg="a4borange">
+        <FaUpload color="white" />
+      </Button>
+    </>
+  );
 }
 
 export default function ASR({ services }: { services: any }) {
@@ -117,6 +147,65 @@ export default function ASR({ services }: { services: any }) {
     console.log(postProcessor);
   };
 
+  const handleFileChange = (event: any) => {
+    const file = event.target.files[0];
+    if (file) {
+      const fileURL = URL.createObjectURL(file);
+      const audio = new Audio(fileURL);
+      audio.play();
+      const selectedAudioReader = new FileReader();
+      selectedAudioReader.readAsDataURL(file);
+      selectedAudioReader.onloadend = async () => {
+        const audioString = (selectedAudioReader.result as string).split(
+          ","
+        )[1];
+        try {
+          const response = await axios.post(`${API_URL}/inference/transcribe`, {
+            sourceLanguage: sourceLanguage,
+            audioContent: audioString,
+            task: "asr",
+            serviceId: service,
+            samplingRate: samplingRate,
+            preProcessors: preProcessor,
+            postProcessors: postProcessor,
+          });
+          if (response.status === 200) {
+            setOutputText(response.data["output"][0]["source"]);
+            toast({
+              title: "Success",
+              description: "Translation Inference Successful",
+              status: "success",
+              duration: 4000,
+              isClosable: true,
+            });
+          }
+        } catch (error: any) {
+          const response = error.response;
+          if (response.status === 403) {
+            setOutputText("");
+            toast({
+              title: "Warning",
+              description: "You have reached maximum trials in a minute",
+              status: "warning",
+              duration: 4000,
+              isClosable: true,
+            });
+          } else if (response.status === 503) {
+            setOutputText("");
+            toast({
+              title: "Warning",
+              description:
+                "Service Currently Unavailable, Please Try Again Later",
+              status: "warning",
+              duration: 4000,
+              isClosable: true,
+            });
+          }
+        }
+      };
+    }
+  };
+
   return (
     <Card borderWidth={1} borderColor={"a4borange"} boxShadow={"2xl"} p={5}>
       <FormControl isRequired>
@@ -188,13 +277,16 @@ export default function ASR({ services }: { services: any }) {
           </Select>
         </VStack>
         <VStack p={5} w={"full"}>
-          <AudioRecorder
-            onRecordingComplete={(blob) => {
-              setOutputText("");
-              fetchTranscription({ blob: blob });
-            }}
-            recorderControls={recorderControls}
-          />
+          <HStack>
+            <AudioRecorder
+              onRecordingComplete={(blob) => {
+                setOutputText("");
+                fetchTranscription({ blob: blob });
+              }}
+              recorderControls={recorderControls}
+            />
+            <FileUploadButton handleFileChange={handleFileChange} />
+          </HStack>
           <Textarea width={344} value={outputText} isReadOnly></Textarea>
         </VStack>
       </FormControl>
