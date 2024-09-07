@@ -328,7 +328,7 @@ export default function ASR({ services }: { services: any }) {
             />
             <FileUploadButton handleFileChange={handleFileChange} />
           </HStack>
-          <Textarea width={344} value={outputText} isReadOnly></Textarea>
+          <Textarea  value={outputText} isReadOnly></Textarea>
         </VStack>
       </FormControl>
     </Card>
