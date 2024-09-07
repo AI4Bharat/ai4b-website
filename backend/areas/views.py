@@ -105,6 +105,7 @@ def transcribe(request):
                                             "serviceId": body["serviceId"],
                                             "preProcessors": body["preProcessors"],
                                             "postProcessors": body["postProcessors"],
+                                            "domain":body["domain"],
                                             "transcriptionFormat": {
                                             "value": "transcript"
                                             },
@@ -300,6 +301,7 @@ class PublicationFilterOptions(viewsets.ViewSet):
 
         conferences += Dataset.objects.values_list("conference", flat=True).distinct()
         conferences += Model.objects.values_list("conference", flat=True).distinct()
+        conferences = [x for x in conferences if x!=None]
 
         years += Dataset.objects.values_list("published_on", flat=True).distinct()
         years += Model.objects.values_list("published_on", flat=True).distinct()
