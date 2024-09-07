@@ -2,33 +2,57 @@
 import { API_URL, LANGUAGE_CODE_NAMES } from "@/app/config";
 import {
   Box,
+  Button,
   Card,
   Checkbox,
   FormControl,
+  FormHelperText,
   FormLabel,
   HStack,
+  Input,
   Select,
   Textarea,
   useToast,
   VStack,
-  Input,
-  Button,
-  Text,
-  IconButton,
 } from "@chakra-ui/react";
 import axios from "axios";
-import {
-  useState,
-  useRef,
-  MutableRefObject,
-  EventHandler,
-  ChangeEventHandler,
-} from "react";
+import { ChangeEventHandler, useRef, useState } from "react";
 import { AudioRecorder, useAudioRecorder } from "react-audio-voice-recorder";
 import { FaUpload } from "react-icons/fa";
 
 const preProcessors = ["vad"];
 const postProcessors = ["itn", "punctuation"];
+const domains = {
+  General: "general",
+  "Digital payments": "digital_payments",
+  "Bigbasket commands": "bigbasket_commands",
+  "Umang commands": "umang_commands",
+  Digilocker: "digilocker",
+  "Passport Seva": "passport_seva",
+  "Crop insurance": "crop_insurance",
+  "Electricity bill payments": "electricity_bill_payments",
+  "Gas booking": "gas_booking",
+  Aadhaar: "aadhaar",
+  "Clothe Shopping": "clothe_shopping",
+  "Electronic Shopping": "electronic_shopping",
+  EPFO: "epfo",
+  "Pan Services": "pan_services",
+  PMKVY: "pmkvy",
+  "Health services": "health_services",
+  "Parivahan (Transport)": "parivahan_transport",
+  Startups: "startups",
+  "Flight Booking": "flight_booking",
+  Garbage: "garbage",
+  GST: "gst",
+  "Landline Bill Payment": "landline_bill_payment",
+  ITR: "itr",
+  "Mobile recharge and bill Payment": "mobile_recharge_and_bill_payment",
+  "Movie, Shows": "movie_shows",
+  NPS: "nps",
+  "ORS (Birth/Death)": "ors_birth_death",
+  "Railway Booking": "railway_booking",
+  "Water Services": "water_services",
+};
 
 interface LanguageCodeNames {
   [key: string]: string;
@@ -72,6 +96,7 @@ export default function ASR({ services }: { services: any }) {
     services[Object.keys(services)[0]]["languageFilters"]["sourceLanguages"][0]
   );
   const [outputText, setOutputText] = useState("");
+  const [domain, setDomain] = useState("general");
 
   const toast = useToast();
 
@@ -88,6 +113,7 @@ export default function ASR({ services }: { services: any }) {
           sourceLanguage: sourceLanguage,
           audioContent: audioString,
           task: "asr",
+          domain: domain,
           serviceId: service,
           samplingRate: samplingRate,
           preProcessors: preProcessor,
@@ -165,6 +191,7 @@ export default function ASR({ services }: { services: any }) {
             audioContent: audioString,
             task: "asr",
             serviceId: service,
+            domain: domain,
             samplingRate: samplingRate,
             preProcessors: preProcessor,
             postProcessors: postProcessor,
@@ -275,6 +302,20 @@ export default function ASR({ services }: { services: any }) {
             <option value={16000}>16000</option>
             <option value={48000}>48000</option>
           </Select>
+          <FormLabel textColor={"gray.500"}>Domain:</FormLabel>
+          <Select
+            value={domain}
+            onChange={(event) => setDomain(event.target.value)}
+          >
+            {Object.entries(domains).map(([key, val]) => (
+              <option key={val} value={val}>
+                {key}
+              </option>
+            ))}
+          </Select>
+          <FormHelperText>
+            Please Choose a domain for your audio. (For evaluation purposes)
+          </FormHelperText>
         </VStack>
         <VStack p={5} w={"full"}>
           <HStack>
