@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
 
@@ -14,50 +13,32 @@ from .serializers import DatasetSerializer, ToolSerializer, ModelSerializer,News
 from rest_framework.decorators import permission_classes
 from rest_framework import permissions
 
-from rest_framework.views import APIView
-from django_ratelimit.decorators import ratelimit
 from django.utils.decorators import method_decorator
+from django_ratelimit.decorators import ratelimit
+from rest_framework.decorators import api_view
 
 from dotenv import load_dotenv
 
 load_dotenv()
 
+def fetchDhruvaServiceInfo(serviceId):
+    dhruvaServiceInfo = requests.post(os.getenv("DHRUVA_MODEL_VIEW_URL"),
+                                        headers=
+                                        {'x-auth-source': 'API_KEY',
+                                            'Authorization': os.getenv('DHRUVA_API_KEY')},
+                                            json={'serviceId':serviceId})
+    if dhruvaServiceInfo.status_code!=200:
+        return {}
+    else:
+        return dhruvaServiceInfo.json()["model"]
+
+## Inference Views
+@ratelimit(key='ip', rate='30/m', method='POST')
+@api_view(["POST"])
 @permission_classes((permissions.AllowAny,))
-class InferenceView(APIView):
-    def post(self, request, format=None):
-        body = request.data
-        task = body["task"]
-        if task=="transliteration":
-            INFERENCE_API = "https://api.dhruva.ekstep.ai/services/inference/transliteration"
-            inferenceResult = requests.post(INFERENCE_API,headers=
-                                       {'x-auth-source': 'API_KEY',
-                                        'Authorization': os.getenv('DHRUVA_API_KEY')},
-                                        json={
-                                                "controlConfig": {
-                                                    "dataTracking": True
-                                                },
-                                                "config": {
-                                                    "serviceId": body["serviceId"],
-                                                    "language": {
-                                                    "sourceLanguage": body["sourceLanguage"],
-                                                    "sourceScriptCode": "",
-                                                    "targetLanguage": body["targetLanguage"],
-                                                    "targetScriptCode": ""
-                                                    },
-                                                    "isSentence": True,
-                                                    "numSuggestions": 0
-                                                },
-                                                "input": [
-                                                    {
-                                                    "source": body["input"]
-                                                    }
-                                                ]
-                                                })
-
-        
-        elif task=="translation":
-            INFERENCE_API = "https://api.dhruva.ekstep.ai/services/inference/translation"
-            inferenceResult = requests.post(INFERENCE_API,headers=
+def translate(request):
+    body = request.data
+    inferenceResult = requests.post(os.getenv("DHRUVA_TRANSLATION_ENDPOINT"),headers=
                                        {'x-auth-source': 'API_KEY',
                                         'Authorization': os.getenv('DHRUVA_API_KEY')},
                                         json={
@@ -79,12 +60,76 @@ class InferenceView(APIView):
                                                     }
                                                 ]
                                                 })
+    if inferenceResult.status_code!=200:
+        return Response({"message":"Inference Failed"},status=status.HTTP_503_SERVICE_UNAVAILABLE)
+    else:
+        return Response(inferenceResult.json(),status=status.HTTP_200_OK)
+    
 
-        
-        elif task == "tts":
-            INFERENCE_API = "https://api.dhruva.ekstep.ai/services/inference/tts"
 
-            inferenceResult = requests.post(INFERENCE_API,headers=
+@ratelimit(key='ip', rate='50/m', method='POST')
+@api_view(["POST"])
+@permission_classes((permissions.AllowAny,))
+def transcribe(request):
+
+    body = request.data
+
+    webm_base64 = body["audioContent"]
+    webm_data = base64.b64decode(webm_base64)
+
+    with open("/tmp/temp.webm", "wb") as webm_file:
+        webm_file.write(webm_data)
+
+    subprocess.run(["ffmpeg","-y", "-i", "/tmp/temp.webm", "/tmp/temp.wav"], check=True)
+
+    with open("/tmp/temp.wav", "rb") as wav_file:
+        wav_data = wav_file.read()
+        wav_base64 = base64.b64encode(wav_data).decode('utf-8')
+
+
+    inferenceResult = requests.post(os.getenv("DHRUVA_ASR_ENDPOINT"),headers=
+                                {'x-auth-source': 'API_KEY',
+                                'Authorization': os.getenv('DHRUVA_API_KEY')},
+                                json={
+                                        "controlConfig": {
+                                            "dataTracking": True
+                                        },
+                                        "config": {
+                                            "audioFormat": "wav",
+                                            "language": {
+                                            "sourceLanguage": body["sourceLanguage"],
+                                            "sourceScriptCode": ""
+                                            },
+                                            "encoding": "wav",
+                                            "samplingRate": body["samplingRate"],
+                                            "serviceId": body["serviceId"],
+                                            "preProcessors": body["preProcessors"],
+                                            "postProcessors": body["postProcessors"],
+                                            "transcriptionFormat": {
+                                            "value": "transcript"
+                                            },
+                                            "bestTokenCount": 0
+                                        },
+                                        "audio": [
+                                            {
+                                            "audioContent": wav_base64,
+                                            }
+                                        ]
+                                    }
+                                    )
+    if inferenceResult.status_code!=200:
+        return Response({"message":"Inference Failed"},status=status.HTTP_503_SERVICE_UNAVAILABLE)
+    else:
+        return Response(inferenceResult.json(),status=status.HTTP_200_OK)
+    
+
+@ratelimit(key='ip', rate='30/m', method='POST')
+@api_view(["POST"])
+@permission_classes((permissions.AllowAny,))
+def convertToAudio(request):
+
+    body = request.data
+    inferenceResult = requests.post(os.getenv("DHRUVA_TTS_ENDPOINT"),headers=
                                        {'x-auth-source': 'API_KEY',
                                         'Authorization': os.getenv('DHRUVA_API_KEY')},
                                         json={
@@ -108,64 +153,12 @@ class InferenceView(APIView):
                                                     }
                                                 ]
                                                 })
-            
+    if inferenceResult.status_code!=200:
+        return Response({"message":"Inference Failed"},status=status.HTTP_503_SERVICE_UNAVAILABLE)
+    else:
+        return Response(inferenceResult.json(),status=status.HTTP_200_OK)
 
-
-        
-        elif task == "asr":
-
-            INFERENCE_API = "https://api.dhruva.ekstep.ai/services/inference/asr"
-
-            webm_base64 = body["audioContent"]
-            webm_data = base64.b64decode(webm_base64)
-
-            with open("/tmp/temp.webm", "wb") as webm_file:
-                webm_file.write(webm_data)
-
-            subprocess.run(["ffmpeg","-y", "-i", "/tmp/temp.webm", "/tmp/temp.wav"], check=True)
-
-            with open("/tmp/temp.wav", "rb") as wav_file:
-                wav_data = wav_file.read()
-                wav_base64 = base64.b64encode(wav_data).decode('utf-8')
-
-
-            inferenceResult = requests.post(INFERENCE_API,headers=
-                                       {'x-auth-source': 'API_KEY',
-                                        'Authorization': os.getenv('DHRUVA_API_KEY')},
-                                        json={
-                                                "controlConfig": {
-                                                    "dataTracking": True
-                                                },
-                                                "config": {
-                                                    "audioFormat": "wav",
-                                                    "language": {
-                                                    "sourceLanguage": body["sourceLanguage"],
-                                                    "sourceScriptCode": ""
-                                                    },
-                                                    "encoding": "wav",
-                                                    "samplingRate": body["samplingRate"],
-                                                    "serviceId": body["serviceId"],
-                                                    "preProcessors": body["preProcessors"],
-                                                    "postProcessors": body["postProcessors"],
-                                                    "transcriptionFormat": {
-                                                    "value": "transcript"
-                                                    },
-                                                    "bestTokenCount": 0
-                                                },
-                                                "audio": [
-                                                    {
-                                                    "audioContent": wav_base64,
-                                                    }
-                                                ]
-                                            }
-                                            )
-        inferenceResult = inferenceResult.json()
-        return Response(inferenceResult,status=status.HTTP_200_OK)
-
-            
-
-        
-
+    
 
 class NewsViewSet(viewsets.ModelViewSet):
     queryset = News.objects.all()
@@ -189,52 +182,47 @@ class ModelViewSet(viewsets.ModelViewSet):
     serializer_class = ModelSerializer
 
     def retrieve(self, request, *args, **kwargs):
+
+        
+
         title = kwargs.get("title")
         try:
             model = Model.objects.get(title=title)
         except Model.DoesNotExist:
-            raise NotFound("Model with the given title does not exist.")
+            return Response({"message":"Model Not found"},status=status.HTTP_404_NOT_FOUND)
 
         serializer = self.get_serializer(model)
 
         modelData = serializer.data
+
+        modelData["type"] = "Model" 
+
         hfData = {}
         if modelData["hf_id"]!=None:
             hfData = requests.get(f"https://huggingface.co/api/models/{modelData['hf_id']}")
             hfData = hfData.json()
 
-        if "service_id" in modelData and modelData["service_id"]!=None:
-            serviceId = modelData["service_id"]
-            modelData["services"] = {}
-            if "," not in serviceId:
-                dhruvaModelData = requests.post(os.getenv("DHRUVA_MODEL_VIEW_URL"),
-                                        headers=
-                                        {'x-auth-source': 'API_KEY',
-                                            'Authorization': os.getenv('DHRUVA_API_KEY')},
-                                            json={'serviceId':serviceId}).json()["model"]
-            
-                languages = dhruvaModelData["languages"]
+        modelData["hfData"] = hfData
+        modelData["services"] = {}
 
-                sourceLanguages = list(set([x["sourceLanguage"] for x in languages]))
-                if "targetLanguage" in languages[0]:
-                    targetLanguages = list(set([x["targetLanguage"] for x in languages]))
-                else:
-                    targetLanguages = []
+        if modelData["service_id"] != None:
+
+            serviceIds = modelData["service_id"].split(",")
+
+            if len(serviceIds)==1:
+
+                serviceId = serviceIds[0]
+
+                dhruvaServiceData = fetchDhruvaServiceInfo(serviceId=serviceId)
+
+                sourceLanguages = []
+                targetLanguages = []
 
                 modelData["services"][serviceId] = {"service_id":serviceId,"languageFilters":{"sourceLanguages":sourceLanguages,"targetLanguages":targetLanguages}}
-            else:
-                serviceIds = modelData["service_id"].split(",")
-                services = {}
-                for serviceId in serviceIds:
-                    serviceData = {"service_id":serviceId}
 
-                    dhruvaModelData = requests.post(os.getenv("DHRUVA_MODEL_VIEW_URL"),
-                                        headers=
-                                        {'x-auth-source': 'API_KEY',
-                                            'Authorization': os.getenv('DHRUVA_API_KEY')},
-                                            json={'serviceId':serviceId}).json()["model"]
-            
-                    languages = dhruvaModelData["languages"]
+                if dhruvaServiceData!={}:
+
+                    languages = dhruvaServiceData["languages"]
 
                     sourceLanguages = list(set([x["sourceLanguage"] for x in languages]))
                     if "targetLanguage" in languages[0]:
@@ -242,13 +230,31 @@ class ModelViewSet(viewsets.ModelViewSet):
                     else:
                         targetLanguages = []
 
-                    serviceData["languageFilters"] = {"sourceLanguages":sourceLanguages,"targetLanguages":targetLanguages}
-                    services[serviceId] = serviceData
-                modelData["services"] = services
+                    modelData["services"][serviceId] = {"service_id":serviceId,"languageFilters":{"sourceLanguages":sourceLanguages,"targetLanguages":targetLanguages}}
+            
+            else:
 
-        modelData["hfData"] = hfData
-        modelData["type"] = "Model"
-       
+                for serviceId in serviceIds:
+
+                    dhruvaServiceData = fetchDhruvaServiceInfo(serviceId=serviceId)
+
+                    sourceLanguages = []
+                    targetLanguages = []
+
+                    modelData["services"][serviceId] = {"service_id":serviceId,"languageFilters":{"sourceLanguages":sourceLanguages,"targetLanguages":targetLanguages}}
+
+                    if dhruvaServiceData!={}:
+
+                        languages = dhruvaServiceData["languages"]
+
+                        sourceLanguages = list(set([x["sourceLanguage"] for x in languages]))
+                        if "targetLanguage" in languages[0]:
+                            targetLanguages = list(set([x["targetLanguage"] for x in languages]))
+                        else:
+                            targetLanguages = []
+
+                        modelData["services"][serviceId] = {"service_id":serviceId,"languageFilters":{"sourceLanguages":sourceLanguages,"targetLanguages":targetLanguages}}
+                
         return Response(modelData)
 
 

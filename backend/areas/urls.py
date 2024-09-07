@@ -3,8 +3,8 @@ from rest_framework.routers import DefaultRouter
 from areas import views
 from django.conf.urls.static import static
 from django.conf import settings
-from .views import PublicationViewSet, PublicationFilterOptions, AreaViewSet,InferenceView
-from django_ratelimit.decorators import ratelimit
+from .views import PublicationViewSet, PublicationFilterOptions, AreaViewSet,translate,transcribe,convertToAudio
+
 
 
 
@@ -44,7 +44,10 @@ urlpatterns = [
         AreaViewSet.as_view({"get":"list"}),
         name="area-list"
     ),
-    path("inference/",InferenceView.as_view(),name="inference"),
+    path("inference/translate",translate,name="translate"),
+    path("inference/transcribe",transcribe,name="asr"),
+    path("inference/convert",convertToAudio,name="tts")
+    # path("inference/",InferenceView.as_view(),name="inference"),
 ]
 # Add static file serving if needed
 if settings.DEBUG:

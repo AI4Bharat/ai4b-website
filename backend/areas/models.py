@@ -41,7 +41,7 @@ class Model(models.Model):
     latest = models.BooleanField(default=False)
     conference = models.CharField(max_length=20, null=True, blank=True)
     description = models.TextField()
-    paper_link = models.URLField(max_length=500)
+    paper_link = models.URLField(max_length=500,null=True,blank=True)
     website_link = models.URLField(max_length=500, null=True, blank=True)
     github_link = models.URLField(max_length=500,null=True,blank=True)
     colab_link = models.URLField(max_length=500,null=True,blank=True)
