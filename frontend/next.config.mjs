@@ -1,6 +1,7 @@
 const nextConfig = {
   basePath: process.env.BASE_PATH || "",
-  output: "export",
+  reactStrictMode: false,
+  distDir: "out",
   eslint: {
     ignoreDuringBuilds: true,
   },

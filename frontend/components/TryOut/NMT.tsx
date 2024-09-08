@@ -1,24 +1,20 @@
 "use client";
-import React from "react";
-import { useState } from "react";
+import { API_URL, LANGUAGE_CODE_NAMES } from "@/app/config";
+import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import {
-  FormControl,
-  FormLabel,
-  FormErrorMessage,
-  FormHelperText,
-  Select,
-  Textarea,
   Button,
   Card,
-  HStack,
-  VStack,
+  FormControl,
+  FormLabel,
+  Select,
   Switch,
+  Textarea,
+  useToast,
+  VStack,
 } from "@chakra-ui/react";
-import { LANGUAGE_CODE_NAMES } from "@/app/config";
-import axios, { AxiosError, AxiosPromise } from "axios";
-import { API_URL } from "@/app/config";
-import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
-import { useToast } from "@chakra-ui/react";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import Feedback from "../Feedback";
 
 const fetchTranslation = async ({
   sourceLanguage,
@@ -166,33 +162,45 @@ export default function NMT({ services }: { services: any }) {
                     isClosable: true,
                   });
                 } else {
-                  const response = await fetchTranslation({
-                    sourceLanguage: sourceLanguage,
-                    targetLanguage: targetLanguage,
-                    input: inputText,
-                    task: "translation",
-                    serviceId: service,
-                  });
-                  if (response.status === 200) {
-                    setOutputText(response.data["output"][0]["target"]);
-                    toast({
-                      title: "Success",
-                      description: "Translation Inference Successful",
-                      status: "success",
-                      duration: 4000,
-                      isClosable: true,
+                  try {
+                    const response = await fetchTranslation({
+                      sourceLanguage: sourceLanguage,
+                      targetLanguage: targetLanguage,
+                      input: inputText,
+                      task: "translation",
+                      serviceId: service,
                     });
-                  } else if (response.status === 403) {
-                    setOutputText("");
-                    toast({
-                      title: "Warning",
-                      description:
-                        "You have reached maximum trials in a minute",
-                      status: "warning",
-                      duration: 4000,
-                      isClosable: true,
-                    });
-                  } else if (response.status === 503) {
+                    if (response.status === 200) {
+                      setOutputText(response.data["output"][0]["target"]);
+                      toast({
+                        title: "Success",
+                        description: "Translation Inference Successful",
+                        status: "success",
+                        duration: 4000,
+                        isClosable: true,
+                      });
+                    } else if (response.status === 403) {
+                      setOutputText("");
+                      toast({
+                        title: "Warning",
+                        description:
+                          "You have reached maximum trials in a minute",
+                        status: "warning",
+                        duration: 4000,
+                        isClosable: true,
+                      });
+                    } else {
+                      setOutputText("");
+                      toast({
+                        title: "Warning",
+                        description:
+                          "Service Currently Unavailable, Please Try Again Later",
+                        status: "warning",
+                        duration: 4000,
+                        isClosable: true,
+                      });
+                    }
+                  } catch (error) {
                     setOutputText("");
                     toast({
                       title: "Warning",
