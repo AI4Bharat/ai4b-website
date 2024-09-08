@@ -166,36 +166,49 @@ export default function TTS({ services }: { services: any }) {
             <Button
               onClick={async () => {
                 setOutput("");
-                const response = await fetchAudio({
-                  sourceLanguage,
-                  input: inputText,
-                  gender: gender,
-                  samplingRate: samplingRate,
-                  serviceId: service,
-                });
-                if (response.status === 200) {
-                  const result = response.data;
-                  setOutput(
-                    "data:audio/wav;base64," +
-                      result["audio"][0]["audioContent"]
-                  );
-                  toast({
-                    title: "Success",
-                    description: "Translation Inference Successful",
-                    status: "success",
-                    duration: 4000,
-                    isClosable: true,
+                try {
+                  const response = await fetchAudio({
+                    sourceLanguage,
+                    input: inputText,
+                    gender: gender,
+                    samplingRate: samplingRate,
+                    serviceId: service,
                   });
-                } else if (response.status === 403) {
-                  setOutput("");
-                  toast({
-                    title: "Warning",
-                    description: "You have reached maximum trials in a minute",
-                    status: "warning",
-                    duration: 4000,
-                    isClosable: true,
-                  });
-                } else if (response.status === 503) {
+                  if (response.status === 200) {
+                    const result = response.data;
+                    setOutput(
+                      "data:audio/wav;base64," +
+                        result["audio"][0]["audioContent"]
+                    );
+                    toast({
+                      title: "Success",
+                      description: "Translation Inference Successful",
+                      status: "success",
+                      duration: 4000,
+                      isClosable: true,
+                    });
+                  } else if (response.status === 403) {
+                    setOutput("");
+                    toast({
+                      title: "Warning",
+                      description:
+                        "You have reached maximum trials in a minute",
+                      status: "warning",
+                      duration: 4000,
+                      isClosable: true,
+                    });
+                  } else {
+                    setOutput("");
+                    toast({
+                      title: "Warning",
+                      description:
+                        "Service Currently Unavailable, Please Try Again Later",
+                      status: "warning",
+                      duration: 4000,
+                      isClosable: true,
+                    });
+                  }
+                } catch (error) {
                   setOutput("");
                   toast({
                     title: "Warning",

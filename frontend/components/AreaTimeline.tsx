@@ -202,11 +202,15 @@ const Card = ({
                 {type}
               </Text>
             </Box>
-            <Box p={2} bg="a4borange" borderRadius={15}>
-              <Text textColor={"white"} fontSize="sm">
-                {conference}
-              </Text>
-            </Box>
+            {conference ? (
+              <Box p={2} bg="a4borange" borderRadius={15}>
+                <Text textColor={"white"} fontSize="sm">
+                  {conference}
+                </Text>
+              </Box>
+            ) : (
+              <></>
+            )}
           </HStack>
         </HStack>
 

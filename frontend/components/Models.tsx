@@ -1,27 +1,28 @@
 "use client";
-import React from "react";
+import { API_URL } from "@/app/config";
 import {
-  Container,
-  Stack,
-  Flex,
   Box,
-  Heading,
-  Text,
-  Link,
-  HStack,
+  Container,
   Divider,
+  Flex,
+  Heading,
+  HStack,
+  Link,
+  Stack,
+  Text,
+  VStack,
+  useToast,
 } from "@chakra-ui/react";
-import { useQuery } from "react-query";
-import { API_URL, imagePrefix } from "@/app/config";
-import { useEffect, useState } from "react";
 import axios from "axios";
-import NMT from "./TryOut/NMT";
-import ASR from "./TryOut/ASR";
-import XLIT from "./TryOut/XLIT";
-import TTS from "./TryOut/TTS";
-import { FaPaperclip, FaGithub, FaCode } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import { FaCode, FaGithub, FaPaperclip } from "react-icons/fa";
+import { useQuery } from "react-query";
 import ToolInstructions from "./ToolInstructionComponent";
-import Image from "next/image";
+import ASR from "./TryOut/ASR";
+import NMT from "./TryOut/NMT";
+import TTS from "./TryOut/TTS";
+import XLIT from "./TryOut/XLIT";
+import Feedback from "./Feedback";
 
 const fetchModel = async ({ title }: { title: string }) => {
   try {
@@ -70,6 +71,8 @@ export default function ModelView({
   area: string;
   title: string;
 }) {
+  const toast = useToast();
+
   const [model, setModel] = useState<{
     service_id: string;
     inferenceSchema: any;
@@ -131,6 +134,19 @@ export default function ModelView({
       });
     } else {
       setModel(modelData);
+      if (
+        modelData.services[Object.keys(modelData.services)[0]][
+          "languageFilters"
+        ]["sourceLanguages"].length === 0
+      ) {
+        toast({
+          title: "Warning",
+          description: "The Inference Service might not be available now",
+          status: "warning",
+          duration: 4000,
+          isClosable: true,
+        });
+      }
     }
   }, [modelError, modelLoading, modelData]);
 
@@ -264,23 +280,25 @@ export default function ModelView({
             )}
           </HStack>
         </Stack>
-        {model.service_id ? (
-          <Flex
-            flex={1}
-            justify={"center"}
-            align={"center"}
-            position={"relative"}
-            w={"full"}
-          >
-            {modelLoading ? (
-              <></>
-            ) : (
-              renderTryOut({ area: area, services: model.services })
-            )}
-          </Flex>
-        ) : (
-          <></>
-        )}
+        <VStack>
+          {model.service_id ? (
+            <Flex
+              flex={1}
+              justify={"center"}
+              align={"center"}
+              position={"relative"}
+              w={"full"}
+            >
+              {modelLoading ? (
+                <></>
+              ) : (
+                renderTryOut({ area: area, services: model.services })
+              )}
+            </Flex>
+          ) : (
+            <></>
+          )}
+        </VStack>
       </Stack>
       {modelLoading ? (
         <></>

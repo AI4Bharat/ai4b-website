@@ -1,24 +1,20 @@
 "use client";
-import React from "react";
-import { useState, useEffect } from "react";
+import { API_URL, LANGUAGE_CODE_NAMES } from "@/app/config";
+import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import {
-  FormControl,
-  FormLabel,
-  FormErrorMessage,
-  FormHelperText,
-  Select,
-  Textarea,
   Button,
   Card,
-  HStack,
-  VStack,
+  FormControl,
+  FormLabel,
+  Select,
   Switch,
+  Textarea,
+  useToast,
+  VStack,
 } from "@chakra-ui/react";
-import { LANGUAGE_CODE_NAMES } from "@/app/config";
-import axios, { AxiosError, AxiosPromise } from "axios";
-import { API_URL } from "@/app/config";
-import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
-import { useToast } from "@chakra-ui/react";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import Feedback from "../Feedback";
 
 const fetchTranslation = async ({
   sourceLanguage,
@@ -64,21 +60,6 @@ export default function NMT({ services }: { services: any }) {
   const [outputText, setOutputText] = useState("");
 
   const toast = useToast();
-
-  useEffect(() => {
-    if (
-      services[Object.keys(services)[0]]["languageFilters"]["sourceLanguages"]
-        .length === 0
-    ) {
-      toast({
-        title: "Warning",
-        description: "The Inference Service might not be available now",
-        status: "warning",
-        duration: 4000,
-        isClosable: true,
-      });
-    }
-  }, []);
 
   return (
     <Card borderWidth={1} borderColor={"a4borange"} boxShadow={"2xl"} p={5}>
