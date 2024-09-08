@@ -15,6 +15,7 @@ from rest_framework import permissions
 
 from django.utils.decorators import method_decorator
 from django_ratelimit.decorators import ratelimit
+from django.views.decorators.cache import cache_page
 from rest_framework.decorators import api_view
 
 from dotenv import load_dotenv
@@ -22,15 +23,18 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def fetchDhruvaServiceInfo(serviceId):
-    dhruvaServiceInfo = requests.post(os.getenv("DHRUVA_MODEL_VIEW_URL"),
+    try:
+        dhruvaServiceInfo = requests.post(os.getenv("DHRUVA_MODEL_VIEW_URL"),
                                         headers=
                                         {'x-auth-source': 'API_KEY',
                                             'Authorization': os.getenv('DHRUVA_API_KEY')},
-                                            json={'serviceId':serviceId})
-    if dhruvaServiceInfo.status_code!=200:
+                                            json={'serviceId':serviceId},timeout=3)
+        if dhruvaServiceInfo.status_code!=200:
+            return {}
+        else:
+            return dhruvaServiceInfo.json()["model"]
+    except:
         return {}
-    else:
-        return dhruvaServiceInfo.json()["model"]
 
 ## Inference Views
 @ratelimit(key='ip', rate='30/m', method='POST')
@@ -198,7 +202,7 @@ class ModelViewSet(viewsets.ModelViewSet):
 
         modelData["type"] = "Model" 
 
-        hfData = {}
+        hfData = None
         if modelData["hf_id"]!=None:
             hfData = requests.get(f"https://huggingface.co/api/models/{modelData['hf_id']}")
             hfData = hfData.json()

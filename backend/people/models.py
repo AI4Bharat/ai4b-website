@@ -1,5 +1,6 @@
 from django.db import models
-
+import datetime
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 class Team(models.TextChoices):
     FOUNDER = 1
@@ -15,6 +16,7 @@ class Role(models.TextChoices):
     MS = "MS"
     MTECH = "MTech"
     BTECH = "BTech"
+    DUAL = "Dual Degree"
     RESEARCH = "Research"
     DEVELOPMENT = "Development"
 
@@ -51,6 +53,15 @@ def user_directory_path(instance, filename):
         instance.first_name + "_" + instance.last_name, filename
     )
 
+def current_year():
+    return datetime.date.today().year
+
+def max_value_current_year(value):
+    return MaxValueValidator(current_year())(value)  
+
+def year_choices():
+    return [(r,r) for r in range(1984, datetime.date.today().year+1)]
+
 
 # Create your models here.
 class Member(models.Model):
@@ -60,6 +71,7 @@ class Member(models.Model):
     team = models.CharField(max_length=50, choices=Team.choices)
     role = models.CharField(max_length=100)
     prevRol = models.CharField(max_length=20,choices=Role.choices,null=True,blank=True)
+    gradYear = models.IntegerField(choices=year_choices(), validators=[MinValueValidator(1984), max_value_current_year],null=True,blank=True)
     photo = models.ImageField(upload_to=user_directory_path,null=True,blank=True)
     language = models.CharField(
         max_length=50, choices=Language.choices, null=True, blank=True
