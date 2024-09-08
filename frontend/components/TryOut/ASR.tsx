@@ -130,17 +130,29 @@ export default function ASR({ services }: { services: any }) {
           });
         }
       } catch (error: any) {
-        const response = error.response;
-        if (response.status === 403) {
-          setOutputText("");
-          toast({
-            title: "Warning",
-            description: "You have reached maximum trials in a minute",
-            status: "warning",
-            duration: 4000,
-            isClosable: true,
-          });
-        } else if (response.status === 503) {
+        try {
+          const response = error.response;
+          if (response.status === 403) {
+            setOutputText("");
+            toast({
+              title: "Warning",
+              description: "You have reached maximum trials in a minute",
+              status: "warning",
+              duration: 4000,
+              isClosable: true,
+            });
+          } else {
+            setOutputText("");
+            toast({
+              title: "Warning",
+              description:
+                "Service Currently Unavailable, Please Try Again Later",
+              status: "warning",
+              duration: 4000,
+              isClosable: true,
+            });
+          }
+        } catch (error) {
           setOutputText("");
           toast({
             title: "Warning",
@@ -207,17 +219,29 @@ export default function ASR({ services }: { services: any }) {
             });
           }
         } catch (error: any) {
-          const response = error.response;
-          if (response.status === 403) {
-            setOutputText("");
-            toast({
-              title: "Warning",
-              description: "You have reached maximum trials in a minute",
-              status: "warning",
-              duration: 4000,
-              isClosable: true,
-            });
-          } else if (response.status === 503) {
+          try {
+            const response = error.response;
+            if (response.status === 403) {
+              setOutputText("");
+              toast({
+                title: "Warning",
+                description: "You have reached maximum trials in a minute",
+                status: "warning",
+                duration: 4000,
+                isClosable: true,
+              });
+            } else {
+              setOutputText("");
+              toast({
+                title: "Warning",
+                description:
+                  "Service Currently Unavailable, Please Try Again Later",
+                status: "warning",
+                duration: 4000,
+                isClosable: true,
+              });
+            }
+          } catch (error) {
             setOutputText("");
             toast({
               title: "Warning",
@@ -328,7 +352,7 @@ export default function ASR({ services }: { services: any }) {
             />
             <FileUploadButton handleFileChange={handleFileChange} />
           </HStack>
-          <Textarea  value={outputText} isReadOnly></Textarea>
+          <Textarea value={outputText} isReadOnly></Textarea>
         </VStack>
       </FormControl>
     </Card>
