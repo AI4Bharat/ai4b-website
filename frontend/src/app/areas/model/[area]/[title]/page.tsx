@@ -1,6 +1,6 @@
 import ModelView from "../../../../../../components/Models";
 
-export const dynamic = "force-dynamic";
+export const dynamicParams = true;
 
 interface Model {
   area: string;
