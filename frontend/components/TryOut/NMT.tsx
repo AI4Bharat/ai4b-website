@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   FormControl,
   FormLabel,
@@ -64,6 +64,21 @@ export default function NMT({ services }: { services: any }) {
   const [outputText, setOutputText] = useState("");
 
   const toast = useToast();
+
+  useEffect(() => {
+    if (
+      services[Object.keys(services)[0]]["languageFilters"]["sourceLanguages"]
+        .length === 0
+    ) {
+      toast({
+        title: "Warning",
+        description: "The Inference Service might not be available now",
+        status: "warning",
+        duration: 4000,
+        isClosable: true,
+      });
+    }
+  }, []);
 
   return (
     <Card borderWidth={1} borderColor={"a4borange"} boxShadow={"2xl"} p={5}>
@@ -166,33 +181,45 @@ export default function NMT({ services }: { services: any }) {
                     isClosable: true,
                   });
                 } else {
-                  const response = await fetchTranslation({
-                    sourceLanguage: sourceLanguage,
-                    targetLanguage: targetLanguage,
-                    input: inputText,
-                    task: "translation",
-                    serviceId: service,
-                  });
-                  if (response.status === 200) {
-                    setOutputText(response.data["output"][0]["target"]);
-                    toast({
-                      title: "Success",
-                      description: "Translation Inference Successful",
-                      status: "success",
-                      duration: 4000,
-                      isClosable: true,
+                  try {
+                    const response = await fetchTranslation({
+                      sourceLanguage: sourceLanguage,
+                      targetLanguage: targetLanguage,
+                      input: inputText,
+                      task: "translation",
+                      serviceId: service,
                     });
-                  } else if (response.status === 403) {
-                    setOutputText("");
-                    toast({
-                      title: "Warning",
-                      description:
-                        "You have reached maximum trials in a minute",
-                      status: "warning",
-                      duration: 4000,
-                      isClosable: true,
-                    });
-                  } else if (response.status === 503) {
+                    if (response.status === 200) {
+                      setOutputText(response.data["output"][0]["target"]);
+                      toast({
+                        title: "Success",
+                        description: "Translation Inference Successful",
+                        status: "success",
+                        duration: 4000,
+                        isClosable: true,
+                      });
+                    } else if (response.status === 403) {
+                      setOutputText("");
+                      toast({
+                        title: "Warning",
+                        description:
+                          "You have reached maximum trials in a minute",
+                        status: "warning",
+                        duration: 4000,
+                        isClosable: true,
+                      });
+                    } else {
+                      setOutputText("");
+                      toast({
+                        title: "Warning",
+                        description:
+                          "Service Currently Unavailable, Please Try Again Later",
+                        status: "warning",
+                        duration: 4000,
+                        isClosable: true,
+                      });
+                    }
+                  } catch (error) {
                     setOutputText("");
                     toast({
                       title: "Warning",
