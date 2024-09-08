@@ -135,6 +135,7 @@ export default function ModelView({
     } else {
       setModel(modelData);
       if (
+        modelData.service_id &&
         modelData.services[Object.keys(modelData.services)[0]][
           "languageFilters"
         ]["sourceLanguages"].length === 0
