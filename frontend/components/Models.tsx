@@ -93,7 +93,7 @@ export default function ModelView({
     paper_link: "",
     colab_link: "",
     conference: "",
-    hfData: {},
+    hfData: null,
     inferenceSchema: {},
     languageFilters: {},
     service_id: "",
@@ -119,7 +119,7 @@ export default function ModelView({
         paper_link: "",
         colab_link: "",
         conference: "",
-        hfData: {},
+        hfData: null,
         inferenceSchema: {},
         languageFilters: {},
         service_id: "",
@@ -167,7 +167,7 @@ export default function ModelView({
             ) : (
               <></>
             )}
-            {model.hfData.downloads ? (
+            {model.hfData !== null ? (
               <Box
                 borderRadius={15}
                 p={1}
