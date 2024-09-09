@@ -19,6 +19,7 @@ import axios from "axios";
 import { API_URL } from "@/app/config";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import { useToast } from "@chakra-ui/react";
+import Feedback from "../Feedback";
 
 const fetchAudio = async ({
   sourceLanguage,
@@ -63,6 +64,8 @@ export default function TTS({ services }: { services: any }) {
   const [transliteration, setTransliteration] = useState(true);
   const [inputText, setInputText] = useState("");
   const [output, setOutput] = useState("");
+
+  const [success, setSuccess] = useState(false);
 
   const toast = useToast();
 
@@ -166,6 +169,7 @@ export default function TTS({ services }: { services: any }) {
             <Button
               onClick={async () => {
                 setOutput("");
+                setSuccess(false);
                 try {
                   const response = await fetchAudio({
                     sourceLanguage,
@@ -175,11 +179,9 @@ export default function TTS({ services }: { services: any }) {
                     serviceId: service,
                   });
                   if (response.status === 200) {
+                    setSuccess(true);
                     const result = response.data;
-                    setOutput(
-                      "data:audio/wav;base64," +
-                        result["audio"][0]["audioContent"]
-                    );
+                    setOutput(result["audio"][0]["audioContent"]);
                     toast({
                       title: "Success",
                       description: "Translation Inference Successful",
@@ -188,6 +190,7 @@ export default function TTS({ services }: { services: any }) {
                       isClosable: true,
                     });
                   } else if (response.status === 403) {
+                    setSuccess(false);
                     setOutput("");
                     toast({
                       title: "Warning",
@@ -198,6 +201,7 @@ export default function TTS({ services }: { services: any }) {
                       isClosable: true,
                     });
                   } else {
+                    setSuccess(false);
                     setOutput("");
                     toast({
                       title: "Warning",
@@ -209,6 +213,7 @@ export default function TTS({ services }: { services: any }) {
                     });
                   }
                 } catch (error) {
+                  setSuccess(false);
                   setOutput("");
                   toast({
                     title: "Warning",
@@ -224,7 +229,21 @@ export default function TTS({ services }: { services: any }) {
             >
               Convert
             </Button>
-            {output !== "" ? <audio src={output} controls /> : <></>}
+            {output !== "" ? (
+              <audio src={"data:audio/wav;base64," + output} controls />
+            ) : (
+              <></>
+            )}
+            {success ? (
+              <Feedback
+                serviceId={service}
+                task="tts"
+                modelInput={inputText}
+                modelResponse={output}
+              />
+            ) : (
+              <></>
+            )}
           </VStack>
         </VStack>
       </FormControl>

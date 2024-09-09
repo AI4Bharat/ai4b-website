@@ -173,6 +173,7 @@ export default function NMT({ services }: { services: any }) {
                       serviceId: service,
                     });
                     if (response.status === 200) {
+                      setSuccess(true);
                       setOutputText(response.data["output"][0]["target"]);
                       toast({
                         title: "Success",
@@ -183,6 +184,7 @@ export default function NMT({ services }: { services: any }) {
                       });
                       setSuccess(true);
                     } else if (response.status === 403) {
+                      setSuccess(false);
                       setOutputText("");
                       toast({
                         title: "Warning",
@@ -193,6 +195,7 @@ export default function NMT({ services }: { services: any }) {
                         isClosable: true,
                       });
                     } else {
+                      setSuccess(false);
                       setOutputText("");
                       toast({
                         title: "Warning",
@@ -204,6 +207,7 @@ export default function NMT({ services }: { services: any }) {
                       });
                     }
                   } catch (error) {
+                    setSuccess(false);
                     setOutputText("");
                     toast({
                       title: "Warning",
@@ -220,6 +224,16 @@ export default function NMT({ services }: { services: any }) {
             >
               Translate
             </Button>
+            {success ? (
+              <Feedback
+                serviceId={service}
+                task="translation"
+                modelInput={inputText}
+                modelResponse={outputText}
+              />
+            ) : (
+              <></>
+            )}
           </VStack>
         </VStack>
       </FormControl>
