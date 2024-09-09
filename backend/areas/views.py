@@ -12,9 +12,8 @@ from rest_framework import viewsets,status
 from .serializers import DatasetSerializer, ToolSerializer, ModelSerializer,NewsSerializer
 from rest_framework.decorators import permission_classes
 from rest_framework import permissions
-
-from django.utils.decorators import method_decorator
 from django_ratelimit.decorators import ratelimit
+from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from rest_framework.decorators import api_view
 
@@ -174,6 +173,7 @@ class DatasetViewSet(viewsets.ModelViewSet):
     queryset = Dataset.objects.all()
     serializer_class = DatasetSerializer
 
+    @method_decorator(cache_page(60*15))
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
@@ -181,10 +181,16 @@ class DatasetViewSet(viewsets.ModelViewSet):
         datasets.sort(key=lambda dataset: dataset.get("area"))
         return Response(datasets)
 
-
 class ModelViewSet(viewsets.ModelViewSet):
     queryset = Model.objects.all()
     serializer_class = ModelSerializer
+    
+    @method_decorator(cache_page(60*15))
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        models = serializer.data
+        return Response(models)
 
     def retrieve(self, request, *args, **kwargs):
 
@@ -203,9 +209,20 @@ class ModelViewSet(viewsets.ModelViewSet):
         modelData["type"] = "Model" 
 
         hfData = None
-        if modelData["hf_id"]!=None:
-            hfData = requests.get(f"https://huggingface.co/api/models/{modelData['hf_id']}")
-            hfData = hfData.json()
+        if modelData["hf_link"]!=None:
+            hf_link = modelData["hf_link"]
+            if "collections" in hf_link:
+                hf_link = hf_link.replace("https://huggingface.co/collections/","https://huggingface.co/api/collections/")
+                response = requests.get(hf_link)
+                items = response.json()["items"]
+                downloads = sum([item["downloads"] for item in items])
+                hfData = {'downloads':downloads}
+            
+
+            else:
+                hf_link = hf_link.replace("https://huggingface.co/","https://huggingface.co/api/models/")
+                hfData = requests.get(hf_link)
+                hfData = hfData.json()
 
         modelData["hfData"] = hfData
         modelData["services"] = {}
@@ -324,6 +341,7 @@ class PublicationFilterOptions(viewsets.ViewSet):
 
 @permission_classes((permissions.AllowAny,))
 class PublicationViewSet(viewsets.ViewSet):
+    @method_decorator(cache_page(60*15))
     def list(self, request, *args, **kwargs):
         datasets = Dataset.objects.all()
         models = Model.objects.all()
@@ -348,6 +366,7 @@ class PublicationViewSet(viewsets.ViewSet):
 
 @permission_classes((permissions.AllowAny,))
 class AreaViewSet(viewsets.ViewSet):
+
     def list(self, request, *args, **kwargs):
         area = kwargs.get("area")
         datasets = Dataset.objects.filter(area=area)

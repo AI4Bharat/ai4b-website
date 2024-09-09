@@ -27,7 +27,7 @@ class Dataset(models.Model):
     paper_link = models.URLField(max_length=500)
     website_link = models.URLField(max_length=500, null=True, blank=True)
     github_link = models.URLField(max_length=500,null=True,blank=True)
-    hf_id = models.CharField(max_length=500,null=True,blank=True)
+    hf_link = models.URLField(max_length=500,null=True,blank=True)
 
     def __str__(self) -> str:
         return f"{self.title}"
@@ -45,7 +45,7 @@ class Model(models.Model):
     website_link = models.URLField(max_length=500, null=True, blank=True)
     github_link = models.URLField(max_length=500,null=True,blank=True)
     colab_link = models.URLField(max_length=500,null=True,blank=True)
-    hf_id = models.CharField(max_length=500,null=True,blank=True)
+    hf_link = models.URLField(max_length=500,null=True,blank=True)
     service_id = models.CharField(max_length=500, null=True, blank=True)
     installation_steps_json = models.JSONField(null=True,blank=True)
     usage_steps_json = models.JSONField(null=True,blank=True)
