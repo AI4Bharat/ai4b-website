@@ -43,7 +43,7 @@ interface Publication {
   area: string;
   conference: string;
   published_on: string;
-  hf_id: string;
+  hf_link: string;
   paper_link: string;
   github_link: string;
   colab_link: string;
@@ -105,7 +105,7 @@ interface CardProps {
   area: string;
   published_on: string;
   conference: string;
-  hf_id: string;
+  hf_link: string;
   paper_link: string;
   github_link: string;
   website_link: string;
@@ -153,7 +153,7 @@ const Card = ({
   area,
   published_on,
   conference,
-  hf_id,
+  hf_link,
   paper_link,
   github_link,
   website_link,
@@ -252,23 +252,16 @@ const Card = ({
             ) : (
               <></>
             )}
-            {hf_id === null ? (
-              <></>
-            ) : (
-              <Link
-                target="_blank"
-                href={
-                  type === "Model"
-                    ? `https://huggingface.co/${hf_id}`
-                    : `https://huggingface.co/datasets/${hf_id}`
-                }
-              >
+            {hf_link ? (
+              <Link target="_blank" href={hf_link}>
                 <img
                   src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg"
                   alt="Hugging Face"
                   style={{ width: "25px", height: "25px" }}
                 />
               </Link>
+            ) : (
+              <></>
             )}
           </HStack>
         </VStack>
