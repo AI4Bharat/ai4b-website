@@ -36,11 +36,11 @@ import {
 } from "react-icons/fa";
 
 const datasetIcons: { [key: string]: React.ReactElement } = {
-  llm: <FaFileAlt color="orange" size={25} />,
-  asr: <FaMicrophone color="orange" size={25} />,
-  nmt: <FaLanguage color="orange" size={25} />,
-  tts: <FaVolumeUp color="orange" size={25} />,
-  xlit: <FaKeyboard color="orange" size={25} />,
+  llm: <FaFileAlt color="orange" size={50} />,
+  asr: <FaMicrophone color="orange" size={50} />,
+  nmt: <FaLanguage color="orange" size={50} />,
+  tts: <FaVolumeUp color="orange" size={50} />,
+  xlit: <FaKeyboard color="orange" size={50} />,
 };
 
 interface FeatureProps {
@@ -196,13 +196,8 @@ export default function Datasets() {
               {Object.entries(datasetIcons).map(([key, val]) => (
                 <>
                   <HStack>
-                    <ChakraImage
-                      src={`${imagePrefix}/assets/icons/${key}.png`}
-                      alt="Area"
-                      width={50}
-                      height={50}
-                    />
-                    <Wrap key={key}>
+                    {val}
+                    <Wrap ml={5} key={key}>
                       {datasets.map((dataset: Dataset) => (
                         <>
                           {dataset.area.toLowerCase() === key ? (
