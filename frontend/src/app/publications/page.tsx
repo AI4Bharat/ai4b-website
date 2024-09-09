@@ -126,7 +126,7 @@ interface Publication {
   conference: string;
   published_on: string;
   colab_link: string;
-  hf_id: string;
+  hf_link: string;
   paper_link: string;
   github_link: string;
   type: string;
@@ -284,7 +284,7 @@ interface Publication {
 //                 categories={[pub.area, pub.conference]}
 //                 description={pub.description}
 //                 date={new Date(pub.published_on)}
-//                 hf_id={pub.hf_id}
+//                 hf_link={pub.hf_link}
 //                 paper_link={pub.paper_link}
 //                 github_link={pub.github_link}
 //                 colab_link={pub.colab_link}
@@ -481,7 +481,7 @@ const Publications = () => {
                 categories={[pub.area, pub.conference]}
                 description={pub.description}
                 date={new Date(pub.published_on)}
-                hf_id={pub.hf_id}
+                hf_link={pub.hf_link}
                 paper_link={pub.paper_link}
                 github_link={pub.github_link}
                 colab_link={pub.colab_link}
@@ -502,7 +502,7 @@ interface CardProps {
   categories: string[];
   description: string;
   date: Date;
-  hf_id: string;
+  hf_link: string;
   paper_link: string;
   github_link: string;
   colab_link: string;
@@ -514,7 +514,7 @@ const Card = ({
   categories,
   description,
   date,
-  hf_id,
+  hf_link,
   paper_link,
   github_link,
   colab_link,
@@ -585,23 +585,16 @@ const Card = ({
             ) : (
               <></>
             )}
-            {hf_id === null ? (
-              <></>
-            ) : (
-              <Link
-                target="_blank"
-                href={
-                  type === "Model"
-                    ? `https://huggingface.co/${hf_id}`
-                    : `https://huggingface.co/datasets/${hf_id}`
-                }
-              >
+            {hf_link ? (
+              <Link href={hf_link} target="_blank">
                 <img
                   src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg"
                   alt="Hugging Face"
                   style={{ width: "50px", height: "50px" }}
                 />
               </Link>
+            ) : (
+              <></>
             )}
           </HStack>
         </VStack>

@@ -15,7 +15,7 @@ class DatasetSerializer(ModelSerializer):
             "paper_link",
             "website_link",
             "github_link",
-            "hf_id",
+            "hf_link",
         ]
 
 
@@ -34,7 +34,7 @@ class ModelSerializer(ModelSerializer):
             "website_link",
             "github_link",
             "service_id",
-            "hf_id",
+            "hf_link",
             "installation_steps_json",
             "usage_steps_json",
             "testimonials_json",
