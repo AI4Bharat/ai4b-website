@@ -196,9 +196,9 @@ export default function Datasets() {
               {Object.entries(datasetIcons).map(([key, val]) => (
                 <>
                   <HStack>
-                    <Image
+                    <ChakraImage
                       src={`${imagePrefix}/assets/icons/${key}.png`}
-                      alt="NMT"
+                      alt="Area"
                       width={50}
                       height={50}
                     />
