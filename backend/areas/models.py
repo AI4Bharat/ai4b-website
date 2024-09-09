@@ -31,6 +31,21 @@ class Dataset(models.Model):
 
     def __str__(self) -> str:
         return f"{self.title}"
+    
+
+class ModelFeedback(models.Model):
+    id = models.AutoField(primary_key=True)
+    serviceId = models.CharField(max_length=500)
+    task = models.CharField(max_length=500)
+    postedOn = models.DateField(default=date.today)
+    modelInput = models.TextField()
+    modelResponse = models.TextField()
+    liked = models.BooleanField(default=False)
+    comment = models.TextField()
+
+    def __str__(self) -> str:
+        return f"{self.id}_{self.serviceId}"
+    
 
 
 class Model(models.Model):
