@@ -134,11 +134,9 @@ export default function ToolComponent({ slug }: { slug: string }) {
           {tool.main_video_hyperlink === "" ? (
             <></>
           ) : (
-            <ReactPlayer
-              style={{ borderRadius: 50 }}
-              url={tool.main_video_hyperlink}
-              controls
-            />
+            <div className="curved-player-wrapper">
+              <ReactPlayer url={tool.main_video_hyperlink} controls />
+            </div>
           )}
         </Flex>
       </Stack>
