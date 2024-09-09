@@ -92,7 +92,7 @@ export default function ToolComponent({ slug }: { slug: string }) {
         py={{ base: 10, md: 18 }}
         direction={{ base: "column", md: "row" }}
       >
-        <Stack flex={1}>
+        <Stack flex={1} spacing={7}>
           <Heading
             lineHeight={1.1}
             fontWeight={600}
@@ -134,7 +134,11 @@ export default function ToolComponent({ slug }: { slug: string }) {
           {tool.main_video_hyperlink === "" ? (
             <></>
           ) : (
-            <ReactPlayer url={tool.main_video_hyperlink} controls />
+            <ReactPlayer
+              style={{ borderRadius: 50 }}
+              url={tool.main_video_hyperlink}
+              controls
+            />
           )}
         </Flex>
       </Stack>

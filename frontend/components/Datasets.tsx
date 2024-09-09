@@ -68,18 +68,6 @@ interface Dataset {
 const Feature = ({ title, icon, dataset_link }: FeatureProps) => {
   return (
     <HStack as={Link} href={dataset_link}>
-      <Flex
-        w={16}
-        h={16}
-        align={"center"}
-        justify={"center"}
-        color={"white"}
-        rounded={"full"}
-        // bg={"gray.100"}
-        mb={1}
-      >
-        {datasetIcons[icon]}
-      </Flex>
       <Text fontWeight={600}>{title}</Text>
     </HStack>
   );
@@ -113,7 +101,7 @@ export default function Datasets() {
       <Stack
         align={"center"}
         spacing={{ base: 8, md: 10 }}
-        py={{ base: 20, md: 28 }}
+        p={10}
         direction={{ base: "column", md: "row" }}
       >
         <Stack flex={1} spacing={{ base: 5, md: 10 }}>

@@ -67,12 +67,14 @@ export default function ToolInstructions({
                   whiteSpace={"pre-wrap"}
                   borderRadius={15}
                   p={5}
+                  width={"fit-content"}
                   fontSize="sm"
                   color="gray.500"
                   textOverflow={"clip"}
                   display="flex"
                   justifyContent="space-between"
                   alignItems="center"
+                  mt={5}
                   gap={5}
                 >
                   {data.codeString}

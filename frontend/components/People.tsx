@@ -91,7 +91,13 @@ const Card = ({ first_name, last_name, role, gradYear, photo }: CardProps) => {
       overflow="hidden"
       p={5}
     >
-      <Stack align={"start"} spacing={2}>
+      <Stack
+        alignContent={"center"}
+        justifyContent={"center"}
+        justifyItems={"center"}
+        alignItems={"center"}
+        spacing={1}
+      >
         {photo !== null ? (
           <Image
             src={photo}
