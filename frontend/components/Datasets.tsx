@@ -34,11 +34,11 @@ import {
 } from "react-icons/fa";
 
 const datasetIcons: { [key: string]: React.ReactElement } = {
-  nmt: <FaLanguage color="orange" size={35} />,
-  llm: <FaFileAlt color="orange" size={35} />,
-  asr: <FaMicrophone color="orange" size={35} />,
-  tts: <FaVolumeUp color="orange" size={35} />,
-  xlit: <FaKeyboard color="orange" size={35} />,
+  nmt: <FaLanguage color="orange" size={20} />,
+  llm: <FaFileAlt color="orange" size={20} />,
+  asr: <FaMicrophone color="orange" size={20} />,
+  tts: <FaVolumeUp color="orange" size={20} />,
+  xlit: <FaKeyboard color="orange" size={20} />,
 };
 
 interface FeatureProps {
@@ -69,14 +69,10 @@ const Feature = ({ title, icon, dataset_link }: FeatureProps) => {
   return (
     <HStack as={Link} href={dataset_link}>
       <Flex
-        w={16}
-        h={16}
         align={"center"}
         justify={"center"}
         color={"white"}
         rounded={"full"}
-        // bg={"gray.100"}
-        mb={1}
       >
         {datasetIcons[icon]}
       </Flex>
@@ -113,7 +109,7 @@ export default function Datasets() {
       <Stack
         align={"center"}
         spacing={{ base: 8, md: 10 }}
-        py={{ base: 20, md: 28 }}
+        p={10}
         direction={{ base: "column", md: "row" }}
       >
         <Stack flex={1} spacing={{ base: 5, md: 10 }}>
