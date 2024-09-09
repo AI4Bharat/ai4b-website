@@ -34,11 +34,11 @@ import {
 } from "react-icons/fa";
 
 const datasetIcons: { [key: string]: React.ReactElement } = {
-  nmt: <FaLanguage color="orange" size={35} />,
-  llm: <FaFileAlt color="orange" size={35} />,
-  asr: <FaMicrophone color="orange" size={35} />,
-  tts: <FaVolumeUp color="orange" size={35} />,
-  xlit: <FaKeyboard color="orange" size={35} />,
+  nmt: <FaLanguage color="orange" size={20} />,
+  llm: <FaFileAlt color="orange" size={20} />,
+  asr: <FaMicrophone color="orange" size={20} />,
+  tts: <FaVolumeUp color="orange" size={20} />,
+  xlit: <FaKeyboard color="orange" size={20} />,
 };
 
 interface FeatureProps {
@@ -68,6 +68,14 @@ interface Dataset {
 const Feature = ({ title, icon, dataset_link }: FeatureProps) => {
   return (
     <HStack as={Link} href={dataset_link}>
+      <Flex
+        align={"center"}
+        justify={"center"}
+        color={"white"}
+        rounded={"full"}
+      >
+        {datasetIcons[icon]}
+      </Flex>
       <Text fontWeight={600}>{title}</Text>
     </HStack>
   );
