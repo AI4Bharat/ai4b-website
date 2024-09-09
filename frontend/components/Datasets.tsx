@@ -19,6 +19,7 @@ import {
   Image as ChakraImage,
   useBreakpointValue,
   Wrap,
+  Divider,
 } from "@chakra-ui/react";
 import Image from "next/image";
 import axios from "axios";
@@ -68,7 +69,7 @@ interface Dataset {
 
 const Feature = ({ title, icon, dataset_link }: FeatureProps) => {
   return (
-    <HStack p={3} as={Link} href={dataset_link}>
+    <HStack width={150} p={3} as={Link} href={dataset_link}>
       <Text fontWeight={600}>{title}</Text>
     </HStack>
   );
@@ -193,35 +194,42 @@ export default function Datasets() {
           ) : (
             <>
               {Object.entries(datasetIcons).map(([key, val]) => (
-                <Wrap key={key}>
-                  <Image
-                    src={`${imagePrefix}/assets/icons/${key}.png`}
-                    alt="NMT"
-                    width={50}
-                    height={50}
-                  />
-                  {datasets.map((dataset: Dataset) => (
-                    <>
-                      {dataset.area.toLowerCase() === key ? (
-                        <Card
-                          key={dataset.title}
-                          border={"solid"}
-                          borderColor={"orange"}
-                        >
-                          <Feature
-                            icon={dataset.area.toLowerCase()}
-                            title={dataset.title}
-                            dataset_link={
-                              dataset.website_link ? dataset.website_link : ""
-                            }
-                          />
-                        </Card>
-                      ) : (
-                        <></>
-                      )}
-                    </>
-                  ))}
-                </Wrap>
+                <>
+                  <HStack>
+                    <Image
+                      src={`${imagePrefix}/assets/icons/${key}.png`}
+                      alt="NMT"
+                      width={50}
+                      height={50}
+                    />
+                    <Wrap key={key}>
+                      {datasets.map((dataset: Dataset) => (
+                        <>
+                          {dataset.area.toLowerCase() === key ? (
+                            <Card
+                              key={dataset.title}
+                              border={"solid"}
+                              borderColor={"orange"}
+                            >
+                              <Feature
+                                icon={dataset.area.toLowerCase()}
+                                title={dataset.title}
+                                dataset_link={
+                                  dataset.website_link
+                                    ? dataset.website_link
+                                    : ""
+                                }
+                              />
+                            </Card>
+                          ) : (
+                            <></>
+                          )}
+                        </>
+                      ))}
+                    </Wrap>
+                  </HStack>
+                  <Divider borderWidth={1} borderColor={"gray.100"} />
+                </>
               ))}
             </>
           )}
