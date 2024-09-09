@@ -48,7 +48,7 @@ interface Model {
   installation_steps_json: Array<any>;
   usage_steps_json: Array<any>;
   type: string;
-  hf_id: string;
+  hf_link: string;
 }
 
 const renderTryOut = ({ area, services }: { area: string; services: any }) => {
@@ -88,7 +88,7 @@ export default function ModelView({
     installation_steps_json: Array<any>;
     usage_steps_json: Array<any>;
     type: string;
-    hf_id: string;
+    hf_link: string;
   }>({
     title: "",
     description: "",
@@ -104,7 +104,7 @@ export default function ModelView({
     installation_steps_json: [],
     usage_steps_json: [],
     type: "",
-    hf_id: "",
+    hf_link: "",
   });
 
   const {
@@ -130,7 +130,7 @@ export default function ModelView({
         installation_steps_json: [],
         usage_steps_json: [],
         type: "",
-        hf_id: "",
+        hf_link: "",
       });
     } else {
       setModel(modelData);
@@ -252,15 +252,8 @@ export default function ModelView({
             ) : (
               <></>
             )}
-            {model.hf_id ? (
-              <Link
-                target="_blank"
-                href={
-                  model.type === "Model"
-                    ? `https://huggingface.co/${model.hf_id}`
-                    : `https://huggingface.co/datasets/${model.hf_id}`
-                }
-              >
+            {model.hf_link ? (
+              <Link target="_blank" href={model.hf_link}>
                 <HStack
                   borderRadius={50}
                   p={1}

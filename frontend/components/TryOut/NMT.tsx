@@ -13,7 +13,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Feedback from "../Feedback";
 
 const fetchTranslation = async ({
@@ -58,6 +58,7 @@ export default function NMT({ services }: { services: any }) {
   const [transliteration, setTransliteration] = useState(true);
   const [inputText, setInputText] = useState("");
   const [outputText, setOutputText] = useState("");
+  const [success, setSuccess] = useState(false);
 
   const toast = useToast();
 
@@ -153,6 +154,7 @@ export default function NMT({ services }: { services: any }) {
             <Button
               onClick={async () => {
                 setOutputText("");
+                setSuccess(false);
                 if (inputText === "") {
                   toast({
                     title: "Input Error",
@@ -179,6 +181,7 @@ export default function NMT({ services }: { services: any }) {
                         duration: 4000,
                         isClosable: true,
                       });
+                      setSuccess(true);
                     } else if (response.status === 403) {
                       setOutputText("");
                       toast({
