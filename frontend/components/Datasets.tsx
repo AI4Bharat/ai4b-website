@@ -18,6 +18,7 @@ import {
   Link,
   Image as ChakraImage,
   useBreakpointValue,
+  Wrap,
 } from "@chakra-ui/react";
 import Image from "next/image";
 import axios from "axios";
@@ -34,11 +35,11 @@ import {
 } from "react-icons/fa";
 
 const datasetIcons: { [key: string]: React.ReactElement } = {
-  nmt: <FaLanguage color="orange" size={20} />,
-  llm: <FaFileAlt color="orange" size={20} />,
-  asr: <FaMicrophone color="orange" size={20} />,
-  tts: <FaVolumeUp color="orange" size={20} />,
-  xlit: <FaKeyboard color="orange" size={20} />,
+  llm: <FaFileAlt color="orange" size={25} />,
+  asr: <FaMicrophone color="orange" size={25} />,
+  nmt: <FaLanguage color="orange" size={25} />,
+  tts: <FaVolumeUp color="orange" size={25} />,
+  xlit: <FaKeyboard color="orange" size={25} />,
 };
 
 interface FeatureProps {
@@ -67,15 +68,7 @@ interface Dataset {
 
 const Feature = ({ title, icon, dataset_link }: FeatureProps) => {
   return (
-    <HStack as={Link} href={dataset_link}>
-      <Flex
-        align={"center"}
-        justify={"center"}
-        color={"white"}
-        rounded={"full"}
-      >
-        {datasetIcons[icon]}
-      </Flex>
+    <HStack p={3} as={Link} href={dataset_link}>
       <Text fontWeight={600}>{title}</Text>
     </HStack>
   );
@@ -173,7 +166,7 @@ export default function Datasets() {
             efforts not only within India but also in multilingual regions
             across the globe.
           </Text>
-          <HStack p={5}>
+          {/* <HStack p={5}>
             <HStack>
               <FaMicrophone color="orange" size={25} />
               <Text as="b">ASR</Text>
@@ -194,47 +187,45 @@ export default function Datasets() {
               <FaKeyboard color="orange" size={25} />
               <Text as="b">XLIT</Text>
             </HStack>
-          </HStack>
-        </Stack>
-        {isLoading ? (
-          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={10}>
-            {Array.from({ length: 13 }, (_, index) => (
-              <Card
-                key={index}
-                border={"solid"}
-                borderColor={"orange"}
-                w={113.77}
-                h={140}
-                padding="6"
-              >
-                <SkeletonCircle />
-                <br />
-                <SkeletonText />
-              </Card>
-            ))}
-          </SimpleGrid>
-        ) : (
-          <SimpleGrid
-            height={isMobile ? 500 : "auto"}
-            columns={{ base: 1, md: 3 }}
-            spacing={5}
-            overflowY={"scroll"}
-          >
-            {datasets.map((dataset: Dataset) => (
-              <Card key={dataset.title} border={"solid"} borderColor={"orange"}>
-                <CardBody>
-                  <Feature
-                    icon={dataset.area.toLowerCase()}
-                    title={dataset.title}
-                    dataset_link={
-                      dataset.website_link ? dataset.website_link : ""
-                    }
+          </HStack> */}
+          {isLoading ? (
+            <></>
+          ) : (
+            <>
+              {Object.entries(datasetIcons).map(([key, val]) => (
+                <Wrap key={key}>
+                  <Image
+                    src={`${imagePrefix}/assets/icons/${key}.png`}
+                    alt="NMT"
+                    width={50}
+                    height={50}
                   />
-                </CardBody>
-              </Card>
-            ))}
-          </SimpleGrid>
-        )}
+                  {datasets.map((dataset: Dataset) => (
+                    <>
+                      {dataset.area.toLowerCase() === key ? (
+                        <Card
+                          key={dataset.title}
+                          border={"solid"}
+                          borderColor={"orange"}
+                        >
+                          <Feature
+                            icon={dataset.area.toLowerCase()}
+                            title={dataset.title}
+                            dataset_link={
+                              dataset.website_link ? dataset.website_link : ""
+                            }
+                          />
+                        </Card>
+                      ) : (
+                        <></>
+                      )}
+                    </>
+                  ))}
+                </Wrap>
+              ))}
+            </>
+          )}
+        </Stack>
       </Stack>
     </Container>
   );
