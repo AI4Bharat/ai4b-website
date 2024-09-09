@@ -278,7 +278,17 @@ const Card = ({
             View Model
           </Button>
         ) : (
-          <></>
+          <Button
+            as={Link}
+            target="_blank"
+            href={website_link}
+            borderColor={"a4borange"}
+            variant={"outline"}
+            color={"a4borange"}
+            fontSize={15}
+          >
+            View Dataset
+          </Button>
         )}
       </Box>
     </HStack>
