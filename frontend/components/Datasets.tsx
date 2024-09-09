@@ -69,7 +69,7 @@ interface Dataset {
 
 const Feature = ({ title, icon, dataset_link }: FeatureProps) => {
   return (
-    <HStack width={150} p={3} as={Link} href={dataset_link}>
+    <HStack minWidth={150} p={3} as={Link} href={dataset_link}>
       <Text fontWeight={600}>{title}</Text>
     </HStack>
   );
