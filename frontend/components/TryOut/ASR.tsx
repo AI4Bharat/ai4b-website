@@ -19,6 +19,7 @@ import axios from "axios";
 import { ChangeEventHandler, useRef, useState } from "react";
 import { AudioRecorder, useAudioRecorder } from "react-audio-voice-recorder";
 import { FaUpload } from "react-icons/fa";
+import Feedback from "../Feedback";
 
 const preProcessors = ["vad"];
 const postProcessors = ["itn", "punctuation"];
@@ -96,11 +97,16 @@ export default function ASR({ services }: { services: any }) {
     services[Object.keys(services)[0]]["languageFilters"]["sourceLanguages"][0]
   );
   const [outputText, setOutputText] = useState("");
+  const [audioString, setAudioString] = useState("");
   const [domain, setDomain] = useState("general");
+
+  const [success, setSuccess] = useState(false);
 
   const toast = useToast();
 
   const fetchTranscription = async ({ blob }: { blob: Blob }) => {
+    setSuccess(false);
+    setAudioString("");
     const reader = new FileReader();
     let base64data: string | ArrayBuffer | null;
     reader.readAsDataURL(blob);
@@ -108,6 +114,7 @@ export default function ASR({ services }: { services: any }) {
     reader.onloadend = async function () {
       base64data = reader.result;
       const audioString = (base64data as string).split(",")[1];
+      setAudioString(audioString);
       try {
         const response = await axios.post(`${API_URL}/inference/transcribe`, {
           sourceLanguage: sourceLanguage,
@@ -120,6 +127,7 @@ export default function ASR({ services }: { services: any }) {
           postProcessors: postProcessor,
         });
         if (response.status === 200) {
+          setSuccess(true);
           setOutputText(response.data["output"][0]["source"]);
           toast({
             title: "Success",
@@ -133,6 +141,7 @@ export default function ASR({ services }: { services: any }) {
         try {
           const response = error.response;
           if (response.status === 403) {
+            setSuccess(false);
             setOutputText("");
             toast({
               title: "Warning",
@@ -142,6 +151,7 @@ export default function ASR({ services }: { services: any }) {
               isClosable: true,
             });
           } else {
+            setSuccess(false);
             setOutputText("");
             toast({
               title: "Warning",
@@ -153,6 +163,7 @@ export default function ASR({ services }: { services: any }) {
             });
           }
         } catch (error) {
+          setSuccess(false);
           setOutputText("");
           toast({
             title: "Warning",
@@ -186,6 +197,8 @@ export default function ASR({ services }: { services: any }) {
   };
 
   const handleFileChange = (event: any) => {
+    setSuccess(false);
+    setAudioString("");
     const file = event.target.files[0];
     if (file) {
       const fileURL = URL.createObjectURL(file);
@@ -197,6 +210,7 @@ export default function ASR({ services }: { services: any }) {
         const audioString = (selectedAudioReader.result as string).split(
           ","
         )[1];
+        setAudioString(audioString);
         try {
           const response = await axios.post(`${API_URL}/inference/transcribe`, {
             sourceLanguage: sourceLanguage,
@@ -209,6 +223,7 @@ export default function ASR({ services }: { services: any }) {
             postProcessors: postProcessor,
           });
           if (response.status === 200) {
+            setSuccess(true);
             setOutputText(response.data["output"][0]["source"]);
             toast({
               title: "Success",
@@ -353,6 +368,16 @@ export default function ASR({ services }: { services: any }) {
             <FileUploadButton handleFileChange={handleFileChange} />
           </HStack>
           <Textarea value={outputText} isReadOnly></Textarea>
+          {success ? (
+            <Feedback
+              serviceId={service}
+              task="asr"
+              modelInput={audioString}
+              modelResponse={outputText}
+            />
+          ) : (
+            <></>
+          )}
         </VStack>
       </FormControl>
     </Card>

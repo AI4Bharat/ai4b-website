@@ -24,6 +24,13 @@ import {
   FcManager,
 } from "react-icons/fc";
 
+const roleOrder: { [key: string]: number } = {
+  "PhD Scholar": 1,
+  "MS Scholar": 2,
+  "Project Officer": 3,
+  "Project Associate": 4,
+};
+
 interface CardProps {
   first_name: string;
   last_name: string;
@@ -132,6 +139,12 @@ export default function PeopleSection({
   team: string;
   members: Array<Member>;
 }) {
+  const sortedMembers = members.sort((a, b) => {
+    const orderA = roleOrder[a.role] || 999; // Assign high value if role is not in the custom order
+    const orderB = roleOrder[b.role] || 999;
+    return orderA - orderB;
+  });
+
   return (
     <Box p={4}>
       <Stack spacing={4} as={Container} maxW={"3xl"} textAlign={"center"}>
