@@ -304,43 +304,57 @@ export default function ASR({ services }: { services: any }) {
               )
             )}
           </Select>
-          <FormLabel textColor={"gray.500"}>Select Pre Processors:</FormLabel>
-          <Box>
-            <HStack spacing={4}>
-              {preProcessors.map((option) => (
-                <Checkbox
-                  key={option}
-                  isChecked={preProcessor.includes(option)}
-                  onChange={() => handlePreCheckboxChange(option)}
-                >
-                  {option}
-                </Checkbox>
-              ))}
-            </HStack>
-          </Box>
-          <FormLabel textColor={"gray.500"}>Select Post Processors:</FormLabel>
-          <Box>
-            <HStack spacing={4}>
-              {postProcessors.map((option) => (
-                <Checkbox
-                  key={option}
-                  isChecked={postProcessor.includes(option)}
-                  onChange={() => handlePostCheckboxChange(option)}
-                >
-                  {option}
-                </Checkbox>
-              ))}
-            </HStack>
-          </Box>
-          <FormLabel textColor={"gray.500"}>Select Sampling Rate:</FormLabel>
-          <Select
-            value={samplingRate}
-            onChange={(event) => setSamplingRate(parseInt(event.target.value))}
-          >
-            <option value={8000}>8000</option>
-            <option value={16000}>16000</option>
-            <option value={48000}>48000</option>
-          </Select>
+          {service !== "ai4bharat/conformer-multilingual-all--gpu-t4" ? (
+            <>
+              <FormLabel textColor={"gray.500"}>
+                Select Pre Processors:
+              </FormLabel>
+              <Box>
+                <HStack spacing={4}>
+                  {preProcessors.map((option) => (
+                    <Checkbox
+                      key={option}
+                      isChecked={preProcessor.includes(option)}
+                      onChange={() => handlePreCheckboxChange(option)}
+                    >
+                      {option}
+                    </Checkbox>
+                  ))}
+                </HStack>
+              </Box>
+              <FormLabel textColor={"gray.500"}>
+                Select Post Processors:
+              </FormLabel>
+              <Box>
+                <HStack spacing={4}>
+                  {postProcessors.map((option) => (
+                    <Checkbox
+                      key={option}
+                      isChecked={postProcessor.includes(option)}
+                      onChange={() => handlePostCheckboxChange(option)}
+                    >
+                      {option}
+                    </Checkbox>
+                  ))}
+                </HStack>
+              </Box>
+              <FormLabel textColor={"gray.500"}>
+                Select Sampling Rate:
+              </FormLabel>
+              <Select
+                value={samplingRate}
+                onChange={(event) =>
+                  setSamplingRate(parseInt(event.target.value))
+                }
+              >
+                <option value={8000}>8000</option>
+                <option value={16000}>16000</option>
+                <option value={48000}>48000</option>
+              </Select>
+            </>
+          ) : (
+            <></>
+          )}
           <FormLabel textColor={"gray.500"}>Domain:</FormLabel>
           <Select
             value={domain}
@@ -365,7 +379,7 @@ export default function ASR({ services }: { services: any }) {
               }}
               recorderControls={recorderControls}
             />
-            {/* <FileUploadButton handleFileChange={handleFileChange} /> */}
+            <FileUploadButton handleFileChange={handleFileChange} />
           </HStack>
           <Textarea value={outputText} isReadOnly></Textarea>
           {success ? (
