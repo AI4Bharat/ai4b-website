@@ -44,6 +44,7 @@ class ModelFeedback(models.Model):
     comment = models.TextField()
     sourceLanguage = models.CharField(max_length=100,null=True,blank=True)
     targetLanguage = models.CharField(max_length=100,null=True,blank=True)
+    domain = models.CharField(max_length=100,null=True,blank=True)
 
     def __str__(self) -> str:
         return f"{self.id}_{self.serviceId}"

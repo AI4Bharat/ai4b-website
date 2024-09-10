@@ -200,6 +200,9 @@ class ModelFeedbackViewSet(viewsets.ModelViewSet):
         task = body["task"]
         sourceLanguage = body["sourceLanguage"]
         targetLanguage = body["targetLanguage"]
+        domain="general"
+        if "domain" in body:
+            domain = body["domain"]
 
         modelInput = body["modelInput"]
         modelResponse = body["modelResponse"]
@@ -234,7 +237,7 @@ class ModelFeedbackViewSet(viewsets.ModelViewSet):
             modelResponse = hashlib.sha256(modelResponse.encode())
             modelResponse = modelResponse.hexdigest()
 
-        feedback = ModelFeedback(serviceId = body["serviceId"],task=task,modelInput=modelInput,modelResponse=modelResponse,liked=val2Bool(body["liked"]),comment=body["comment"],sourceLanguage=sourceLanguage,targetLanguage=targetLanguage)
+        feedback = ModelFeedback(serviceId = body["serviceId"],task=task,modelInput=modelInput,modelResponse=modelResponse,liked=val2Bool(body["liked"]),comment=body["comment"],sourceLanguage=sourceLanguage,targetLanguage=targetLanguage,domain=domain)
         feedback.save()
 
         return Response({"message":"Submitted Feedback"},status=status.HTTP_201_CREATED)
