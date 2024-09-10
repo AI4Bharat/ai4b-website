@@ -74,7 +74,7 @@ def translate(request):
     
 
 
-@ratelimit(key='ip', rate='50/m', method='POST')
+
 @api_view(["POST"])
 @permission_classes((permissions.AllowAny,))
 def transcribe(request):
@@ -198,6 +198,8 @@ class ModelFeedbackViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         body = request.data
         task = body["task"]
+        sourceLanguage = body["sourceLanguage"]
+        targetLanguage = body["targetLanguage"]
 
         modelInput = body["modelInput"]
         modelResponse = body["modelResponse"]
@@ -232,7 +234,7 @@ class ModelFeedbackViewSet(viewsets.ModelViewSet):
             modelResponse = hashlib.sha256(modelResponse.encode())
             modelResponse = modelResponse.hexdigest()
 
-        feedback = ModelFeedback(serviceId = body["serviceId"],task=task,modelInput=modelInput,modelResponse=modelResponse,liked=val2Bool(body["liked"]),comment=body["comment"])
+        feedback = ModelFeedback(serviceId = body["serviceId"],task=task,modelInput=modelInput,modelResponse=modelResponse,liked=val2Bool(body["liked"]),comment=body["comment"],sourceLanguage=sourceLanguage,targetLanguage=targetLanguage)
         feedback.save()
 
         return Response({"message":"Submitted Feedback"},status=status.HTTP_201_CREATED)
