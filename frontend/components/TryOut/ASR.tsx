@@ -374,6 +374,8 @@ export default function ASR({ services }: { services: any }) {
               task="asr"
               modelInput={audioString}
               modelResponse={outputText}
+              sourceLanguage={sourceLanguage}
+              targetLanguage={""}
             />
           ) : (
             <></>

@@ -240,6 +240,8 @@ export default function TTS({ services }: { services: any }) {
                 task="tts"
                 modelInput={inputText}
                 modelResponse={output}
+                sourceLanguage={sourceLanguage}
+                targetLanguage=""
               />
             ) : (
               <></>
