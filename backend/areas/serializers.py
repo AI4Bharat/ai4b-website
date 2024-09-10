@@ -21,7 +21,7 @@ class DatasetSerializer(ModelSerializer):
 class ModelFeedbackSerializer(ModelSerializer):
     class Meta:
         model = ModelFeedback
-        fields = ['id','serviceId','task','modelInput','modelResponse','comment','liked','postedOn','sourceLanguage','targetLanguage']
+        fields = ['id','serviceId','task','modelInput','modelResponse','comment','liked','postedOn','sourceLanguage','targetLanguage','domain']
 
 class ModelSerializer(ModelSerializer):
     class Meta:
