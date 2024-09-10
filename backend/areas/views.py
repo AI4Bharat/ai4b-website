@@ -9,9 +9,9 @@ import base64
 import subprocess
 
 # Create your views here.
-from .models import Dataset, Tool, Model,News,ModelFeedback
+from .models import Dataset, Tool, Model,News,ModelFeedback,Publication
 from rest_framework import viewsets,status
-from .serializers import DatasetSerializer, ToolSerializer, ModelSerializer,NewsSerializer,ModelFeedbackSerializer
+from .serializers import DatasetSerializer, ToolSerializer, ModelSerializer,NewsSerializer,ModelFeedbackSerializer,PublicationSerializer
 from rest_framework.decorators import permission_classes
 from rest_framework import permissions
 from django_ratelimit.decorators import ratelimit
@@ -179,6 +179,10 @@ def convertToAudio(request):
 class NewsViewSet(viewsets.ModelViewSet):
     queryset = News.objects.all()
     serializer_class = NewsSerializer
+
+class PubViewSet(viewsets.ModelViewSet):
+    queryset = Publication.objects.all()
+    serializer_class = PublicationSerializer
 
 def val2Bool(val):
     if val=="true":

@@ -12,6 +12,7 @@ router = DefaultRouter()
 router.register(r"datasets", views.DatasetViewSet)
 router.register(r"news",views.NewsViewSet)
 router.register(r"feedback",views.ModelFeedbackViewSet)
+router.register(r"pubs",views.PubViewSet)
 # Do not register the ToolViewSet with the router, as we need custom routes
 
 # The API URLs are now determined automatically by the router.

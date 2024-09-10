@@ -127,3 +127,12 @@ class News(models.Model):
 
     def __str__(self) -> str:
         return f"{self.title}"
+
+class Publication(models.Model):
+    id = models.AutoField(primary_key=True)
+    title = models.CharField(max_length=200)
+    dataset = models.ManyToManyField(Dataset,null=True,blank=True)
+    model = models.ManyToManyField(Model,null=True,blank=True)
+
+    def __str__(self) -> str:
+        return f"{self.title}"
