@@ -1,21 +1,25 @@
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
 
+import hashlib
+
 import os
 import requests
 import base64 
 import subprocess
 
 # Create your views here.
-from .models import Dataset, Tool, Model,News
+from .models import Dataset, Tool, Model,News,ModelFeedback,Publication
 from rest_framework import viewsets,status
-from .serializers import DatasetSerializer, ToolSerializer, ModelSerializer,NewsSerializer
+from .serializers import DatasetSerializer, ToolSerializer, ModelSerializer,NewsSerializer,ModelFeedbackSerializer,PublicationSerializer
 from rest_framework.decorators import permission_classes
 from rest_framework import permissions
 from django_ratelimit.decorators import ratelimit
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from rest_framework.decorators import api_view
+
+import uuid
 
 from dotenv import load_dotenv
 
@@ -80,12 +84,18 @@ def transcribe(request):
     webm_base64 = body["audioContent"]
     webm_data = base64.b64decode(webm_base64)
 
-    with open("/tmp/temp.webm", "wb") as webm_file:
+    webmUUID = uuid.uuid4()
+    wavUUID = uuid.uuid4()
+
+    webmPath = f"/tmp/{webmUUID}.webm"
+    wavPath = f"/tmp/{wavUUID}.wav"
+
+    with open(webmPath, "wb") as webm_file:
         webm_file.write(webm_data)
 
-    subprocess.run(["ffmpeg","-y", "-i", "/tmp/temp.webm", "/tmp/temp.wav"], check=True)
+    subprocess.run(["ffmpeg","-y", "-i", webmPath, wavPath], check=True)
 
-    with open("/tmp/temp.wav", "rb") as wav_file:
+    with open(wavPath, "rb") as wav_file:
         wav_data = wav_file.read()
         wav_base64 = base64.b64encode(wav_data).decode('utf-8')
 
@@ -121,6 +131,8 @@ def transcribe(request):
                                         ]
                                     }
                                     )
+    os.remove(webmPath)
+    os.remove(wavPath)
     if inferenceResult.status_code!=200:
         return Response({"message":"Inference Failed"},status=status.HTTP_503_SERVICE_UNAVAILABLE)
     else:
@@ -167,6 +179,67 @@ def convertToAudio(request):
 class NewsViewSet(viewsets.ModelViewSet):
     queryset = News.objects.all()
     serializer_class = NewsSerializer
+
+class PubViewSet(viewsets.ModelViewSet):
+    queryset = Publication.objects.all()
+    serializer_class = PublicationSerializer
+
+def val2Bool(val):
+    if val=="true":
+        return True
+    elif val=="false":
+        return False
+
+@permission_classes((permissions.AllowAny,))
+class ModelFeedbackViewSet(viewsets.ModelViewSet):
+    queryset = ModelFeedback.objects.all()
+    serializer_class = ModelFeedbackSerializer
+
+    def create(self, request, *args, **kwargs):
+        body = request.data
+        task = body["task"]
+
+        modelInput = body["modelInput"]
+        modelResponse = body["modelResponse"]
+
+        if task=="asr":
+            webm_base64 = modelInput
+            webm_data = base64.b64decode(webm_base64)
+
+            webmUUID = uuid.uuid4()
+            wavUUID = uuid.uuid4()
+
+            webmPath = f"/tmp/{webmUUID}.webm"
+            wavPath = f"/tmp/{wavUUID}.wav"
+
+            with open(webmPath, "wb") as webm_file:
+                webm_file.write(webm_data)
+
+            subprocess.run(["ffmpeg","-y", "-i", webmPath, wavPath], check=True)
+
+            with open(wavPath, "rb") as wav_file:
+                wav_data = wav_file.read()
+                wav_base64 = base64.b64encode(wav_data).decode('utf-8')
+
+            modelInput = hashlib.sha256(wav_base64.encode())
+            modelInput = modelInput.hexdigest()
+
+            os.remove(webmPath)
+            os.remove(wavPath)
+
+        elif task=="tts":
+
+            modelResponse = hashlib.sha256(modelResponse.encode())
+            modelResponse = modelResponse.hexdigest()
+
+        feedback = ModelFeedback(serviceId = body["serviceId"],task=task,modelInput=modelInput,modelResponse=modelResponse,liked=val2Bool(body["liked"]),comment=body["comment"])
+        feedback.save()
+
+        return Response({"message":"Submitted Feedback"},status=status.HTTP_201_CREATED)
+        
+            
+
+
 
 
 class DatasetViewSet(viewsets.ModelViewSet):

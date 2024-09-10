@@ -31,6 +31,21 @@ class Dataset(models.Model):
 
     def __str__(self) -> str:
         return f"{self.title}"
+    
+
+class ModelFeedback(models.Model):
+    id = models.AutoField(primary_key=True)
+    serviceId = models.CharField(max_length=500)
+    task = models.CharField(max_length=500)
+    postedOn = models.DateField(default=date.today)
+    modelInput = models.TextField()
+    modelResponse = models.TextField()
+    liked = models.BooleanField(default=False)
+    comment = models.TextField()
+
+    def __str__(self) -> str:
+        return f"{self.id}_{self.serviceId}"
+    
 
 
 class Model(models.Model):
@@ -109,6 +124,15 @@ class News(models.Model):
     image = models.ImageField(upload_to=image_directory_path,null=True,blank=True)
     related_link = models.URLField(max_length=500, null=True, blank=True)
     markdown_content = models.TextField(null=True,blank=True)
+
+    def __str__(self) -> str:
+        return f"{self.title}"
+
+class Publication(models.Model):
+    id = models.AutoField(primary_key=True)
+    title = models.CharField(max_length=200)
+    dataset = models.ManyToManyField(Dataset,null=True,blank=True)
+    model = models.ManyToManyField(Model,null=True,blank=True)
 
     def __str__(self) -> str:
         return f"{self.title}"

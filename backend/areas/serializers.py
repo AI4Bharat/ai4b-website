@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer
-from .models import Dataset, Tool, Model,News
+from .models import Dataset, Tool, Model,News,ModelFeedback,Publication
 
 
 class DatasetSerializer(ModelSerializer):
@@ -18,6 +18,10 @@ class DatasetSerializer(ModelSerializer):
             "hf_link",
         ]
 
+class ModelFeedbackSerializer(ModelSerializer):
+    class Meta:
+        model = ModelFeedback
+        fields = ['id','serviceId','task','modelInput','modelResponse','comment','liked','postedOn']
 
 class ModelSerializer(ModelSerializer):
     class Meta:
@@ -69,3 +73,17 @@ class NewsSerializer(ModelSerializer):
             "related_link",
             "markdown_content"
         ]
+
+class PublicationSerializer(ModelSerializer):
+    model = ModelSerializer(many=True)
+    dataset = DatasetSerializer(many=True)
+    class Meta:
+        model = Publication
+        fields = [
+            "id",
+            "title",
+            "model",
+            "dataset",
+        ]
+
+
