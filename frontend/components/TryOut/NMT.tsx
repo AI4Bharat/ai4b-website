@@ -230,6 +230,8 @@ export default function NMT({ services }: { services: any }) {
                 task="translation"
                 modelInput={inputText}
                 modelResponse={outputText}
+                sourceLanguage={sourceLanguage}
+                targetLanguage={targetLanguage}
               />
             ) : (
               <></>
