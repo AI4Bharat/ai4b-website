@@ -365,7 +365,7 @@ export default function ASR({ services }: { services: any }) {
               }}
               recorderControls={recorderControls}
             />
-            <FileUploadButton handleFileChange={handleFileChange} />
+            {/* <FileUploadButton handleFileChange={handleFileChange} /> */}
           </HStack>
           <Textarea value={outputText} isReadOnly></Textarea>
           {success ? (
@@ -374,6 +374,8 @@ export default function ASR({ services }: { services: any }) {
               task="asr"
               modelInput={audioString}
               modelResponse={outputText}
+              sourceLanguage={sourceLanguage}
+              targetLanguage={""}
             />
           ) : (
             <></>
