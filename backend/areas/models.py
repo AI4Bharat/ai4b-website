@@ -42,6 +42,8 @@ class ModelFeedback(models.Model):
     modelResponse = models.TextField()
     liked = models.BooleanField(default=False)
     comment = models.TextField()
+    sourceLanguage = models.CharField(max_length=100,null=True,blank=True)
+    targetLanguage = models.CharField(max_length=100,null=True,blank=True)
 
     def __str__(self) -> str:
         return f"{self.id}_{self.serviceId}"
@@ -132,7 +134,7 @@ class Publication(models.Model):
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=200)
     dataset = models.ManyToManyField(Dataset,null=True,blank=True)
-    model = models.ManyToManyField(Model,null=True,blank=True)
+    model = models.ManyToManyField(Model,null=True,blank=True,)
 
     def __str__(self) -> str:
         return f"{self.title}"
