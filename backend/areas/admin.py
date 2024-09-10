@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Dataset, Tool, Model,News,ModelFeedback
+from .models import Dataset, Tool, Model,News,ModelFeedback,Publication
 
 from import_export import resources
 
@@ -34,9 +34,13 @@ class ModelAdmin(admin.ModelAdmin):
 class ToolAdmin(admin.ModelAdmin):
     search_fields = ["title"]
 
+class PublicationAdmin(admin.ModelAdmin):
+    search_fields = ["title"]
+
 
 admin.site.register(Dataset, DatasetAdmin)
 admin.site.register(Tool, ToolAdmin)
 admin.site.register(Model, ModelAdmin)
 admin.site.register(News,NewsAdmin)
 admin.site.register(ModelFeedback,ModelFeedbackAdmin)
+admin.site.register(Publication,PublicationAdmin)
