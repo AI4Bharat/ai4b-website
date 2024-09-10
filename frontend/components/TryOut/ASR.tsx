@@ -376,6 +376,7 @@ export default function ASR({ services }: { services: any }) {
               modelResponse={outputText}
               sourceLanguage={sourceLanguage}
               targetLanguage={""}
+              domain={domain}
             />
           ) : (
             <></>

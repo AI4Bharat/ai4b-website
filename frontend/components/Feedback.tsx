@@ -73,6 +73,7 @@ export default function Feedback({
   modelResponse,
   sourceLanguage,
   targetLanguage,
+  domain,
 }: {
   serviceId: string;
   task: string;
@@ -80,6 +81,7 @@ export default function Feedback({
   modelResponse: string;
   sourceLanguage: string;
   targetLanguage: string;
+  domain: string;
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -157,6 +159,7 @@ export default function Feedback({
                   modelResponse: modelResponse,
                   sourceLanguage: sourceLanguage,
                   targetLanguage: targetLanguage,
+                  domain: domain,
                 });
                 if (feedbackSubmitted) {
                   toast({
