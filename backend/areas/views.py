@@ -224,6 +224,9 @@ class ModelFeedbackViewSet(viewsets.ModelViewSet):
             modelInput = hashlib.sha256(wav_base64.encode())
             modelInput = modelInput.hexdigest()
 
+            os.remove(webmPath)
+            os.remove(wavPath)
+
         elif task=="tts":
 
             modelResponse = hashlib.sha256(modelResponse.encode())
