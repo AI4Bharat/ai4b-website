@@ -110,7 +110,6 @@ const Card = ({ first_name, last_name, role, gradYear, photo }: CardProps) => {
             borderRadius="full"
             objectFit="cover"
             boxSize="150px"
-            bgColor={"a4borange"}
             alt="Profile Photo"
           />
         ) : (
