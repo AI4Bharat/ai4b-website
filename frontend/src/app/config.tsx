@@ -28,4 +28,4 @@ export const LANGUAGE_CODE_NAMES = {
   kok: "Konkani",
 };
 
-export const imagePrefix = process.env.BASE_PATH || "";
+export const imagePrefix = "";
