@@ -167,28 +167,28 @@ export default function Datasets() {
             efforts not only within India but also in multilingual regions
             across the globe.
           </Text>
-          {/* <HStack p={5}>
+          <HStack p={5}>
             <HStack>
-              <FaMicrophone color="orange" size={25} />
+              <FaMicrophone color="#ff6600" size={25} />
               <Text as="b">ASR</Text>
             </HStack>
             <HStack>
-              <FaFileAlt color="orange" size={25} />
+              <FaFileAlt color="#ff6600" size={25} />
               <Text as="b">LLM</Text>
             </HStack>
             <HStack>
-              <FaLanguage color="orange" size={25} />
+              <FaLanguage color="#ff6600" size={25} />
               <Text as="b">NMT</Text>
             </HStack>
             <HStack>
-              <FaVolumeUp color="orange" size={25} />
+              <FaVolumeUp color="#ff6600" size={25} />
               <Text as="b">TTS</Text>
             </HStack>
             <HStack>
-              <FaKeyboard color="orange" size={25} />
+              <FaKeyboard color="#ff6600" size={25} />
               <Text as="b">XLIT</Text>
             </HStack>
-          </HStack> */}
+          </HStack>
           {isLoading ? (
             <></>
           ) : (

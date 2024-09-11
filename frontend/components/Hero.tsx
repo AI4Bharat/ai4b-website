@@ -134,24 +134,16 @@ export default function Hero() {
           align={"center"}
           position={"relative"}
           w={"full"}
+          height={"50vh"}
         >
-          <Box
-            position={"relative"}
-            height={"300px"}
-            rounded={"2xl"}
-            boxShadow={"2xl"}
-            width={"full"}
-            overflow={"hidden"}
-          >
-            <Image
-              alt={"Hero Image"}
-              fit={"cover"}
-              align={"center"}
-              w={"100%"}
-              h={"100%"}
-              src={"https://rbcdsai.iitm.ac.in/images/blogs/indic-langs.webp"}
-            />
-          </Box>
+          <Image
+            alt={"Hero Image"}
+            fit={"contain"}
+            align={"center"}
+            w={"100%"}
+            h={"100%"}
+            src={"/assets/wordcloudtransparent.png"}
+          />
         </Flex>
       </Stack>
       {/* <Divider colorScheme="orange" variant={"solid"} />
