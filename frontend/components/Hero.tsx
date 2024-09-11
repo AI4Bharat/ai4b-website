@@ -68,8 +68,8 @@ export default function Hero() {
               size={"lg"}
               fontWeight={"normal"}
               px={6}
-              colorScheme={"red"}
-              bg={"red.400"}
+              textColor={"white"}
+              bg={"a4borange"}
               _hover={{ bg: "red.500" }}
             >
               XLIT
@@ -81,8 +81,8 @@ export default function Hero() {
               size={"lg"}
               fontWeight={"normal"}
               px={6}
-              colorScheme={"red"}
-              bg={"red.400"}
+              textColor={"white"}
+              bg={"a4borange"}
               _hover={{ bg: "red.500" }}
             >
               NMT
@@ -94,8 +94,8 @@ export default function Hero() {
               size={"lg"}
               fontWeight={"normal"}
               px={6}
-              colorScheme={"red"}
-              bg={"red.400"}
+              textColor={"white"}
+              bg={"a4borange"}
               _hover={{ bg: "red.500" }}
             >
               ASR
@@ -107,8 +107,8 @@ export default function Hero() {
               size={"lg"}
               fontWeight={"normal"}
               px={6}
-              colorScheme={"red"}
-              bg={"red.400"}
+              textColor={"white"}
+              bg={"a4borange"}
               _hover={{ bg: "red.500" }}
             >
               TTS
@@ -120,8 +120,8 @@ export default function Hero() {
               size={"lg"}
               fontWeight={"normal"}
               px={6}
-              colorScheme={"red"}
-              bg={"red.400"}
+              textColor={"white"}
+              bg={"a4borange"}
               _hover={{ bg: "red.500" }}
             >
               LLMs
