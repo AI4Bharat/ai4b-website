@@ -153,7 +153,7 @@ export default function Features() {
               href={`${imagePrefix}/areas/tts`}
             />
             <Card
-              heading={"OCR"}
+              heading={"Optical Character Recognition"}
               icon={
                 <Image
                   src={`${imagePrefix}/assets/icons/ocr.png`}
