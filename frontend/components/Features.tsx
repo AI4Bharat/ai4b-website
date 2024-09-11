@@ -70,12 +70,8 @@ const Card = ({ heading, description, icon, href }: CardProps) => {
 export default function Features() {
   return (
     <Container maxW={"7xl"}>
-      <Stack
-        align={"center"}
-        spacing={{ base: 4, md: 5 }}
-        py={{ base: 10, md: 14 }}
-      >
-        <Stack spacing={4} textAlign={"center"}>
+      <Stack spacing={{ base: 4, md: 5 }} py={{ base: 10, md: 14 }}>
+        <Stack spacing={4}>
           <Heading
             fontSize={{ base: "3xl", sm: "4xl", lg: "6xl" }}
             fontWeight={"bold"}
@@ -84,6 +80,7 @@ export default function Features() {
             <Text textColor={"a4bred"}>across areas.</Text>
           </Heading>
         </Stack>
+        <br />
         <SimpleGrid>
           <Flex flexWrap="wrap" gridGap={6} justify="center">
             <Card
