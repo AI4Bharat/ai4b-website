@@ -52,15 +52,16 @@ const Card = ({ heading, description, icon, href }: CardProps) => {
             {description}
           </Text>
         </Box>
-        <Link href={href}>
-          {href !== "" ? (
+
+        {href !== "" ? (
+          <Link href={href}>
             <Button variant={"link"} colorScheme={"orange"}>
               Learn more
             </Button>
-          ) : (
-            <Text textColor={"a4borange"}>Coming Soon</Text>
-          )}
-        </Link>
+          </Link>
+        ) : (
+          <Text textColor={"a4borange"}>Coming Soon</Text>
+        )}
       </Stack>
     </Box>
   );
