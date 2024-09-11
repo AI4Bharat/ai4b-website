@@ -213,6 +213,7 @@ export default function NMT({ services }: { services: any }) {
                       });
                     }
                   } catch (error) {
+                    setIsLoading(false);
                     setSuccess(false);
                     setOutputText("");
                     toast({
