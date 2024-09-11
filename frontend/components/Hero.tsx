@@ -64,7 +64,7 @@ export default function Hero() {
             <Button
               as="a"
               href={`${imagePrefix}/areas/xlit`}
-              rounded={"full"}
+              borderRadius={10}
               size={"lg"}
               fontWeight={"normal"}
               px={6}
@@ -77,7 +77,7 @@ export default function Hero() {
             <Button
               as="a"
               href={`${imagePrefix}/areas/nmt`}
-              rounded={"full"}
+              borderRadius={10}
               size={"lg"}
               fontWeight={"normal"}
               px={6}
@@ -90,7 +90,7 @@ export default function Hero() {
             <Button
               as="a"
               href={`${imagePrefix}/areas/asr`}
-              rounded={"full"}
+              borderRadius={10}
               size={"lg"}
               fontWeight={"normal"}
               px={6}
@@ -103,7 +103,7 @@ export default function Hero() {
             <Button
               as="a"
               href={`${imagePrefix}/areas/tts`}
-              rounded={"full"}
+              borderRadius={10}
               size={"lg"}
               fontWeight={"normal"}
               px={6}
@@ -116,7 +116,7 @@ export default function Hero() {
             <Button
               as="a"
               href={`${imagePrefix}/areas/llm`}
-              rounded={"full"}
+              borderRadius={10}
               size={"lg"}
               fontWeight={"normal"}
               px={6}
