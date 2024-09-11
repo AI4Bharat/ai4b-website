@@ -107,6 +107,9 @@ export default function ASR({ services }: { services: any }) {
   const toast = useToast();
 
   const fetchTranscription = async ({ blob }: { blob: Blob }) => {
+    const url = URL.createObjectURL(blob);
+    const audio = new Audio(url);
+    audio.play();
     setSuccess(false);
     setAudioString("");
     const reader = new FileReader();
@@ -142,6 +145,7 @@ export default function ASR({ services }: { services: any }) {
           });
         }
       } catch (error: any) {
+        setIsLoading(false);
         try {
           const response = error.response;
           if (response.status === 403) {
@@ -240,6 +244,7 @@ export default function ASR({ services }: { services: any }) {
             });
           }
         } catch (error: any) {
+          setIsLoading(false);
           try {
             const response = error.response;
             if (response.status === 403) {

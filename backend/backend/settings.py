@@ -30,9 +30,11 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["localhost","admin.models.ai4bharat.org"]
+ALLOWED_HOSTS = ["localhost","admin.models.ai4bharat.org","test.ai4bharat.org","ai4bharat.iitm.ac.in"]
 
 TIME_ZONE = "Asia/Kolkata"
+
+SECURE_SSL_REDIRECT = True
 
 
 # Application definition
@@ -51,6 +53,7 @@ INSTALLED_APPS = [
     "django_filters",
     "corsheaders",
     'import_export',
+    'adrf'
 ]
 
 MIDDLEWARE = [
@@ -62,6 +65,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "corsheaders.middleware.CorsMiddleware",
+    "backend.get_ip.reverse_proxy"
 ]
 CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
 
@@ -145,15 +149,15 @@ MEDIA_URL = "/media/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# CACHES = {
-#     "default": {
-#         "BACKEND": "django_redis.cache.RedisCache",
-#         "LOCATION": "redis://127.0.0.1:6379/1",
-#         "OPTIONS": {
-#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-#         }
-#     }
-# }
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
 
 RATELIMIT_USE_CACHE = 'default'
 

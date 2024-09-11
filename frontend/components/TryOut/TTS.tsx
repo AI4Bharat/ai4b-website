@@ -217,6 +217,7 @@ export default function TTS({ services }: { services: any }) {
                     });
                   }
                 } catch (error) {
+                  setIsLoading(false);
                   setSuccess(false);
                   setOutput("");
                   toast({

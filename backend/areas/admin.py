@@ -18,7 +18,7 @@ class NewsAdmin(admin.ModelAdmin):
 
 class ModelFeedbackAdmin(ImportExportModelAdmin):
     resource_classes = [FeedbackResource]
-    list_filter = ["task", "serviceId","postedOn"]
+    list_filter = ["task", "serviceId","postedOn","liked","sourceLanguage","targetLanguage","domain"]
     search_fields = ["serviceId"]
 
 class DatasetAdmin(admin.ModelAdmin):

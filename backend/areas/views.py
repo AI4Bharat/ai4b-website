@@ -7,6 +7,10 @@ import os
 import requests
 import base64 
 import subprocess
+import shutil
+import httpx
+
+
 
 # Create your views here.
 from .models import Dataset, Tool, Model,News,ModelFeedback,Publication
@@ -18,6 +22,7 @@ from django_ratelimit.decorators import ratelimit
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from rest_framework.decorators import api_view
+from adrf.decorators import api_view as apv
 
 import uuid
 
@@ -31,7 +36,7 @@ def fetchDhruvaServiceInfo(serviceId):
                                         headers=
                                         {'x-auth-source': 'API_KEY',
                                             'Authorization': os.getenv('DHRUVA_API_KEY')},
-                                            json={'serviceId':serviceId},timeout=3)
+                                            json={'serviceId':serviceId})
         if dhruvaServiceInfo.status_code!=200:
             return {}
         else:
@@ -40,44 +45,50 @@ def fetchDhruvaServiceInfo(serviceId):
         return {}
 
 ## Inference Views
-@ratelimit(key='ip', rate='30/m', method='POST')
-@api_view(["POST"])
+@ratelimit(key='ip', rate='15/m', method='POST')
+@apv(["POST"])
 @permission_classes((permissions.AllowAny,))
-def translate(request):
+async def translate(request):
     body = request.data
-    inferenceResult = requests.post(os.getenv("DHRUVA_TRANSLATION_ENDPOINT"),headers=
-                                       {'x-auth-source': 'API_KEY',
-                                        'Authorization': os.getenv('DHRUVA_API_KEY')},
-                                        json={
-                                                "controlConfig": {
-                                                    "dataTracking": True
-                                                },
-                                                "config": {
-                                                    "serviceId": body["serviceId"],
-                                                    "language": {
-                                                    "sourceLanguage": body["sourceLanguage"],
-                                                    "sourceScriptCode": "",
-                                                    "targetLanguage": body["targetLanguage"],
-                                                    "targetScriptCode": ""
-                                                    }
-                                                },
-                                                "input": [
-                                                    {
-                                                    "source": body["input"]
-                                                    }
-                                                ]
-                                                })
-    if inferenceResult.status_code!=200:
-        return Response({"message":"Inference Failed"},status=status.HTTP_503_SERVICE_UNAVAILABLE)
+    url = os.getenv("DHRUVA_TRANSLATION_ENDPOINT")
+    headers = {
+        'x-auth-source': 'API_KEY',
+        'Authorization': os.getenv('DHRUVA_API_KEY')
+    }
+    payload = {
+        "controlConfig": {
+            "dataTracking": True
+        },
+        "config": {
+            "serviceId": body["serviceId"],
+            "language": {
+                "sourceLanguage": body["sourceLanguage"],
+                "sourceScriptCode": "",
+                "targetLanguage": body["targetLanguage"],
+                "targetScriptCode": ""
+            }
+        },
+        "input": [
+            {
+                "source": body["input"]
+            }
+        ]
+    }
+
+    async with httpx.AsyncClient() as client:
+        inference_result = await client.post(url, headers=headers, json=payload)
+
+    if inference_result.status_code != 200:
+        return Response({"message": "Inference Failed"}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
     else:
-        return Response(inferenceResult.json(),status=status.HTTP_200_OK)
+        return Response(inference_result.json(), status=status.HTTP_200_OK)
     
 
 
-
-@api_view(["POST"])
+@ratelimit(key='ip', rate='10/m', method='POST')
+@apv(["POST"])
 @permission_classes((permissions.AllowAny,))
-def transcribe(request):
+async def transcribe(request):
 
     body = request.data
 
@@ -100,10 +111,8 @@ def transcribe(request):
         wav_base64 = base64.b64encode(wav_data).decode('utf-8')
 
 
-    inferenceResult = requests.post(os.getenv("DHRUVA_ASR_ENDPOINT"),headers=
-                                {'x-auth-source': 'API_KEY',
-                                'Authorization': os.getenv('DHRUVA_API_KEY')},
-                                json={
+    headers = {'x-auth-source': 'API_KEY','Authorization': os.getenv('DHRUVA_API_KEY')}
+    payload = {
                                         "controlConfig": {
                                             "dataTracking": True
                                         },
@@ -130,7 +139,10 @@ def transcribe(request):
                                             }
                                         ]
                                     }
-                                    )
+    
+    async with httpx.AsyncClient() as client:
+        inferenceResult = await client.post(os.getenv("DHRUVA_ASR_ENDPOINT"),headers=headers,json=payload)
+
     os.remove(webmPath)
     os.remove(wavPath)
     if inferenceResult.status_code!=200:
@@ -139,41 +151,47 @@ def transcribe(request):
         return Response(inferenceResult.json(),status=status.HTTP_200_OK)
     
 
-@ratelimit(key='ip', rate='30/m', method='POST')
-@api_view(["POST"])
+@ratelimit(key='ip', rate='10/m', method='POST')
+@apv(["POST"])
 @permission_classes((permissions.AllowAny,))
-def convertToAudio(request):
-
+async def convertToAudio(request):
     body = request.data
-    inferenceResult = requests.post(os.getenv("DHRUVA_TTS_ENDPOINT"),headers=
-                                       {'x-auth-source': 'API_KEY',
-                                        'Authorization': os.getenv('DHRUVA_API_KEY')},
-                                        json={
-                                                "controlConfig": {
-                                                    "dataTracking": True
-                                                },
-                                                "config": {
-                                                    "serviceId": body["serviceId"],
-                                                    "gender": body["gender"],
-                                                    "samplingRate": body["samplingRate"],
-                                                    "audioFormat": "wav",
-                                                    "language": {
-                                                    "sourceLanguage": body["sourceLanguage"],
-                                                    "sourceScriptCode": ""
-                                                    }
-                                                },
-                                                "input": [
-                                                    {
-                                                    "source": body["input"],
-                                                    "audioDuration": 0
-                                                    }
-                                                ]
-                                                })
-    if inferenceResult.status_code!=200:
-        return Response({"message":"Inference Failed"},status=status.HTTP_503_SERVICE_UNAVAILABLE)
-    else:
-        return Response(inferenceResult.json(),status=status.HTTP_200_OK)
+    
+    url = os.getenv("DHRUVA_TTS_ENDPOINT")
+    headers = {
+        'x-auth-source': 'API_KEY',
+        'Authorization': os.getenv('DHRUVA_API_KEY')
+    }
+    
+    json_payload = {
+        "controlConfig": {
+            "dataTracking": True
+        },
+        "config": {
+            "serviceId": body["serviceId"],
+            "gender": body["gender"],
+            "samplingRate": body["samplingRate"],
+            "audioFormat": "wav",
+            "language": {
+                "sourceLanguage": body["sourceLanguage"],
+                "sourceScriptCode": ""
+            }
+        },
+        "input": [
+            {
+                "source": body["input"],
+                "audioDuration": 0
+            }
+        ]
+    }
 
+    async with httpx.AsyncClient() as client:
+        inference_result = await client.post(url, headers=headers, json=json_payload)
+
+    if inference_result.status_code != 200:
+        return Response({"message": "Inference Failed"}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+    else:
+        return Response(inference_result.json(), status=status.HTTP_200_OK)
     
 
 class NewsViewSet(viewsets.ModelViewSet):
@@ -228,7 +246,7 @@ class ModelFeedbackViewSet(viewsets.ModelViewSet):
 
             modelInput = hashlib.sha256(wav_base64.encode())
             modelInput = modelInput.hexdigest()
-
+            shutil.copy2(wavPath,f"/home/ai4bharat/ai4b-website/backend/media/audio/{modelInput}.wav")
             os.remove(webmPath)
             os.remove(wavPath)
 
@@ -362,6 +380,7 @@ class ToolViewSet(viewsets.ModelViewSet):
     queryset = Tool.objects.all()
     serializer_class = ToolSerializer
 
+    @method_decorator(cache_page(60*15))
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
@@ -389,6 +408,7 @@ class ToolViewSet(viewsets.ModelViewSet):
 
 @permission_classes((permissions.AllowAny,))
 class PublicationFilterOptions(viewsets.ViewSet):
+    @method_decorator(cache_page(60*15))
     def list(self, request, *args, **kwargs):
 
         areas = []
@@ -444,7 +464,7 @@ class PublicationViewSet(viewsets.ViewSet):
 
 @permission_classes((permissions.AllowAny,))
 class AreaViewSet(viewsets.ViewSet):
-
+    @method_decorator(cache_page(60*15))
     def list(self, request, *args, **kwargs):
         area = kwargs.get("area")
         datasets = Dataset.objects.filter(area=area)
