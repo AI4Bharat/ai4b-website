@@ -11,6 +11,8 @@ import {
   Textarea,
   useToast,
   VStack,
+  Progress,
+  CircularProgress,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useState } from "react";
@@ -150,6 +152,7 @@ export default function NMT({ services }: { services: any }) {
               }}
               lang={sourceLanguage}
             />
+
             <Textarea value={outputText} isReadOnly></Textarea>
             <Button
               onClick={async () => {
@@ -235,7 +238,7 @@ export default function NMT({ services }: { services: any }) {
                 domain="general"
               />
             ) : (
-              <></>
+              <CircularProgress isIndeterminate color="a4borange" />
             )}
           </VStack>
         </VStack>

@@ -36,11 +36,11 @@ import {
 } from "react-icons/fa";
 
 const datasetIcons: { [key: string]: React.ReactElement } = {
-  llm: <FaFileAlt color="orange" size={50} />,
-  asr: <FaMicrophone color="orange" size={50} />,
-  nmt: <FaLanguage color="orange" size={50} />,
-  tts: <FaVolumeUp color="orange" size={50} />,
-  xlit: <FaKeyboard color="orange" size={50} />,
+  llm: <FaFileAlt color="#ff6600" size={50} />,
+  asr: <FaMicrophone color="#ff6600" size={50} />,
+  nmt: <FaLanguage color="#ff6600" size={50} />,
+  tts: <FaVolumeUp color="#ff6600" size={50} />,
+  xlit: <FaKeyboard color="#ff6600" size={50} />,
 };
 
 interface FeatureProps {
@@ -204,7 +204,7 @@ export default function Datasets() {
                             <Card
                               key={dataset.title}
                               border={"solid"}
-                              borderColor={"orange"}
+                              borderColor={"a4borange"}
                             >
                               <Feature
                                 icon={dataset.area.toLowerCase()}

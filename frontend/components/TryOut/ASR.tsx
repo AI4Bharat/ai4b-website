@@ -14,6 +14,7 @@ import {
   Textarea,
   useToast,
   VStack,
+  CircularProgress,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { ChangeEventHandler, useRef, useState } from "react";
@@ -393,7 +394,7 @@ export default function ASR({ services }: { services: any }) {
               domain={domain}
             />
           ) : (
-            <></>
+            <CircularProgress isIndeterminate color="a4borange" />
           )}
         </VStack>
       </FormControl>

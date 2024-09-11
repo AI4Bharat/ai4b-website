@@ -13,6 +13,7 @@ import {
   HStack,
   VStack,
   Switch,
+  CircularProgress,
 } from "@chakra-ui/react";
 import { LANGUAGE_CODE_NAMES } from "@/app/config";
 import axios from "axios";
@@ -245,7 +246,7 @@ export default function TTS({ services }: { services: any }) {
                 domain="general"
               />
             ) : (
-              <></>
+              <CircularProgress isIndeterminate color="a4borange" />
             )}
           </VStack>
         </VStack>

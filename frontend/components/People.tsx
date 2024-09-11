@@ -72,7 +72,6 @@ const TabbedCard = ({
             borderRadius="full"
             objectFit="cover"
             boxSize="200px"
-            bgColor={"a4borange"}
             alt="Profile Photo"
             width={200}
           />
