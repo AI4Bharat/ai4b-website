@@ -37,7 +37,7 @@ const renderSection = ({
     case "fdr":
       return (
         <PeopleSection
-          heading="Visionaries Behind AI4Bharat: Meet Our Founders"
+          heading="Meet Our Founders"
           description="In the vanguard of AI innovation stands a collective of extraordinary minds—the founders of AI4Bharat. Their visionary leadership has been the cornerstone of our journey, shaping the organization into a driving force of technological advancement."
           members={members}
           team={"1"}
@@ -55,7 +55,7 @@ const renderSection = ({
     case "vr":
       return (
         <PeopleSection
-          heading="Distinguished Minds at AI4Bharat: Our Visiting Researchers"
+          heading="Meet Our Visiting Researchers"
           description="Meet the brains behind the breakthroughs, the individuals who bring a wealth of experience and innovation to our collaborative ecosystem. From pioneering research methodologies to pushing the boundaries of AI applications, our visiting researchers are at the forefront of shaping the future."
           members={members}
           team={"3"}
@@ -64,7 +64,7 @@ const renderSection = ({
     case "dl":
       return (
         <PeopleSection
-          heading="Meet Our Data Leads: Architects of Linguistic Precision"
+          heading="Meet Our Data Leads"
           description="Our Data Leads are the backbone of AI4Bharat linguistic innovations. These consummate professionals meticulously curate datasets, ensuring our language models comprehend human expression with unparalleled precision. Meet the professionals shaping the linguistic future at AI4Bharat, where dedication meets excellence."
           members={members}
           team={"4"}
