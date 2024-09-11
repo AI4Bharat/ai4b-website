@@ -102,6 +102,7 @@ export default function ASR({ services }: { services: any }) {
   const [domain, setDomain] = useState("general");
 
   const [success, setSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const toast = useToast();
 
@@ -117,6 +118,7 @@ export default function ASR({ services }: { services: any }) {
       const audioString = (base64data as string).split(",")[1];
       setAudioString(audioString);
       try {
+        setIsLoading(true);
         const response = await axios.post(`${API_URL}/inference/transcribe`, {
           sourceLanguage: sourceLanguage,
           audioContent: audioString,
@@ -127,6 +129,7 @@ export default function ASR({ services }: { services: any }) {
           preProcessors: preProcessor,
           postProcessors: postProcessor,
         });
+        setIsLoading(false);
         if (response.status === 200) {
           setSuccess(true);
           setOutputText(response.data["output"][0]["source"]);
@@ -213,6 +216,7 @@ export default function ASR({ services }: { services: any }) {
         )[1];
         setAudioString(audioString);
         try {
+          setIsLoading(true);
           const response = await axios.post(`${API_URL}/inference/transcribe`, {
             sourceLanguage: sourceLanguage,
             audioContent: audioString,
@@ -223,6 +227,7 @@ export default function ASR({ services }: { services: any }) {
             preProcessors: preProcessor,
             postProcessors: postProcessor,
           });
+          setIsLoading(false);
           if (response.status === 200) {
             setSuccess(true);
             setOutputText(response.data["output"][0]["source"]);
@@ -394,7 +399,13 @@ export default function ASR({ services }: { services: any }) {
               domain={domain}
             />
           ) : (
-            <CircularProgress isIndeterminate color="a4borange" />
+            <>
+              {isLoading ? (
+                <CircularProgress isIndeterminate color="a4borange" />
+              ) : (
+                <></>
+              )}
+            </>
           )}
         </VStack>
       </FormControl>

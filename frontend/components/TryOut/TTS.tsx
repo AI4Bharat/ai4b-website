@@ -65,6 +65,7 @@ export default function TTS({ services }: { services: any }) {
   const [transliteration, setTransliteration] = useState(true);
   const [inputText, setInputText] = useState("");
   const [output, setOutput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const [success, setSuccess] = useState(false);
 
@@ -172,6 +173,7 @@ export default function TTS({ services }: { services: any }) {
                 setOutput("");
                 setSuccess(false);
                 try {
+                  setIsLoading(true);
                   const response = await fetchAudio({
                     sourceLanguage,
                     input: inputText,
@@ -179,6 +181,7 @@ export default function TTS({ services }: { services: any }) {
                     samplingRate: samplingRate,
                     serviceId: service,
                   });
+                  setIsLoading(false);
                   if (response.status === 200) {
                     setSuccess(true);
                     const result = response.data;
@@ -246,7 +249,13 @@ export default function TTS({ services }: { services: any }) {
                 domain="general"
               />
             ) : (
-              <CircularProgress isIndeterminate color="a4borange" />
+              <>
+                {isLoading ? (
+                  <CircularProgress isIndeterminate color="a4borange" />
+                ) : (
+                  <></>
+                )}
+              </>
             )}
           </VStack>
         </VStack>

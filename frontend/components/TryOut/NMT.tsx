@@ -61,6 +61,7 @@ export default function NMT({ services }: { services: any }) {
   const [inputText, setInputText] = useState("");
   const [outputText, setOutputText] = useState("");
   const [success, setSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const toast = useToast();
 
@@ -168,6 +169,7 @@ export default function NMT({ services }: { services: any }) {
                   });
                 } else {
                   try {
+                    setIsLoading(true);
                     const response = await fetchTranslation({
                       sourceLanguage: sourceLanguage,
                       targetLanguage: targetLanguage,
@@ -175,6 +177,7 @@ export default function NMT({ services }: { services: any }) {
                       task: "translation",
                       serviceId: service,
                     });
+                    setIsLoading(false);
                     if (response.status === 200) {
                       setSuccess(true);
                       setOutputText(response.data["output"][0]["target"]);
@@ -238,7 +241,13 @@ export default function NMT({ services }: { services: any }) {
                 domain="general"
               />
             ) : (
-              <CircularProgress isIndeterminate color="a4borange" />
+              <>
+                {isLoading ? (
+                  <CircularProgress isIndeterminate color="a4borange" />
+                ) : (
+                  <></>
+                )}
+              </>
             )}
           </VStack>
         </VStack>
