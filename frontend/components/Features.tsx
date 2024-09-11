@@ -52,15 +52,16 @@ const Card = ({ heading, description, icon, href }: CardProps) => {
             {description}
           </Text>
         </Box>
-        <Link href={href}>
-          {href !== "" ? (
+
+        {href !== "" ? (
+          <Link href={href}>
             <Button variant={"link"} colorScheme={"orange"}>
               Learn more
             </Button>
-          ) : (
-            <Text textColor={"a4borange"}>Coming Soon</Text>
-          )}
-        </Link>
+          </Link>
+        ) : (
+          <Text textColor={"a4borange"}>Coming Soon</Text>
+        )}
       </Stack>
     </Box>
   );
@@ -69,12 +70,17 @@ const Card = ({ heading, description, icon, href }: CardProps) => {
 export default function Features() {
   return (
     <Container maxW={"7xl"}>
-      <Stack
-        align={"center"}
-        spacing={{ base: 4, md: 5 }}
-        py={{ base: 10, md: 14 }}
-        direction={{ base: "column", md: "row" }}
-      >
+      <Stack spacing={{ base: 4, md: 5 }} py={{ base: 10, md: 14 }}>
+        <Stack spacing={4}>
+          <Heading
+            fontSize={{ base: "3xl", sm: "4xl", lg: "6xl" }}
+            fontWeight={"bold"}
+          >
+            <Text textColor={"a4borange"}>Cutting-edge work</Text>
+            <Text textColor={"a4bred"}>across areas.</Text>
+          </Heading>
+        </Stack>
+        <br />
         <SimpleGrid>
           <Flex flexWrap="wrap" gridGap={6} justify="center">
             <Card
@@ -153,7 +159,7 @@ export default function Features() {
               href={`${imagePrefix}/areas/tts`}
             />
             <Card
-              heading={"OCR"}
+              heading={"Optical Character Recognition"}
               icon={
                 <Image
                   src={`${imagePrefix}/assets/icons/ocr.png`}
@@ -169,15 +175,6 @@ export default function Features() {
             />
           </Flex>
         </SimpleGrid>
-        <Stack spacing={4} textAlign={"center"}>
-          <Heading
-            fontSize={{ base: "3xl", sm: "4xl", lg: "6xl" }}
-            fontWeight={"bold"}
-          >
-            <Text textColor={"a4borange"}>Cutting-edge work</Text>
-            <Text textColor={"a4bred"}>across areas.</Text>
-          </Heading>
-        </Stack>
       </Stack>
     </Container>
     // <Box p={4}>

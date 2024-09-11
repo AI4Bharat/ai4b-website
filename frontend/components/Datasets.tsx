@@ -36,11 +36,11 @@ import {
 } from "react-icons/fa";
 
 const datasetIcons: { [key: string]: React.ReactElement } = {
-  llm: <FaFileAlt color="orange" size={50} />,
-  asr: <FaMicrophone color="orange" size={50} />,
-  nmt: <FaLanguage color="orange" size={50} />,
-  tts: <FaVolumeUp color="orange" size={50} />,
-  xlit: <FaKeyboard color="orange" size={50} />,
+  llm: <FaFileAlt color="#ff6600" size={50} />,
+  asr: <FaMicrophone color="#ff6600" size={50} />,
+  nmt: <FaLanguage color="#ff6600" size={50} />,
+  tts: <FaVolumeUp color="#ff6600" size={50} />,
+  xlit: <FaKeyboard color="#ff6600" size={50} />,
 };
 
 interface FeatureProps {
@@ -167,28 +167,28 @@ export default function Datasets() {
             efforts not only within India but also in multilingual regions
             across the globe.
           </Text>
-          {/* <HStack p={5}>
+          <HStack p={5}>
             <HStack>
-              <FaMicrophone color="orange" size={25} />
+              <FaMicrophone color="#ff6600" size={25} />
               <Text as="b">ASR</Text>
             </HStack>
             <HStack>
-              <FaFileAlt color="orange" size={25} />
+              <FaFileAlt color="#ff6600" size={25} />
               <Text as="b">LLM</Text>
             </HStack>
             <HStack>
-              <FaLanguage color="orange" size={25} />
+              <FaLanguage color="#ff6600" size={25} />
               <Text as="b">NMT</Text>
             </HStack>
             <HStack>
-              <FaVolumeUp color="orange" size={25} />
+              <FaVolumeUp color="#ff6600" size={25} />
               <Text as="b">TTS</Text>
             </HStack>
             <HStack>
-              <FaKeyboard color="orange" size={25} />
+              <FaKeyboard color="#ff6600" size={25} />
               <Text as="b">XLIT</Text>
             </HStack>
-          </HStack> */}
+          </HStack>
           {isLoading ? (
             <></>
           ) : (
@@ -204,7 +204,7 @@ export default function Datasets() {
                             <Card
                               key={dataset.title}
                               border={"solid"}
-                              borderColor={"orange"}
+                              borderColor={"a4borange"}
                             >
                               <Feature
                                 icon={dataset.area.toLowerCase()}

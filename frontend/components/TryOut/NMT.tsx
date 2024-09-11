@@ -11,6 +11,8 @@ import {
   Textarea,
   useToast,
   VStack,
+  Progress,
+  CircularProgress,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useState } from "react";
@@ -59,6 +61,7 @@ export default function NMT({ services }: { services: any }) {
   const [inputText, setInputText] = useState("");
   const [outputText, setOutputText] = useState("");
   const [success, setSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const toast = useToast();
 
@@ -150,6 +153,7 @@ export default function NMT({ services }: { services: any }) {
               }}
               lang={sourceLanguage}
             />
+
             <Textarea value={outputText} isReadOnly></Textarea>
             <Button
               onClick={async () => {
@@ -165,6 +169,7 @@ export default function NMT({ services }: { services: any }) {
                   });
                 } else {
                   try {
+                    setIsLoading(true);
                     const response = await fetchTranslation({
                       sourceLanguage: sourceLanguage,
                       targetLanguage: targetLanguage,
@@ -172,6 +177,7 @@ export default function NMT({ services }: { services: any }) {
                       task: "translation",
                       serviceId: service,
                     });
+                    setIsLoading(false);
                     if (response.status === 200) {
                       setSuccess(true);
                       setOutputText(response.data["output"][0]["target"]);
@@ -207,6 +213,7 @@ export default function NMT({ services }: { services: any }) {
                       });
                     }
                   } catch (error) {
+                    setIsLoading(false);
                     setSuccess(false);
                     setOutputText("");
                     toast({
@@ -235,7 +242,13 @@ export default function NMT({ services }: { services: any }) {
                 domain="general"
               />
             ) : (
-              <></>
+              <>
+                {isLoading ? (
+                  <CircularProgress isIndeterminate color="a4borange" />
+                ) : (
+                  <></>
+                )}
+              </>
             )}
           </VStack>
         </VStack>

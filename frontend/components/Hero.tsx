@@ -64,12 +64,12 @@ export default function Hero() {
             <Button
               as="a"
               href={`${imagePrefix}/areas/xlit`}
-              rounded={"full"}
+              borderRadius={10}
               size={"lg"}
               fontWeight={"normal"}
               px={6}
-              colorScheme={"red"}
-              bg={"red.400"}
+              textColor={"white"}
+              bg={"a4borange"}
               _hover={{ bg: "red.500" }}
             >
               XLIT
@@ -77,12 +77,12 @@ export default function Hero() {
             <Button
               as="a"
               href={`${imagePrefix}/areas/nmt`}
-              rounded={"full"}
+              borderRadius={10}
               size={"lg"}
               fontWeight={"normal"}
               px={6}
-              colorScheme={"red"}
-              bg={"red.400"}
+              textColor={"white"}
+              bg={"a4borange"}
               _hover={{ bg: "red.500" }}
             >
               NMT
@@ -90,12 +90,12 @@ export default function Hero() {
             <Button
               as="a"
               href={`${imagePrefix}/areas/asr`}
-              rounded={"full"}
+              borderRadius={10}
               size={"lg"}
               fontWeight={"normal"}
               px={6}
-              colorScheme={"red"}
-              bg={"red.400"}
+              textColor={"white"}
+              bg={"a4borange"}
               _hover={{ bg: "red.500" }}
             >
               ASR
@@ -103,12 +103,12 @@ export default function Hero() {
             <Button
               as="a"
               href={`${imagePrefix}/areas/tts`}
-              rounded={"full"}
+              borderRadius={10}
               size={"lg"}
               fontWeight={"normal"}
               px={6}
-              colorScheme={"red"}
-              bg={"red.400"}
+              textColor={"white"}
+              bg={"a4borange"}
               _hover={{ bg: "red.500" }}
             >
               TTS
@@ -116,12 +116,12 @@ export default function Hero() {
             <Button
               as="a"
               href={`${imagePrefix}/areas/llm`}
-              rounded={"full"}
+              borderRadius={10}
               size={"lg"}
               fontWeight={"normal"}
               px={6}
-              colorScheme={"red"}
-              bg={"red.400"}
+              textColor={"white"}
+              bg={"a4borange"}
               _hover={{ bg: "red.500" }}
             >
               LLMs
@@ -134,24 +134,16 @@ export default function Hero() {
           align={"center"}
           position={"relative"}
           w={"full"}
+          height={"50vh"}
         >
-          <Box
-            position={"relative"}
-            height={"300px"}
-            rounded={"2xl"}
-            boxShadow={"2xl"}
-            width={"full"}
-            overflow={"hidden"}
-          >
-            <Image
-              alt={"Hero Image"}
-              fit={"cover"}
-              align={"center"}
-              w={"100%"}
-              h={"100%"}
-              src={"https://rbcdsai.iitm.ac.in/images/blogs/indic-langs.webp"}
-            />
-          </Box>
+          <Image
+            alt={"Hero Image"}
+            fit={"contain"}
+            align={"center"}
+            w={"100%"}
+            h={"100%"}
+            src={"/assets/wordcloudtransparent.png"}
+          />
         </Flex>
       </Stack>
       {/* <Divider colorScheme="orange" variant={"solid"} />

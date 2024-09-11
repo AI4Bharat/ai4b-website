@@ -116,7 +116,7 @@ export default function AreaComponent({ slug }: { slug: string }) {
                 href={`${imagePrefix}/areas/model/${slug.toUpperCase()}/${latest}`}
               >
                 <Button
-                  rounded={"full"}
+                  borderRadius={10}
                   size={"lg"}
                   fontWeight={"normal"}
                   px={6}

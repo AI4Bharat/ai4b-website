@@ -54,8 +54,7 @@ const fetchTransliteration = async ({
 
 export default function XLIT({ services }: { services: any }) {
   const [service, setService] = useState(Object.keys(services)[0]);
-  const [sourceLanguage, setSourceLanguage] = useState("en");
-  const [targetLanguage, setTargetLanguage] = useState("hi");
+  const [sourceLanguage, setSourceLanguage] = useState("hi");
   const [inputText, setInputText] = useState("");
   const [outputText, setOutputText] = useState("");
 
@@ -85,7 +84,7 @@ export default function XLIT({ services }: { services: any }) {
               ))}
             </Select>
             <FormLabel textColor={"gray.500"}>
-              Select Source Language:
+              Select Target Language:
             </FormLabel>
             <Select
               value={sourceLanguage}

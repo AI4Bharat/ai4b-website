@@ -14,6 +14,7 @@ import {
   Textarea,
   useToast,
   VStack,
+  CircularProgress,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { ChangeEventHandler, useRef, useState } from "react";
@@ -101,10 +102,14 @@ export default function ASR({ services }: { services: any }) {
   const [domain, setDomain] = useState("general");
 
   const [success, setSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const toast = useToast();
 
   const fetchTranscription = async ({ blob }: { blob: Blob }) => {
+    const url = URL.createObjectURL(blob);
+    const audio = new Audio(url);
+    audio.play();
     setSuccess(false);
     setAudioString("");
     const reader = new FileReader();
@@ -116,6 +121,7 @@ export default function ASR({ services }: { services: any }) {
       const audioString = (base64data as string).split(",")[1];
       setAudioString(audioString);
       try {
+        setIsLoading(true);
         const response = await axios.post(`${API_URL}/inference/transcribe`, {
           sourceLanguage: sourceLanguage,
           audioContent: audioString,
@@ -126,6 +132,7 @@ export default function ASR({ services }: { services: any }) {
           preProcessors: preProcessor,
           postProcessors: postProcessor,
         });
+        setIsLoading(false);
         if (response.status === 200) {
           setSuccess(true);
           setOutputText(response.data["output"][0]["source"]);
@@ -138,6 +145,7 @@ export default function ASR({ services }: { services: any }) {
           });
         }
       } catch (error: any) {
+        setIsLoading(false);
         try {
           const response = error.response;
           if (response.status === 403) {
@@ -212,6 +220,7 @@ export default function ASR({ services }: { services: any }) {
         )[1];
         setAudioString(audioString);
         try {
+          setIsLoading(true);
           const response = await axios.post(`${API_URL}/inference/transcribe`, {
             sourceLanguage: sourceLanguage,
             audioContent: audioString,
@@ -222,6 +231,7 @@ export default function ASR({ services }: { services: any }) {
             preProcessors: preProcessor,
             postProcessors: postProcessor,
           });
+          setIsLoading(false);
           if (response.status === 200) {
             setSuccess(true);
             setOutputText(response.data["output"][0]["source"]);
@@ -234,6 +244,7 @@ export default function ASR({ services }: { services: any }) {
             });
           }
         } catch (error: any) {
+          setIsLoading(false);
           try {
             const response = error.response;
             if (response.status === 403) {
@@ -304,43 +315,57 @@ export default function ASR({ services }: { services: any }) {
               )
             )}
           </Select>
-          <FormLabel textColor={"gray.500"}>Select Pre Processors:</FormLabel>
-          <Box>
-            <HStack spacing={4}>
-              {preProcessors.map((option) => (
-                <Checkbox
-                  key={option}
-                  isChecked={preProcessor.includes(option)}
-                  onChange={() => handlePreCheckboxChange(option)}
-                >
-                  {option}
-                </Checkbox>
-              ))}
-            </HStack>
-          </Box>
-          <FormLabel textColor={"gray.500"}>Select Post Processors:</FormLabel>
-          <Box>
-            <HStack spacing={4}>
-              {postProcessors.map((option) => (
-                <Checkbox
-                  key={option}
-                  isChecked={postProcessor.includes(option)}
-                  onChange={() => handlePostCheckboxChange(option)}
-                >
-                  {option}
-                </Checkbox>
-              ))}
-            </HStack>
-          </Box>
-          <FormLabel textColor={"gray.500"}>Select Sampling Rate:</FormLabel>
-          <Select
-            value={samplingRate}
-            onChange={(event) => setSamplingRate(parseInt(event.target.value))}
-          >
-            <option value={8000}>8000</option>
-            <option value={16000}>16000</option>
-            <option value={48000}>48000</option>
-          </Select>
+          {service !== "ai4bharat/conformer-multilingual-all--gpu-t4" ? (
+            <>
+              <FormLabel textColor={"gray.500"}>
+                Select Pre Processors:
+              </FormLabel>
+              <Box>
+                <HStack spacing={4}>
+                  {preProcessors.map((option) => (
+                    <Checkbox
+                      key={option}
+                      isChecked={preProcessor.includes(option)}
+                      onChange={() => handlePreCheckboxChange(option)}
+                    >
+                      {option}
+                    </Checkbox>
+                  ))}
+                </HStack>
+              </Box>
+              <FormLabel textColor={"gray.500"}>
+                Select Post Processors:
+              </FormLabel>
+              <Box>
+                <HStack spacing={4}>
+                  {postProcessors.map((option) => (
+                    <Checkbox
+                      key={option}
+                      isChecked={postProcessor.includes(option)}
+                      onChange={() => handlePostCheckboxChange(option)}
+                    >
+                      {option}
+                    </Checkbox>
+                  ))}
+                </HStack>
+              </Box>
+              <FormLabel textColor={"gray.500"}>
+                Select Sampling Rate:
+              </FormLabel>
+              <Select
+                value={samplingRate}
+                onChange={(event) =>
+                  setSamplingRate(parseInt(event.target.value))
+                }
+              >
+                <option value={8000}>8000</option>
+                <option value={16000}>16000</option>
+                <option value={48000}>48000</option>
+              </Select>
+            </>
+          ) : (
+            <></>
+          )}
           <FormLabel textColor={"gray.500"}>Domain:</FormLabel>
           <Select
             value={domain}
@@ -365,7 +390,7 @@ export default function ASR({ services }: { services: any }) {
               }}
               recorderControls={recorderControls}
             />
-            {/* <FileUploadButton handleFileChange={handleFileChange} /> */}
+            <FileUploadButton handleFileChange={handleFileChange} />
           </HStack>
           <Textarea value={outputText} isReadOnly></Textarea>
           {success ? (
@@ -379,7 +404,13 @@ export default function ASR({ services }: { services: any }) {
               domain={domain}
             />
           ) : (
-            <></>
+            <>
+              {isLoading ? (
+                <CircularProgress isIndeterminate color="a4borange" />
+              ) : (
+                <></>
+              )}
+            </>
           )}
         </VStack>
       </FormControl>
