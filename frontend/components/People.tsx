@@ -116,7 +116,7 @@ const Card = ({ first_name, last_name, role, gradYear, photo }: CardProps) => {
         ) : (
           <></>
         )}
-        <Box mt={2}>
+        <Box justifyItems={"center"} mt={2}>
           <Heading size="md">{first_name + " " + last_name}</Heading>
           <Text mt={1} fontSize={"sm"}>
             {role}

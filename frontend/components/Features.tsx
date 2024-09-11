@@ -74,8 +74,16 @@ export default function Features() {
         align={"center"}
         spacing={{ base: 4, md: 5 }}
         py={{ base: 10, md: 14 }}
-        direction={{ base: "column", md: "row" }}
       >
+        <Stack spacing={4} textAlign={"center"}>
+          <Heading
+            fontSize={{ base: "3xl", sm: "4xl", lg: "6xl" }}
+            fontWeight={"bold"}
+          >
+            <Text textColor={"a4borange"}>Cutting-edge work</Text>
+            <Text textColor={"a4bred"}>across areas.</Text>
+          </Heading>
+        </Stack>
         <SimpleGrid>
           <Flex flexWrap="wrap" gridGap={6} justify="center">
             <Card
@@ -170,15 +178,6 @@ export default function Features() {
             />
           </Flex>
         </SimpleGrid>
-        <Stack spacing={4} textAlign={"center"}>
-          <Heading
-            fontSize={{ base: "3xl", sm: "4xl", lg: "6xl" }}
-            fontWeight={"bold"}
-          >
-            <Text textColor={"a4borange"}>Cutting-edge work</Text>
-            <Text textColor={"a4bred"}>across areas.</Text>
-          </Heading>
-        </Stack>
       </Stack>
     </Container>
     // <Box p={4}>

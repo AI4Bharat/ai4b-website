@@ -24,7 +24,7 @@ export default function Sponsors() {
       </Stack>
 
       <Box mt={12}>
-        <Wrap justify={"center"} gap={10}>
+        <Wrap justify={"center"} spacing={50}>
           <Card w={200} h={75}>
             <Image
               src={`${imagePrefix}/assets/logos/meity.svg`}
