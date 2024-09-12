@@ -30,6 +30,12 @@ export default function Layout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <meta
+          name="google-site-verification"
+          content="b1WctRF2NMXuJMYEFj300y6C86haSpYGcwiq2YXgyMM"
+        />
+      </head>
       <body className={inter.className}>
         <ChakraProvider theme={theme}>
           <QueryClientProvider client={queryClient}>
