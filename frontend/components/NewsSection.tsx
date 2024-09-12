@@ -2,10 +2,8 @@
 import React from "react";
 import {
   Box,
-  Flex,
   Text,
   Heading,
-  VStack,
   LinkBox,
   LinkOverlay,
 } from "@chakra-ui/react";
@@ -120,7 +118,7 @@ const News = () => {
           >
             <Image src={card.image} alt="News Image" height={300} width={300} />
             <Box p={4}>
-              <Text fontWeight="bold">{card.title}</Text>
+                <Text fontWeight="bold" noOfLines={1}>{card.title}</Text>
               <Text noOfLines={4}>{card.description}</Text>
               <LinkOverlay href={`${imagePrefix}/news/${card.id}`}>
                 <Text textColor={"a4borange"}>Read More</Text>
