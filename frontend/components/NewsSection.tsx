@@ -1,23 +1,24 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Text,
   Heading,
   LinkBox,
   LinkOverlay,
+  Tooltip,
 } from "@chakra-ui/react";
 import AI4BContainer from "./AI4BContainer";
 import { useQuery } from "react-query";
 import { API_URL } from "@/app/config";
 import axios from "axios";
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import { imagePrefix } from "@/app/config";
 import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
 import $ from "jquery";
 import dynamic from "next/dynamic";
+import Link from "next/link"; // Import Next.js Link
 
 const fetchNews = async () => {
   try {
@@ -36,10 +37,10 @@ const News = () => {
       image: string;
       title: string;
       description: string;
+      published_on: string;
     }[]
   >([]);
   const { isLoading, error, data } = useQuery("fetchNews", fetchNews);
-  const [scrollIndex, setScrollIndex] = useState(0);
 
   useEffect(() => {
     if (error || isLoading) {
@@ -52,14 +53,12 @@ const News = () => {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    // Ensure jQuery is available before initializing Owl Carousel
     if (typeof window !== "undefined") {
       window.$ = window.jQuery = $;
     }
     setIsMounted(true);
   }, []);
 
-  // Dynamically import OwlCarousel to prevent SSR
   const OwlCarousel = dynamic(() => import("react-owl-carousel"), {
     ssr: false,
   });
@@ -67,11 +66,10 @@ const News = () => {
   const options = {
     loop: true,
     center: true,
-    items: 3,
-    margin: 10,
+    margin: 6,
     autoplay: true,
     dots: false,
-    autoplayTimeout: 1500,
+    autoplayTimeout: 2400,
     smartSpeed: 800,
     nav: true,
     navText: ["<-", "->"],
@@ -79,21 +77,27 @@ const News = () => {
       0: {
         items: 1,
       },
-      600: {
+      576: {
+        items: 2,
+      },
+      768: {
+        items: 2,
+      },
+      992: {
         items: 3,
       },
-      1000: {
+      1200: {
         items: 3,
       },
     },
   };
 
   if (!isMounted) {
-    return null; // Render nothing until the component mounts (on the client side)
+    return null;
   }
 
   return (
-    <AI4BContainer>
+    <div>
       <Heading
         fontSize={{ base: "3xl", sm: "4xl", lg: "6xl" }}
         fontWeight={"bold"}
@@ -105,29 +109,50 @@ const News = () => {
 
       <OwlCarousel className="owl-carousel owl-theme" {...options}>
         {news.map((card, index) => (
-          <LinkBox
-            className="item"
-            key={index}
-            as="article"
-            w={300}
+          <LinkBox 
+          className="item"
+          key={index}
+          as="article"
+            w={340}
             borderWidth="1px"
             borderRadius="lg"
             backgroundColor="white"
             boxShadow="md"
             flexShrink={0}
           >
-            <Image src={card.image} alt="News Image" height={300} width={300} />
+            <Image src={card.image} alt="{card.title} Image" height={180} width={320} />
             <Box p={4}>
-                <Text fontWeight="bold" noOfLines={1}>{card.title}</Text>
-              <Text noOfLines={4}>{card.description}</Text>
-              <LinkOverlay href={`${imagePrefix}/news/${card.id}`}>
-                <Text textColor={"a4borange"}>Read More</Text>
-              </LinkOverlay>
+                <Text fontWeight="bold" noOfLines={1} zIndex={100}>
+                  {card.title}
+                </Text>
+                <Text textColor="a4borange"> 
+                  {new Date(card.published_on).toLocaleDateString("en-IN", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                  })}
+                </Text>
+              <Text noOfLines={3}>{card.description}</Text>
+                {card.title.length > 30 ? (
+                <Tooltip
+                  label={card.title}
+                  aria-label="Full title"
+                  placement="top-start"
+                >
+                  <LinkOverlay as={Link} href={`${imagePrefix}/news/${card.id}`}>
+                  <Text textColor="a4borange">Read More</Text>
+                  </LinkOverlay>
+                </Tooltip>
+                ) : (
+                <LinkOverlay as={Link} href={`${imagePrefix}/news/${card.id}`}>
+                  <Text textColor="a4borange">Read More</Text>
+                </LinkOverlay>
+                )}
             </Box>
           </LinkBox>
         ))}
       </OwlCarousel>
-    </AI4BContainer>
+    </div>
   );
 };
 
