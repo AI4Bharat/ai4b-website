@@ -1,11 +1,8 @@
 "use client";
-import React from "react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FormControl,
   FormLabel,
-  FormErrorMessage,
-  FormHelperText,
   Select,
   Textarea,
   Button,
@@ -48,28 +45,59 @@ const fetchAudio = async ({
   } catch (error: any) {
     return error.response;
   }
-  // return "data:audio/wav;base64," + result["audio"][0]["audioContent"];
 };
 
 interface LanguageCodeNames {
   [key: string]: string;
 }
 
-export default function TTS({ services }: { services: any }) {
-  const [service, setService] = useState(Object.keys(services)[0]);
-  const [sourceLanguage, setSourceLanguage] = useState(
-    services[Object.keys(services)[0]]["languageFilters"]["sourceLanguages"][0]
-  );
+export default function TTS() {
+  const [services, setServices] = useState<any>({});
+  const [service, setService] = useState("");
+  const [sourceLanguage, setSourceLanguage] = useState("");
   const [samplingRate, setSamplingRate] = useState(16000);
   const [gender, setGender] = useState("female");
   const [transliteration, setTransliteration] = useState(true);
   const [inputText, setInputText] = useState("");
   const [output, setOutput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
   const [success, setSuccess] = useState(false);
 
   const toast = useToast();
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/models/IndicTTS/`);
+        setServices(response.data.services);
+        const firstService = Object.keys(response.data.services)[0];
+        setService(firstService);
+        setSourceLanguage(
+          response.data.services[firstService].languageFilters.sourceLanguages[0]
+        );
+      } catch (error) {
+        console.error("Error fetching services:", error);
+      }
+    };
+
+    fetchServices();
+  }, []);
+
+  const handleLanguageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedLanguage = event.target.value;
+    let selectedService = "";
+
+    // Find the service that supports the selected language
+    for (const [serviceId, serviceData] of Object.entries(services)) {
+      if (serviceData.languageFilters.sourceLanguages.includes(selectedLanguage)) {
+        selectedService = serviceId;
+        break;
+      }
+    }
+
+    setSourceLanguage(selectedLanguage);
+    setService(selectedService);
+  };
 
   return (
     <Card borderWidth={1} borderColor={"a4borange"} boxShadow={"2xl"} p={5}>
@@ -77,60 +105,27 @@ export default function TTS({ services }: { services: any }) {
         <VStack>
           <VStack>
             <VStack>
-              <FormLabel textColor={"gray.500"}>Select Service:</FormLabel>
+              <FormLabel textColor={"gray.500"}>Select Source Language:</FormLabel>
               <Select
-                value={service}
-                onChange={(event) => {
-                  setService(event.target.value);
-                  setSourceLanguage(
-                    services[event.target.value]["languageFilters"][
-                      "sourceLanguages"
-                    ][0]
-                  );
-                }}
+                value={sourceLanguage}
+                onChange={handleLanguageChange}
               >
-                {Object.entries(services).map(([key, val]) => (
-                  <option key={key} value={key}>
-                    {key}
-                  </option>
-                ))}
+                {Object.values(services).flatMap((serviceData) =>
+                  serviceData.languageFilters.sourceLanguages.map((language: string) => (
+                    <option key={language} value={language}>
+                      {(LANGUAGE_CODE_NAMES as LanguageCodeNames)[language]}
+                    </option>
+                  ))
+                )}
               </Select>
-              <HStack>
-                <VStack>
-                  <FormLabel textColor={"gray.500"}>
-                    Select Source Language:
-                  </FormLabel>
-                  <Select
-                    value={sourceLanguage}
-                    onChange={(event) => setSourceLanguage(event.target.value)}
-                  >
-                    {services[Object.keys(services)[0]].languageFilters
-                      .sourceLanguages.length === 0 ? (
-                      <></>
-                    ) : (
-                      services[service].languageFilters.sourceLanguages.map(
-                        (language: string, index: number) => (
-                          <option key={index} value={language}>
-                            {
-                              (LANGUAGE_CODE_NAMES as LanguageCodeNames)[
-                                language
-                              ]
-                            }
-                          </option>
-                        )
-                      )
-                    )}
-                  </Select>
-                  <FormLabel textColor={"gray.500"}>
-                    Enable Transliteration:
-                  </FormLabel>
-                  <Switch
-                    isChecked={transliteration}
-                    onChange={() => setTransliteration(!transliteration)}
-                    colorScheme={"orange"}
-                  ></Switch>
-                </VStack>
-              </HStack>
+              <FormLabel textColor={"gray.500"}>
+                Enable Transliteration:
+              </FormLabel>
+              <Switch
+                isChecked={transliteration}
+                onChange={() => setTransliteration(!transliteration)}
+                colorScheme={"orange"}
+              ></Switch>
             </VStack>
             <VStack>
               <FormLabel textColor={"gray.500"}>
