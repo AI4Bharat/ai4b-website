@@ -61,9 +61,7 @@ export default function NMT({ services }: { services: any }) {
   );
 
   const [service, setService] = useState(languageOptions[0].serviceId);
-  const [sourceLanguage, setSourceLanguage] = useState(
-    languageOptions[0].language
-  );
+  const [sourceLanguage, setSourceLanguage] = useState(languageOptions[0].language);
   const [targetLanguage, setTargetLanguage] = useState(
     services[Object.keys(services)[0]]["languageFilters"]["targetLanguages"][0]
   );
@@ -94,13 +92,9 @@ export default function NMT({ services }: { services: any }) {
         <VStack>
           <VStack>
             <VStack>
-              <FormLabel textColor={"gray.500"}>
-                Select Source Language:
-              </FormLabel>
+              <FormLabel textColor={"gray.500"}>Select Source Language:</FormLabel>
               <Select
-                value={
-                  (LANGUAGE_CODE_NAMES as LanguageCodeNames)[sourceLanguage]
-                }
+                value={(LANGUAGE_CODE_NAMES as LanguageCodeNames)[sourceLanguage]}
                 onChange={handleLanguageChange}
               >
                 {languageOptions.map((option, index) => (
@@ -111,15 +105,12 @@ export default function NMT({ services }: { services: any }) {
               </Select>
             </VStack>
             <VStack>
-              <FormLabel textColor={"gray.500"}>
-                Select Target Language:
-              </FormLabel>
+              <FormLabel textColor={"gray.500"}>Select Target Language:</FormLabel>
               <Select
                 value={targetLanguage}
                 onChange={(event) => setTargetLanguage(event.target.value)}
               >
-                {services[Object.keys(services)[0]].languageFilters
-                  .targetLanguages.length === 0 ? (
+                {services[Object.keys(services)[0]].languageFilters.targetLanguages.length === 0 ? (
                   <></>
                 ) : (
                   services[service].languageFilters.targetLanguages.map(
@@ -133,9 +124,7 @@ export default function NMT({ services }: { services: any }) {
               </Select>
             </VStack>
             <VStack>
-              <FormLabel textColor={"gray.500"}>
-                Enable Transliteration:
-              </FormLabel>
+              <FormLabel textColor={"gray.500"}>Enable Transliteration:</FormLabel>
               <Switch
                 isChecked={transliteration}
                 onChange={() => setTransliteration(!transliteration)}
