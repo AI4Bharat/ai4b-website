@@ -1,16 +1,7 @@
+import { datasets } from "../config";
+
 export async function generateStaticParams() {
-  let params: any[] = [
-    { title: "svarah" },
-    { title: "lahaja" },
-    { title: "shrutilipi" },
-    { title: "sangraha" },
-    { title: "samanantar" },
-    { title: "aksharantar" },
-    { title: "IndicVoices-R" },
-    { title: "IndicOOV" },
-    { title: "FBI" },
-    { title: "Bhasha-Abhijnaanam" },
-  ];
+  let params: any[] = datasets;
 
   return params;
 }

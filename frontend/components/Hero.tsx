@@ -37,7 +37,11 @@ export default function Hero() {
       >
         <Stack flex={1} spacing={{ base: 5, md: 10 }}>
           <HStack>
-            <Image src={"/assets/logos/ai4baltlogo.webp"} />
+            <Image
+              height={150}
+              width={150}
+              src={"/assets/logos/ai4bclogo.png"}
+            />
             <Heading
               ml={5}
               lineHeight={1.1}
