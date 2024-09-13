@@ -109,7 +109,7 @@ const DataCollectionCarousel = () => {
     {
       lang: "Konkani",
       location: "Tiswadi Taluka, Goa",
-      image: "konkani-tiswadi-taluka-goa.jpg",
+      image: "konkani-tiswari-taluka-goa.jpg",
     },
   ];
   return (
