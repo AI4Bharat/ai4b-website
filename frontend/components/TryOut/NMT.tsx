@@ -49,12 +49,15 @@ interface LanguageCodeNames {
 }
 
 export default function NMT({ services }: { services: any }) {
-  const languageOptions = Object.entries(services).flatMap(([serviceId, serviceData]) =>
-    serviceData.languageFilters.sourceLanguages.map((language: string) => ({
-      serviceId,
-      language,
-      label: (LANGUAGE_CODE_NAMES as LanguageCodeNames)[language],
-    }))
+  const languageOptions = Object.entries(services).flatMap(
+    ([serviceId, serviceData]) =>
+      (serviceData as any).languageFilters.sourceLanguages.map(
+        (language: string) => ({
+          serviceId,
+          language,
+          label: (LANGUAGE_CODE_NAMES as LanguageCodeNames)[language],
+        })
+      )
   );
 
   const [service, setService] = useState(languageOptions[0].serviceId);
@@ -70,7 +73,9 @@ export default function NMT({ services }: { services: any }) {
 
   const toast = useToast();
 
-  const handleLanguageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleLanguageChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     const selectedLanguage = event.target.value;
     const selectedOption = languageOptions.find(
       (option) => option.language === selectedLanguage
@@ -178,7 +183,8 @@ export default function NMT({ services }: { services: any }) {
                       setOutputText("");
                       toast({
                         title: "Warning",
-                        description: "You have reached maximum trials in a minute",
+                        description:
+                          "You have reached maximum trials in a minute",
                         status: "warning",
                         duration: 4000,
                         isClosable: true,
@@ -188,7 +194,8 @@ export default function NMT({ services }: { services: any }) {
                       setOutputText("");
                       toast({
                         title: "Warning",
-                        description: "Service Currently Unavailable, Please Try Again Later",
+                        description:
+                          "Service Currently Unavailable, Please Try Again Later",
                         status: "warning",
                         duration: 4000,
                         isClosable: true,
@@ -200,7 +207,8 @@ export default function NMT({ services }: { services: any }) {
                     setOutputText("");
                     toast({
                       title: "Warning",
-                      description: "Service Currently Unavailable, Please Try Again Later",
+                      description:
+                        "Service Currently Unavailable, Please Try Again Later",
                       status: "warning",
                       duration: 4000,
                       isClosable: true,
