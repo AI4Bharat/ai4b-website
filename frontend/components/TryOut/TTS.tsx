@@ -71,26 +71,29 @@ export default function TTS({ services }: { services: any }) {
 
   const toast = useToast();
 
-  const languageOptions = Object.entries(services).flatMap(([serviceId, serviceData]) =>
-  serviceData.languageFilters.sourceLanguages.map((language: string) => ({
-    serviceId,
-    language,
-    label: (LANGUAGE_CODE_NAMES as LanguageCodeNames)[language],
-  }))
-);
-
-
- const handleLanguageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-  const selectedLanguage = event.target.value;
-  const selectedOption = languageOptions.find(
-    (option) => option.language === selectedLanguage
+  const languageOptions = Object.entries(services).flatMap(
+    ([serviceId, serviceData]) =>
+      (serviceData as any).languageFilters.sourceLanguages.map(
+        (language: string) => ({
+          serviceId,
+          language,
+          label: (LANGUAGE_CODE_NAMES as LanguageCodeNames)[language],
+        })
+      )
   );
-  if (selectedOption) {
-    setService(selectedOption.serviceId);
-    setSourceLanguage(selectedOption.language);
-  }
-};
 
+  const handleLanguageChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const selectedLanguage = event.target.value;
+    const selectedOption = languageOptions.find(
+      (option) => option.language === selectedLanguage
+    );
+    if (selectedOption) {
+      setService(selectedOption.serviceId);
+      setSourceLanguage(selectedOption.language);
+    }
+  };
 
   return (
     <Card borderWidth={1} borderColor={"a4borange"} boxShadow={"2xl"} p={5}>
@@ -99,18 +102,22 @@ export default function TTS({ services }: { services: any }) {
           <VStack>
             <VStack>
               <FormLabel textColor={"gray.500"}>Select Language:</FormLabel>
-<Select
-  value={(LANGUAGE_CODE_NAMES as LanguageCodeNames)[sourceLanguage]}
-  onChange={handleLanguageChange}
->
-  {languageOptions.map((option, index) => (
-    <option key={index} value={option.language}>
-      {option.label}
-    </option>
-  ))}
-</Select>
+              <Select
+                value={
+                  (LANGUAGE_CODE_NAMES as LanguageCodeNames)[sourceLanguage]
+                }
+                onChange={handleLanguageChange}
+              >
+                {languageOptions.map((option, index) => (
+                  <option key={index} value={option.language}>
+                    {option.label}
+                  </option>
+                ))}
+              </Select>
 
-              <FormLabel textColor={"gray.500"}>Enable Transliteration:</FormLabel>
+              <FormLabel textColor={"gray.500"}>
+                Enable Transliteration:
+              </FormLabel>
               <Switch
                 isChecked={transliteration}
                 onChange={() => setTransliteration(!transliteration)}
@@ -118,9 +125,13 @@ export default function TTS({ services }: { services: any }) {
               ></Switch>
             </VStack>
             <VStack>
-              <FormLabel textColor={"gray.500"}>Select Sampling Rate:</FormLabel>
+              <FormLabel textColor={"gray.500"}>
+                Select Sampling Rate:
+              </FormLabel>
               <Select
-                onChange={(event) => setSamplingRate(parseInt(event.target.value))}
+                onChange={(event) =>
+                  setSamplingRate(parseInt(event.target.value))
+                }
                 value={samplingRate}
               >
                 <option value={8000}>8000</option>
@@ -179,7 +190,8 @@ export default function TTS({ services }: { services: any }) {
                     setOutput("");
                     toast({
                       title: "Warning",
-                      description: "You have reached maximum trials in a minute",
+                      description:
+                        "You have reached maximum trials in a minute",
                       status: "warning",
                       duration: 4000,
                       isClosable: true,
@@ -189,7 +201,8 @@ export default function TTS({ services }: { services: any }) {
                     setOutput("");
                     toast({
                       title: "Warning",
-                      description: "Service Currently Unavailable, Please Try Again Later",
+                      description:
+                        "Service Currently Unavailable, Please Try Again Later",
                       status: "warning",
                       duration: 4000,
                       isClosable: true,
@@ -201,7 +214,8 @@ export default function TTS({ services }: { services: any }) {
                   setOutput("");
                   toast({
                     title: "Warning",
-                    description: "Service Currently Unavailable, Please Try Again Later",
+                    description:
+                      "Service Currently Unavailable, Please Try Again Later",
                     status: "warning",
                     duration: 4000,
                     isClosable: true,
