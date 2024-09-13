@@ -9,4 +9,5 @@ export const datasets = [
   { title: "IndicOOV" },
   { title: "FBI" },
   { title: "Bhasha-Abhijnaanam" },
+  { title: "dhwani" },
 ];
