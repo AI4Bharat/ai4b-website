@@ -1,5 +1,12 @@
 "use client";
 import React, { useEffect, useState } from "react";
+
+// Extend the Window interface to include jQuery
+declare global {
+  interface Window {
+    jQuery: any;
+  }
+}
 import {
   Box,
   Text,
@@ -69,7 +76,7 @@ const News = () => {
     margin: 6,
     autoplay: true,
     dots: false,
-    autoplayTimeout: 2400,
+    autoplayTimeout: 3000,
     smartSpeed: 800,
     nav: true,
     navText: ["<-", "->"],
@@ -133,7 +140,6 @@ const News = () => {
                   })}
                 </Text>
               <Text noOfLines={3}>{card.description}</Text>
-                {card.title.length > 30 ? (
                 <Tooltip
                   label={card.title}
                   aria-label="Full title"
@@ -143,11 +149,6 @@ const News = () => {
                   <Text textColor="a4borange">Read More</Text>
                   </LinkOverlay>
                 </Tooltip>
-                ) : (
-                <LinkOverlay as={Link} href={`${imagePrefix}/news/${card.id}`}>
-                  <Text textColor="a4borange">Read More</Text>
-                </LinkOverlay>
-                )}
             </Box>
           </LinkBox>
         ))}
