@@ -77,6 +77,7 @@ function FileUploadButton({
         ref={inputRef}
         onChange={handleFileChange}
         display="none"
+        accept=".wav"
         onClick={(event: any) => {
           event.target.value = null;
         }}
@@ -391,6 +392,7 @@ export default function ASR({ services }: { services: any }) {
               recorderControls={recorderControls}
             />
             <FileUploadButton handleFileChange={handleFileChange} />
+            <FormHelperText>(Upload .wav files)</FormHelperText>
           </HStack>
           <Textarea value={outputText} isReadOnly></Textarea>
           {success ? (
