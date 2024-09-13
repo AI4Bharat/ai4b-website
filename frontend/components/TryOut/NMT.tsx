@@ -49,16 +49,21 @@ interface LanguageCodeNames {
 }
 
 export default function NMT({ services }: { services: any }) {
-  const languageOptions = Object.entries(services).flatMap(([serviceId, serviceData]) =>
-    serviceData.languageFilters.sourceLanguages.map((language: string) => ({
-      serviceId,
-      language,
-      label: (LANGUAGE_CODE_NAMES as LanguageCodeNames)[language],
-    }))
+  const languageOptions = Object.entries(services).flatMap(
+    ([serviceId, serviceData]) =>
+      (serviceData as any).languageFilters.sourceLanguages.map(
+        (language: string) => ({
+          serviceId,
+          language,
+          label: (LANGUAGE_CODE_NAMES as LanguageCodeNames)[language],
+        })
+      )
   );
 
   const [service, setService] = useState(languageOptions[0].serviceId);
-  const [sourceLanguage, setSourceLanguage] = useState(languageOptions[0].language);
+  const [sourceLanguage, setSourceLanguage] = useState(
+    languageOptions[0].language
+  );
   const [targetLanguage, setTargetLanguage] = useState(
     services[Object.keys(services)[0]]["languageFilters"]["targetLanguages"][0]
   );
@@ -70,7 +75,9 @@ export default function NMT({ services }: { services: any }) {
 
   const toast = useToast();
 
-  const handleLanguageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleLanguageChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     const selectedLanguage = event.target.value;
     const selectedOption = languageOptions.find(
       (option) => option.language === selectedLanguage
@@ -87,9 +94,13 @@ export default function NMT({ services }: { services: any }) {
         <VStack>
           <VStack>
             <VStack>
-              <FormLabel textColor={"gray.500"}>Select Source Language:</FormLabel>
+              <FormLabel textColor={"gray.500"}>
+                Select Source Language:
+              </FormLabel>
               <Select
-                value={(LANGUAGE_CODE_NAMES as LanguageCodeNames)[sourceLanguage]}
+                value={
+                  (LANGUAGE_CODE_NAMES as LanguageCodeNames)[sourceLanguage]
+                }
                 onChange={handleLanguageChange}
               >
                 {languageOptions.map((option, index) => (
@@ -100,12 +111,15 @@ export default function NMT({ services }: { services: any }) {
               </Select>
             </VStack>
             <VStack>
-              <FormLabel textColor={"gray.500"}>Select Target Language:</FormLabel>
+              <FormLabel textColor={"gray.500"}>
+                Select Target Language:
+              </FormLabel>
               <Select
                 value={targetLanguage}
                 onChange={(event) => setTargetLanguage(event.target.value)}
               >
-                {services[Object.keys(services)[0]].languageFilters.targetLanguages.length === 0 ? (
+                {services[Object.keys(services)[0]].languageFilters
+                  .targetLanguages.length === 0 ? (
                   <></>
                 ) : (
                   services[service].languageFilters.targetLanguages.map(
@@ -119,7 +133,9 @@ export default function NMT({ services }: { services: any }) {
               </Select>
             </VStack>
             <VStack>
-              <FormLabel textColor={"gray.500"}>Enable Transliteration:</FormLabel>
+              <FormLabel textColor={"gray.500"}>
+                Enable Transliteration:
+              </FormLabel>
               <Switch
                 isChecked={transliteration}
                 onChange={() => setTransliteration(!transliteration)}
@@ -178,7 +194,8 @@ export default function NMT({ services }: { services: any }) {
                       setOutputText("");
                       toast({
                         title: "Warning",
-                        description: "You have reached maximum trials in a minute",
+                        description:
+                          "You have reached maximum trials in a minute",
                         status: "warning",
                         duration: 4000,
                         isClosable: true,
@@ -188,7 +205,8 @@ export default function NMT({ services }: { services: any }) {
                       setOutputText("");
                       toast({
                         title: "Warning",
-                        description: "Service Currently Unavailable, Please Try Again Later",
+                        description:
+                          "Service Currently Unavailable, Please Try Again Later",
                         status: "warning",
                         duration: 4000,
                         isClosable: true,
@@ -200,7 +218,8 @@ export default function NMT({ services }: { services: any }) {
                     setOutputText("");
                     toast({
                       title: "Warning",
-                      description: "Service Currently Unavailable, Please Try Again Later",
+                      description:
+                        "Service Currently Unavailable, Please Try Again Later",
                       status: "warning",
                       duration: 4000,
                       isClosable: true,
