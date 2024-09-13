@@ -1,10 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
 
-// Extend the Window interface to include jQuery
+// Extend the Window interface to include jQuery and $
 declare global {
   interface Window {
     jQuery: any;
+    $: any;
   }
 }
 import {
