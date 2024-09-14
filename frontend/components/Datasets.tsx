@@ -20,7 +20,11 @@ import {
   useBreakpointValue,
   Wrap,
   Divider,
-  Grid,
+  Tabs,
+  Tab,
+  TabList,
+  TabPanels,
+  TabPanel,
 } from "@chakra-ui/react";
 import Image from "next/image";
 import axios from "axios";
@@ -90,7 +94,7 @@ const fetchDatasets = async () => {
 
 export default function Datasets() {
   const isMobile = useBreakpointValue({ base: true, md: false });
-  const [datasets, setDatasets] = useState([]);
+  const [datasets, setDatasets] = useState<Dataset[]>([]);
   const { isLoading, error, data } = useQuery("fetchDatasets", fetchDatasets);
 
   useEffect(() => {
@@ -131,80 +135,214 @@ export default function Datasets() {
         </Box>
       </Flex>
 
-      <Stack
-        align={"center"}
-        spacing={{ base: 8, md: 10 }}
-        p={10}
-        direction={{ base: "column", md: "row" }}
-      >
-        <Stack flex={1} spacing={{ base: 5, md: 10 }}>
-          <HStack p={5}>
+
+      <Stack justify={"center"} align={"center"} spacing={{ base: 8, md: 10 }} p={10} direction={{ base: "column", md: "row" }}>
+      <Tabs>
+        <TabList>
+          <Tab>
             <HStack>
               <FaMicrophone color="#ff6600" size={25} />
               <Text as="b">ASR</Text>
             </HStack>
+          </Tab>
+          <Tab>
             <HStack>
               <FaFileAlt color="#ff6600" size={25} />
               <Text as="b">LLM</Text>
             </HStack>
+          </Tab>
+          <Tab>
             <HStack>
               <FaLanguage color="#ff6600" size={25} />
               <Text as="b">NMT</Text>
             </HStack>
+          </Tab>
+          <Tab>
             <HStack>
               <FaVolumeUp color="#ff6600" size={25} />
               <Text as="b">TTS</Text>
             </HStack>
+          </Tab>
+          <Tab>
             <HStack>
               <FaKeyboard color="#ff6600" size={25} />
               <Text as="b">XLIT</Text>
             </HStack>
-          </HStack>
-          {isLoading ? (
-            <></>
-          ) : (
-            <>
-              {Object.entries(datasetIcons).map(([key, val]) => (
-                <>
-                  <HStack>
-                    {val}
-                    <Wrap ml={5} key={key}>
-                      {datasets.map((dataset: Dataset) => (
-                        <>
-                          {dataset.area.toLowerCase() === key ? (
-                            <Card
-                              key={dataset.title}
-                              border={"solid"}
-                              borderColor={"a4borange"}
-                            >
-                              <Feature
-                                icon={dataset.area.toLowerCase()}
-                                title={dataset.title}
-                                dataset_link={
-                                  dataset.website_link
-                                    ? dataset.website_link
-                                    : ""
-                                }
-                              />
-                            </Card>
-                          ) : (
-                            <></>
-                          )}
-                        </>
-                      ))}
-                    </Wrap>
-                  </HStack>
-                  <Divider borderWidth={1} borderColor={"gray.100"} />
-                </>
-              ))}
-            </>
-          )}
-        </Stack>
-      </Stack>
+          </Tab>
+        </TabList>
+
+        <TabPanels>
+          {/* ASR Tab Panel */}
+          <TabPanel>
+            {isLoading ? (
+              <Text>Loading...</Text>
+            ) : (
+              Object.entries(datasetIcons).map(([key, val]) =>
+                key === "asr" ? (
+                  <>
+                    <HStack>
+                      {val}
+                      <Wrap ml={5} key={key}>
+                        {datasets.map((dataset) => (
+                          <>
+                            {dataset.area.toLowerCase() === key ? (
+                              <Card key={dataset.title} border={"solid"} borderColor={"a4borange"}>
+                                <Feature
+                                  icon={dataset.area.toLowerCase()}
+                                  title={dataset.title}
+                                  dataset_link={dataset.website_link ? dataset.website_link : ""}
+                                />
+                              </Card>
+                            ) : null}
+                          </>
+                        ))}
+                      </Wrap>
+                    </HStack>
+                    <Divider borderWidth={1} borderColor={"gray.100"} />
+                  </>
+                ) : null
+              )
+            )}
+          </TabPanel>
+
+          {/* LLM Tab Panel */}
+          <TabPanel>
+            {isLoading ? (
+              <Text>Loading...</Text>
+            ) : (
+              Object.entries(datasetIcons).map(([key, val]) =>
+                key === "llm" ? (
+                  <>
+                    <HStack>
+                      {val}
+                      <Wrap ml={5} key={key}>
+                        {datasets.map((dataset) => (
+                          <>
+                            {dataset.area.toLowerCase() === key ? (
+                              <Card key={dataset.title} border={"solid"} borderColor={"a4borange"}>
+                                <Feature
+                                  icon={dataset.area.toLowerCase()}
+                                  title={dataset.title}
+                                  dataset_link={dataset.website_link ? dataset.website_link : ""}
+                                />
+                              </Card>
+                            ) : null}
+                          </>
+                        ))}
+                      </Wrap>
+                    </HStack>
+                    <Divider borderWidth={1} borderColor={"gray.100"} />
+                  </>
+                ) : null
+              )
+            )}
+          </TabPanel>
+
+          
+          {/* NMT Tab Panel */}
+          
+          <TabPanel>
+            {isLoading ? (
+              <Text>Loading...</Text>
+            ) : (
+              Object.entries(datasetIcons).map(([key, val]) =>
+                key === "nmt" ? (
+                  <>
+                    <HStack>
+                      {val}
+                      <Wrap ml={5} key={key}>
+                        {datasets.map((dataset) => (
+                          <>
+                            {dataset.area.toLowerCase() === key ? (
+                              <Card key={dataset.title} border={"solid"} borderColor={"a4borange"}>
+                                <Feature
+                                  icon={dataset.area.toLowerCase()}
+                                  title={dataset.title}
+                                  dataset_link={dataset.website_link ? dataset.website_link : ""}
+                                />
+                              </Card>
+                            ) : null}
+                          </>
+                        ))}
+                      </Wrap>
+                    </HStack>
+                    <Divider borderWidth={1} borderColor={"gray.100"} />
+                  </>
+                ) : null
+              )
+            )}
+          </TabPanel>
+
+          {/* TTS Tab Panel */}
+          <TabPanel>
+            {isLoading ? (
+              <Text>Loading...</Text>
+            ) : (
+              Object.entries(datasetIcons).map(([key, val]) =>
+                key === "tts" ? (
+                  <>
+                    <HStack>
+                      {val}
+                      <Wrap ml={5} key={key}>
+                        {datasets.map((dataset) => (
+                          <>
+                            {dataset.area.toLowerCase() === key ? (
+                              <Card key={dataset.title} border={"solid"} borderColor={"a4borange"}>
+                                <Feature
+                                  icon={dataset.area.toLowerCase()}
+                                  title={dataset.title}
+                                  dataset_link={dataset.website_link ? dataset.website_link : ""}
+                                />
+                              </Card>
+                            ) : null}
+                          </>
+                        ))}
+                      </Wrap>
+                    </HStack>
+                    <Divider borderWidth={1} borderColor={"gray.100"} />
+                  </>
+                ) : null
+              )
+            )}
+          </TabPanel>
+          
+          {/* XLIT Tab Panel */}
+          <TabPanel>
+            {isLoading ? (
+              <Text>Loading...</Text>
+            ) : (
+              Object.entries(datasetIcons).map(([key, val]) =>
+                key === "xlit" ? (
+                  <>
+                    <HStack>
+                      {val}
+                      <Wrap ml={5} key={key}>
+                        {datasets.map((dataset) => (
+                          <>
+                            {dataset.area.toLowerCase() === key ? (
+                              <Card key={dataset.title} border={"solid"} borderColor={"a4borange"}>
+                                <Feature
+                                  icon={dataset.area.toLowerCase()}
+                                  title={dataset.title}
+                                  dataset_link={dataset.website_link ? dataset.website_link : ""}
+                                />
+                              </Card>
+                            ) : null}
+                          </>
+                        ))}
+                      </Wrap>
+                    </HStack>
+                    <Divider borderWidth={1} borderColor={"gray.100"} />
+                  </>
+                ) : null
+              )
+            )}
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
+    </Stack>
     </AI4BContainer>
   );
 }
-
-// TODO: Data Collection Carousel
 
 //TODO: Redesign datasets with tabs for each area
