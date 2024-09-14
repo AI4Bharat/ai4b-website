@@ -2,19 +2,12 @@
 import { ReactElement, useState, useEffect } from "react";
 import {
   Box,
-  SimpleGrid,
-  Icon,
   Text,
   Stack,
   Flex,
   Heading,
-  Container,
   Card,
-  CardBody,
-  useColorModeValue,
-  SkeletonCircle,
   HStack,
-  SkeletonText,
   Link,
   Image as ChakraImage,
   useBreakpointValue,
@@ -25,6 +18,7 @@ import {
   TabList,
   TabPanels,
   TabPanel,
+  Tooltip,
 } from "@chakra-ui/react";
 import Image from "next/image";
 import axios from "axios";
@@ -108,11 +102,8 @@ export default function Datasets() {
   return (
     <AI4BContainer>
       <DataCollectionCarousel />
-      
 
       <Flex direction={{ base: "column", md: "row" }} gap={6}>
-        
-      
         <Box flex={1}>
           <Heading
             lineHeight={1.1}
@@ -130,217 +121,315 @@ export default function Datasets() {
           </Heading>
 
           <Text color={"black"}>
-          Early on in our journey, we recognized that advancing Indian technology necessitates large-scale datasets. Thus, building and collecting extensive datasets across multiple verticals has become a critical endeavor at AI4Bharat. Thanks to generous grants from MeitY, we are spearheading pioneering efforts in data collection as part of the Data Management Unit of Bhashini. Our nationwide initiative aims to gather 15,000 hours of transcribed data from over 400 districts, encompassing all 22 scheduled languages of India. In parallel, our in-house team of over 100 translators is diligently creating a parallel corpus with 2.2 million translation pairs across 22 languages. To produce studio-quality data for expressive TTS systems, we have established recording studios in our lab, where professional voice artists contribute their expertise. Additionally, our annotators are meticulously labeling pages for Document Layout Parsing, accommodating the diverse scripts of India. To accelerate the development of Indic Large Language Models (LLMs), we are focused on building pipelines for curating and synthetically generating pre-training data, collecting contextually grounded prompts, and creating evaluation datasets that reflect India’s rich linguistic tapestry. Collecting and annotating data at this scale demands standardization of processes and tools. To meet this challenge, AI4Bharat has invested in developing various open-source data collection and annotation tools, aiming to enhance these efforts not only within India but also in multilingual regions across the globe.
+            Early on in our journey, we recognized that advancing Indian
+            technology necessitates large-scale datasets. Thus, building and
+            collecting extensive datasets across multiple verticals has become a
+            critical endeavor at AI4Bharat. Thanks to generous grants from
+            MeitY, we are spearheading pioneering efforts in data collection as
+            part of the Data Management Unit of Bhashini. Our nationwide
+            initiative aims to gather 15,000 hours of transcribed data from over
+            400 districts, encompassing all 22 scheduled languages of India. In
+            parallel, our in-house team of over 100 translators is diligently
+            creating a parallel corpus with 2.2 million translation pairs across
+            22 languages. To produce studio-quality data for expressive TTS
+            systems, we have established recording studios in our lab, where
+            professional voice artists contribute their expertise. Additionally,
+            our annotators are meticulously labeling pages for Document Layout
+            Parsing, accommodating the diverse scripts of India. To accelerate
+            the development of Indic Large Language Models (LLMs), we are
+            focused on building pipelines for curating and synthetically
+            generating pre-training data, collecting contextually grounded
+            prompts, and creating evaluation datasets that reflect India’s rich
+            linguistic tapestry. Collecting and annotating data at this scale
+            demands standardization of processes and tools. To meet this
+            challenge, AI4Bharat has invested in developing various open-source
+            data collection and annotation tools, aiming to enhance these
+            efforts not only within India but also in multilingual regions
+            across the globe.
           </Text>
         </Box>
       </Flex>
 
+      <Text
+        fontSize={"2xl"}
+        fontWeight={600}
+        textAlign={"center"}
+        color={"a4borange"}
+        mt={10}
+        mb={5}
+      >
+        Explore Datasets
+      </Text>
 
-      <Stack justify={"center"} align={"center"} spacing={{ base: 8, md: 10 }} p={10} direction={{ base: "column", md: "row" }}>
-      <Tabs>
-        <TabList>
-          <Tab>
-            <HStack>
-              <FaMicrophone color="#ff6600" size={25} />
-              <Text as="b">ASR</Text>
-            </HStack>
-          </Tab>
-          <Tab>
-            <HStack>
-              <FaFileAlt color="#ff6600" size={25} />
-              <Text as="b">LLM</Text>
-            </HStack>
-          </Tab>
-          <Tab>
-            <HStack>
-              <FaLanguage color="#ff6600" size={25} />
-              <Text as="b">NMT</Text>
-            </HStack>
-          </Tab>
-          <Tab>
-            <HStack>
-              <FaVolumeUp color="#ff6600" size={25} />
-              <Text as="b">TTS</Text>
-            </HStack>
-          </Tab>
-          <Tab>
-            <HStack>
-              <FaKeyboard color="#ff6600" size={25} />
-              <Text as="b">XLIT</Text>
-            </HStack>
-          </Tab>
-        </TabList>
+      <Stack
+        align={"center"}
+        spacing={{ base: 8, md: 10 }}
+        px={10}
+        direction={{ base: "column", md: "row" }}
+      >
+        <Tabs>
+          <TabList>
+            <Tab>
+                <Tooltip
+                  label="Automatic Speech Recognition"
+                  aria-label="Automatic Speech Recognition"
+                >
+              <HStack>
+                <FaMicrophone color="#ff6600" size={25} />
+                  <Text as="b">ASR</Text>
+              </HStack>
+              </Tooltip>
+            </Tab>
+            <Tab>
+                <Tooltip
+                  label="Large Language Models"
+                  aria-label="Large Language Models"
+                >
+              <HStack>
+                <FaFileAlt color="#ff6600" size={25} />
+                  <Text as="b">LLMs</Text>
+              </HStack>
+              </Tooltip>
+            </Tab>
+            <Tab>
+                <Tooltip
+                  label="Neural Machine Translation"
+                  aria-label="Neural Machine Translation"
+                >
+              <HStack>
+                <FaLanguage color="#ff6600" size={25} />
+                  <Text as="b">NMT</Text>
+              </HStack>
+              </Tooltip>
+            </Tab>
+            <Tab>
+            <Tooltip label="Text-To-Speech" aria-label="Text-To-Speech">
+              <HStack>
+                <FaVolumeUp color="#ff6600" size={25} />
 
-        <TabPanels>
-          {/* ASR Tab Panel */}
-          <TabPanel>
-            {isLoading ? (
-              <Text>Loading...</Text>
-            ) : (
-              Object.entries(datasetIcons).map(([key, val]) =>
-                key === "asr" ? (
-                  <>
-                    <HStack>
-                      {val}
-                      <Wrap ml={5} key={key}>
-                        {datasets.map((dataset) => (
-                          <>
-                            {dataset.area.toLowerCase() === key ? (
-                              <Card key={dataset.title} border={"solid"} borderColor={"a4borange"}>
-                                <Feature
-                                  icon={dataset.area.toLowerCase()}
-                                  title={dataset.title}
-                                  dataset_link={dataset.website_link ? dataset.website_link : ""}
-                                />
-                              </Card>
-                            ) : null}
-                          </>
-                        ))}
-                      </Wrap>
-                    </HStack>
-                    <Divider borderWidth={1} borderColor={"gray.100"} />
-                  </>
-                ) : null
-              )
-            )}
-          </TabPanel>
+                  <Text as="b">TTS</Text>
+              </HStack>
+              </Tooltip>
+            </Tab>
+            <Tab>
+            <Tooltip label="Transliteration" aria-label="Transliteration">
+              <HStack>
+                <FaKeyboard color="#ff6600" size={25} />
+                  <Text as="b">XLIT</Text>
+              </HStack>
+              </Tooltip>
+            </Tab>
+          </TabList>
 
-          {/* LLM Tab Panel */}
-          <TabPanel>
-            {isLoading ? (
-              <Text>Loading...</Text>
-            ) : (
-              Object.entries(datasetIcons).map(([key, val]) =>
-                key === "llm" ? (
-                  <>
-                    <HStack>
-                      {val}
-                      <Wrap ml={5} key={key}>
-                        {datasets.map((dataset) => (
-                          <>
-                            {dataset.area.toLowerCase() === key ? (
-                              <Card key={dataset.title} border={"solid"} borderColor={"a4borange"}>
-                                <Feature
-                                  icon={dataset.area.toLowerCase()}
-                                  title={dataset.title}
-                                  dataset_link={dataset.website_link ? dataset.website_link : ""}
-                                />
-                              </Card>
-                            ) : null}
-                          </>
-                        ))}
-                      </Wrap>
-                    </HStack>
-                    <Divider borderWidth={1} borderColor={"gray.100"} />
-                  </>
-                ) : null
-              )
-            )}
-          </TabPanel>
+          <TabPanels>
+            {/* ASR Tab Panel */}
+            <TabPanel>
+              {isLoading ? (
+                <Text>Loading...</Text>
+              ) : (
+                Object.entries(datasetIcons).map(([key, val]) =>
+                  key === "asr" ? (
+                    <>
+                      <HStack>
+                        {val}
+                        <Wrap ml={5} key={key}>
+                          {datasets.map((dataset) => (
+                            <>
+                              {dataset.area.toLowerCase() === key ? (
+                                <Card
+                                  key={dataset.title}
+                                  border={"solid"}
+                                  borderColor={"a4borange"}
+                                >
+                                  <Feature
+                                    icon={dataset.area.toLowerCase()}
+                                    title={dataset.title}
+                                    dataset_link={
+                                      dataset.website_link
+                                        ? dataset.website_link
+                                        : ""
+                                    }
+                                  />
+                                </Card>
+                              ) : null}
+                            </>
+                          ))}
+                        </Wrap>
+                      </HStack>
+                      <Divider borderWidth={1} borderColor={"gray.100"} />
+                    </>
+                  ) : null
+                )
+              )}
+            </TabPanel>
 
-          
-          {/* NMT Tab Panel */}
-          
-          <TabPanel>
-            {isLoading ? (
-              <Text>Loading...</Text>
-            ) : (
-              Object.entries(datasetIcons).map(([key, val]) =>
-                key === "nmt" ? (
-                  <>
-                    <HStack>
-                      {val}
-                      <Wrap ml={5} key={key}>
-                        {datasets.map((dataset) => (
-                          <>
-                            {dataset.area.toLowerCase() === key ? (
-                              <Card key={dataset.title} border={"solid"} borderColor={"a4borange"}>
-                                <Feature
-                                  icon={dataset.area.toLowerCase()}
-                                  title={dataset.title}
-                                  dataset_link={dataset.website_link ? dataset.website_link : ""}
-                                />
-                              </Card>
-                            ) : null}
-                          </>
-                        ))}
-                      </Wrap>
-                    </HStack>
-                    <Divider borderWidth={1} borderColor={"gray.100"} />
-                  </>
-                ) : null
-              )
-            )}
-          </TabPanel>
+            {/* LLM Tab Panel */}
+            <TabPanel>
+              {isLoading ? (
+                <Text>Loading...</Text>
+              ) : (
+                Object.entries(datasetIcons).map(([key, val]) =>
+                  key === "llm" ? (
+                    <>
+                      <HStack>
+                        {val}
+                        <Wrap ml={5} key={key}>
+                          {datasets.map((dataset) => (
+                            <>
+                              {dataset.area.toLowerCase() === key ? (
+                                <Card
+                                  key={dataset.title}
+                                  border={"solid"}
+                                  borderColor={"a4borange"}
+                                >
+                                  <Feature
+                                    icon={dataset.area.toLowerCase()}
+                                    title={dataset.title}
+                                    dataset_link={
+                                      dataset.website_link
+                                        ? dataset.website_link
+                                        : ""
+                                    }
+                                  />
+                                </Card>
+                              ) : null}
+                            </>
+                          ))}
+                        </Wrap>
+                      </HStack>
+                      <Divider borderWidth={1} borderColor={"gray.100"} />
+                    </>
+                  ) : null
+                )
+              )}
+            </TabPanel>
 
-          {/* TTS Tab Panel */}
-          <TabPanel>
-            {isLoading ? (
-              <Text>Loading...</Text>
-            ) : (
-              Object.entries(datasetIcons).map(([key, val]) =>
-                key === "tts" ? (
-                  <>
-                    <HStack>
-                      {val}
-                      <Wrap ml={5} key={key}>
-                        {datasets.map((dataset) => (
-                          <>
-                            {dataset.area.toLowerCase() === key ? (
-                              <Card key={dataset.title} border={"solid"} borderColor={"a4borange"}>
-                                <Feature
-                                  icon={dataset.area.toLowerCase()}
-                                  title={dataset.title}
-                                  dataset_link={dataset.website_link ? dataset.website_link : ""}
-                                />
-                              </Card>
-                            ) : null}
-                          </>
-                        ))}
-                      </Wrap>
-                    </HStack>
-                    <Divider borderWidth={1} borderColor={"gray.100"} />
-                  </>
-                ) : null
-              )
-            )}
-          </TabPanel>
-          
-          {/* XLIT Tab Panel */}
-          <TabPanel>
-            {isLoading ? (
-              <Text>Loading...</Text>
-            ) : (
-              Object.entries(datasetIcons).map(([key, val]) =>
-                key === "xlit" ? (
-                  <>
-                    <HStack>
-                      {val}
-                      <Wrap ml={5} key={key}>
-                        {datasets.map((dataset) => (
-                          <>
-                            {dataset.area.toLowerCase() === key ? (
-                              <Card key={dataset.title} border={"solid"} borderColor={"a4borange"}>
-                                <Feature
-                                  icon={dataset.area.toLowerCase()}
-                                  title={dataset.title}
-                                  dataset_link={dataset.website_link ? dataset.website_link : ""}
-                                />
-                              </Card>
-                            ) : null}
-                          </>
-                        ))}
-                      </Wrap>
-                    </HStack>
-                    <Divider borderWidth={1} borderColor={"gray.100"} />
-                  </>
-                ) : null
-              )
-            )}
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
-    </Stack>
+            {/* NMT Tab Panel */}
+
+            <TabPanel>
+              {isLoading ? (
+                <Text>Loading...</Text>
+              ) : (
+                Object.entries(datasetIcons).map(([key, val]) =>
+                  key === "nmt" ? (
+                    <>
+                      <HStack>
+                        {val}
+                        <Wrap ml={5} key={key}>
+                          {datasets.map((dataset) => (
+                            <>
+                              {dataset.area.toLowerCase() === key ? (
+                                <Card
+                                  key={dataset.title}
+                                  border={"solid"}
+                                  borderColor={"a4borange"}
+                                >
+                                  <Feature
+                                    icon={dataset.area.toLowerCase()}
+                                    title={dataset.title}
+                                    dataset_link={
+                                      dataset.website_link
+                                        ? dataset.website_link
+                                        : ""
+                                    }
+                                  />
+                                </Card>
+                              ) : null}
+                            </>
+                          ))}
+                        </Wrap>
+                      </HStack>
+                      <Divider borderWidth={1} borderColor={"gray.100"} />
+                    </>
+                  ) : null
+                )
+              )}
+            </TabPanel>
+
+            {/* TTS Tab Panel */}
+            <TabPanel>
+              {isLoading ? (
+                <Text>Loading...</Text>
+              ) : (
+                Object.entries(datasetIcons).map(([key, val]) =>
+                  key === "tts" ? (
+                    <>
+                      <HStack>
+                        {val}
+                        <Wrap ml={5} key={key}>
+                          {datasets.map((dataset) => (
+                            <>
+                              {dataset.area.toLowerCase() === key ? (
+                                <Card
+                                  key={dataset.title}
+                                  border={"solid"}
+                                  borderColor={"a4borange"}
+                                >
+                                  <Feature
+                                    icon={dataset.area.toLowerCase()}
+                                    title={dataset.title}
+                                    dataset_link={
+                                      dataset.website_link
+                                        ? dataset.website_link
+                                        : ""
+                                    }
+                                  />
+                                </Card>
+                              ) : null}
+                            </>
+                          ))}
+                        </Wrap>
+                      </HStack>
+                      <Divider borderWidth={1} borderColor={"gray.100"} />
+                    </>
+                  ) : null
+                )
+              )}
+            </TabPanel>
+
+            {/* XLIT Tab Panel */}
+            <TabPanel>
+              {isLoading ? (
+                <Text>Loading...</Text>
+              ) : (
+                Object.entries(datasetIcons).map(([key, val]) =>
+                  key === "xlit" ? (
+                    <>
+                      <HStack>
+                        {val}
+                        <Wrap ml={5} key={key}>
+                          {datasets.map((dataset) => (
+                            <>
+                              {dataset.area.toLowerCase() === key ? (
+                                <Card
+                                  key={dataset.title}
+                                  border={"solid"}
+                                  borderColor={"a4borange"}
+                                >
+                                  <Feature
+                                    icon={dataset.area.toLowerCase()}
+                                    title={dataset.title}
+                                    dataset_link={
+                                      dataset.website_link
+                                        ? dataset.website_link
+                                        : ""
+                                    }
+                                  />
+                                </Card>
+                              ) : null}
+                            </>
+                          ))}
+                        </Wrap>
+                      </HStack>
+                      <Divider borderWidth={1} borderColor={"gray.100"} />
+                    </>
+                  ) : null
+                )
+              )}
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Stack>
     </AI4BContainer>
   );
 }
