@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import AreaTimeline from "../AreaTimeline";
 import Link from "next/link";
 import { imagePrefix } from "@/app/config";
+import { Metadata } from "next";
 
 const areaInfo: { [key: string]: { title: string; description: string } } = {
   nmt: {
@@ -72,25 +73,57 @@ const fetchAreaData = async (slug: string) => {
   }
 };
 
+
+// Metadata generation function (server-side)
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const slug = params.slug;
+  const title = areaInfo[slug]?.title || "Area - AI4Bharat";
+  const description = areaInfo[slug]?.description?.substring(0, 160) || "Description";
+
+  // Unified metadata for both meta and og tags
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+    },
+  };
+}
+
+// Main component
 export default function AreaComponent({ slug }: { slug: string }) {
   const [areaData, setAreaData] = useState([]);
   const [latest, setLatest] = useState("");
 
-  const { data, isLoading, error } = useQuery("fetchAreaData", () =>
-    fetchAreaData(slug.toUpperCase())
-  );
+  // Fetch area data with react-query
+  const { data, isLoading, error } = useQuery("fetchAreaData", () => fetchAreaData(slug.toUpperCase()));
 
   useEffect(() => {
-    if (!isLoading && !error) {
+    if (!isLoading && !error && data) {
       setAreaData(data);
-      data.forEach((element: any) => {
-        if (element.latest) {
-          setLatest(element.title);
-          console.log(element.title);
-        }
-      });
+      const latestModel = data.find((item: any) => item.latest);
+      if (latestModel) {
+        setLatest(latestModel.title);
+      }
     }
   }, [data, isLoading, error]);
+
+  // Dynamically update metadata on the client side
+  useEffect(() => {
+    const updateMetadata = async () => {
+      if (slug) {
+        let { title, description } = await generateMetadata({ params: { slug } });
+          title = `${title} - AI4Bharat`;
+          document.title = title as string;
+          document.querySelector('meta[property="og:title"]')?.setAttribute("content", title as string);
+          document.querySelector('meta[name="description"]')?.setAttribute("content", description as string);
+          document.querySelector('meta[property="og:description"]')?.setAttribute("content", description as string);
+        
+      }
+    };
+    updateMetadata();
+  }, [slug]);
 
   return (
     <Container maxW={"7xl"}>
@@ -127,9 +160,7 @@ export default function AreaComponent({ slug }: { slug: string }) {
                   Try Out the Latest Model
                 </Button>
               </Link>
-            ) : (
-              <></>
-            )}
+            ) : null}
             <Text textColor={"a4borange"}>
               To know more about our contributions over the years see the
               timeline below!
@@ -155,11 +186,9 @@ export default function AreaComponent({ slug }: { slug: string }) {
             </Box>
           </Flex>
         </Stack>
-      ) : (
-        <></>
-      )}
+      ) : null}
       <VStack>
-        {areaInfo[slug] ? <AreaTimeline data={areaData} /> : <></>}
+        {areaInfo[slug] ? <AreaTimeline data={areaData} /> : null}
       </VStack>
     </Container>
   );
