@@ -10,8 +10,7 @@ import {
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { ReactElement } from "react";
-
+import { ReactElement, useEffect } from "react";
 import CareerContactBanner from "../../../components/CareerContactBanner";
 import Jobs from "../../../components/CareerJobList";
 
@@ -59,6 +58,24 @@ const Card = ({ heading, description, icon, href }: CardProps) => {
 };
 
 export default function Careers() {
+  useEffect(() => {
+    // Dynamically update the page title and meta description
+    document.title = "Careers at AI4Bharat - Join Our Team";
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute(
+        "content",
+        "Explore exciting career opportunities at AI4Bharat. Join us to build cutting-edge AI solutions for Indian languages and contribute to India's AI future."
+      );
+    } else {
+      const newMetaDescription = document.createElement("meta");
+      newMetaDescription.name = "description";
+      newMetaDescription.content =
+        "Explore exciting career opportunities at AI4Bharat. Join us to build cutting-edge AI solutions for Indian languages and contribute to India's AI future.";
+      document.head.appendChild(newMetaDescription);
+    }
+  }, []);
+
   return (
     <Box p={4}>
       <CareerContactBanner />
