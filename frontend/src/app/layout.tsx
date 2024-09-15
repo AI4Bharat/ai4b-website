@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description:
     "AI4Bharat is a research lab at IIT Madras which works on developing open-source datasets, tools, models and applications for Indian languages.",
   openGraph: {
-    images: "/assets/logos/ai4bclogo.png",
+    images: "/assets/logos/ai4blogolarge.png",
   },
 };
 
