@@ -10,4 +10,6 @@ export const datasets = [
   { title: "FBI" },
   { title: "Bhasha-Abhijnaanam" },
   { title: "dhwani" },
+  { title: "Indic-Align" },
+  { title: "Indic-Glue" },
 ];
