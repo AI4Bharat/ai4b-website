@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Layout from "../../components/Layout";
 import "./global.css";
 
-export const metadata: Metadata = {
+export let metadata: Metadata = {
   metadataBase: new URL("https://ai4bharat.iitm.ac.in"),
   title: "AI4Bharat",
   description:
