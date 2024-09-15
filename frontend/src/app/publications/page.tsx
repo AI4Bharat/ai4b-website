@@ -398,6 +398,28 @@ const Publications = () => {
     );
   };
 
+  
+  // Set static meta tags for the page
+  useEffect(() => {
+    // Set a static page title and meta description
+    document.title = "Publications - AI4Bharat";
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute(
+        "content",
+        "Explore AI4Bharat's publications. Discover cutting-edge research papers and projects in AI for Indian languages, machine learning, and natural language processing."
+      );
+    } else {
+      const newMetaDescription = document.createElement("meta");
+      newMetaDescription.name = "description";
+      newMetaDescription.content =
+        "Explore AI4Bharat's publications. Discover cutting-edge research papers and projects in AI for Indian languages, machine learning, and natural language processing.";
+      document.head.appendChild(newMetaDescription);
+    }
+  }, []);
+
+
+
   return (
     <Box p={5}>
       <chakra.h3 fontSize="4xl" fontWeight="bold" mb={18} textAlign="center">
