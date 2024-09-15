@@ -4,11 +4,9 @@ import axios from "axios";
 import PeopleSection from "../../../components/People";
 import {
   Stack,
-  HStack,
   Button,
-  VStack,
-  useBreakpointValue,
   Flex,
+  useBreakpointValue,
   ResponsiveValue,
 } from "@chakra-ui/react";
 import { useQuery } from "react-query";
@@ -16,6 +14,7 @@ import { API_URL } from "../config";
 import { Property } from "csstype";
 import { TabbedPeopleSection } from "../../../components/People";
 
+// Function to fetch members
 const fetchMembers = async () => {
   try {
     const response = await axios.get(`${API_URL}/member/`, {});
@@ -26,6 +25,7 @@ const fetchMembers = async () => {
   }
 };
 
+// Function to render the selected section
 const renderSection = ({
   members,
   section,
@@ -83,7 +83,7 @@ const renderSection = ({
       return (
         <TabbedPeopleSection
           heading="Alumni"
-          description=""
+          description="Meet our esteemed alumni, individuals who have contributed to the success of AI4Bharat and continue to drive innovation beyond."
           members={members}
           team={"6"}
         />
@@ -91,6 +91,7 @@ const renderSection = ({
   }
 };
 
+// Main component with static meta tags
 export default function People() {
   const [members, setMembers] = useState([]);
   const [section, setSection] = useState("fdr");
@@ -98,12 +99,29 @@ export default function People() {
   const direction = useBreakpointValue({ base: "column", md: "row" });
 
   useEffect(() => {
-    if (error || isLoading) {
-      setMembers([]);
-    } else {
+    if (!isLoading && !error) {
       setMembers(data);
     }
   }, [error, data, isLoading]);
+
+  // Set static meta tags for the page
+  useEffect(() => {
+    // Set a static page title and meta description
+    document.title = "People - AI4Bharat";
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute(
+        "content",
+        "Meet the talented individuals at AI4Bharat. From founders to R&D teams, visiting researchers, data leads, and operations, our people drive innovation in AI for Indian languages."
+      );
+    } else {
+      const newMetaDescription = document.createElement("meta");
+      newMetaDescription.name = "description";
+      newMetaDescription.content =
+        "Meet the talented individuals at AI4Bharat. From founders to R&D teams, visiting researchers, data leads, and operations, our people drive innovation in AI for Indian languages.";
+      document.head.appendChild(newMetaDescription);
+    }
+  }, []);
 
   return (
     <Stack>
@@ -115,42 +133,42 @@ export default function People() {
         mt={10}
       >
         <Button
-          onClick={(event) => setSection("fdr")}
+          onClick={() => setSection("fdr")}
           value={"fdr"}
           colorScheme="orange"
         >
           Founders
         </Button>
         <Button
-          onClick={(event) => setSection("rnd")}
+          onClick={() => setSection("rnd")}
           value={"rnd"}
           colorScheme="orange"
         >
           Research and Development
         </Button>
         <Button
-          onClick={(event) => setSection("vr")}
+          onClick={() => setSection("vr")}
           value={"vr"}
           colorScheme="orange"
         >
           Visiting Researchers
         </Button>
         <Button
-          onClick={(event) => setSection("dl")}
+          onClick={() => setSection("dl")}
           value={"dl"}
           colorScheme="orange"
         >
           Data Leads
         </Button>
         <Button
-          onClick={(event) => setSection("do")}
+          onClick={() => setSection("do")}
           value={"do"}
           colorScheme="orange"
         >
           Delivery and Operations
         </Button>
         <Button
-          onClick={(event) => setSection("al")}
+          onClick={() => setSection("al")}
           value={"al"}
           colorScheme="orange"
         >
