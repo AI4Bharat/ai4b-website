@@ -1,4 +1,6 @@
 import ModelView from "../../../../../../components/Models";
+import axios from "axios";
+import { Metadata } from "next";
 
 export const dynamicParams = true;
 
@@ -7,8 +9,7 @@ interface Model {
   title: string;
 }
 
-import axios from "axios";
-
+// Fetch list of models for generating static params
 export async function generateStaticParams() {
   const response = await axios.get(
     "https://admin.models.ai4bharat.org/models/"
@@ -27,6 +28,26 @@ export async function generateStaticParams() {
   return params;
 }
 
+// Metadata generation function (server-side)
+export async function generateMetadata({
+  params,
+}: {
+  params: { area: string; title: string };
+}): Promise<Metadata> {
+  const title = `${params.title} - ${params.area} Model | AI4Bharat`;
+  const description = `Explore the ${params.title} model under the ${params.area} category at AI4Bharat. Get insights into its capabilities and performance for Indian language AI tasks.`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+    },
+  };
+}
+
+// Main component to display the model view
 export default function Model({
   params,
 }: {
