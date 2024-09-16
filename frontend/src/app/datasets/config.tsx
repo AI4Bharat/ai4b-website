@@ -12,4 +12,5 @@ export const datasets = [
   { title: "dhwani" },
   { title: "Indic-Align" },
   { title: "Indic-Glue" },
+  { title: "rasa" },
 ];
