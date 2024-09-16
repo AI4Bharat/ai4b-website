@@ -11,7 +11,6 @@ import {
   Textarea,
   useToast,
   VStack,
-  Progress,
   CircularProgress,
 } from "@chakra-ui/react";
 import axios from "axios";
@@ -50,10 +49,19 @@ interface LanguageCodeNames {
 }
 
 export default function NMT({ services }: { services: any }) {
-  const [service, setService] = useState(Object.keys(services)[0]);
-  const [sourceLanguage, setSourceLanguage] = useState(
-    services[Object.keys(services)[0]]["languageFilters"]["sourceLanguages"][0]
+  const languageOptions = Object.entries(services).flatMap(
+    ([serviceId, serviceData]) =>
+      (serviceData as any).languageFilters.sourceLanguages.map(
+        (language: string) => ({
+          serviceId,
+          language,
+          label: (LANGUAGE_CODE_NAMES as LanguageCodeNames)[language],
+        })
+      )
   );
+
+  const [service, setService] = useState(languageOptions[0].serviceId);
+  const [sourceLanguage, setSourceLanguage] = useState(languageOptions[0].language);
   const [targetLanguage, setTargetLanguage] = useState(
     services[Object.keys(services)[0]]["languageFilters"]["targetLanguages"][0]
   );
@@ -65,61 +73,44 @@ export default function NMT({ services }: { services: any }) {
 
   const toast = useToast();
 
+  const handleLanguageChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const selectedLanguage = event.target.value;
+    const selectedOption = languageOptions.find(
+      (option) => option.language === selectedLanguage
+    );
+    if (selectedOption) {
+      setService(selectedOption.serviceId);
+      setSourceLanguage(selectedOption.language);
+    }
+  };
+
   return (
     <Card borderWidth={1} borderColor={"a4borange"} boxShadow={"2xl"} p={5}>
       <FormControl isRequired>
         <VStack>
           <VStack>
             <VStack>
-              <FormLabel textColor={"gray.500"}>Select Service:</FormLabel>
+              <FormLabel textColor={"gray.500"}>Select Source Language:</FormLabel>
               <Select
-                value={service}
-                onChange={(event) => {
-                  setService(event.target.value);
-                  setSourceLanguage(
-                    services[event.target.value]["languageFilters"][
-                      "sourceLanguages"
-                    ][0]
-                  );
-                }}
+                value={(LANGUAGE_CODE_NAMES as LanguageCodeNames)[sourceLanguage]}
+                onChange={handleLanguageChange}
               >
-                {Object.entries(services).map(([key, val]) => (
-                  <option key={key} value={key}>
-                    {key}
+                {languageOptions.map((option, index) => (
+                  <option key={index} value={option.language}>
+                    {option.label}
                   </option>
                 ))}
               </Select>
-              <FormLabel textColor={"gray.500"}>
-                Select Source Language:
-              </FormLabel>
-              <Select
-                value={sourceLanguage}
-                onChange={(event) => setSourceLanguage(event.target.value)}
-              >
-                {services[Object.keys(services)[0]].languageFilters
-                  .sourceLanguages.length === 0 ? (
-                  <></>
-                ) : (
-                  services[service].languageFilters.sourceLanguages.map(
-                    (language: string, index: number) => (
-                      <option key={index} value={language}>
-                        {(LANGUAGE_CODE_NAMES as LanguageCodeNames)[language]}
-                      </option>
-                    )
-                  )
-                )}
-              </Select>
             </VStack>
             <VStack>
-              <FormLabel textColor={"gray.500"}>
-                Select Target Language:
-              </FormLabel>
+              <FormLabel textColor={"gray.500"}>Select Target Language:</FormLabel>
               <Select
                 value={targetLanguage}
                 onChange={(event) => setTargetLanguage(event.target.value)}
               >
-                {services[Object.keys(services)[0]].languageFilters
-                  .targetLanguages.length === 0 ? (
+                {services[Object.keys(services)[0]].languageFilters.targetLanguages.length === 0 ? (
                   <></>
                 ) : (
                   services[service].languageFilters.targetLanguages.map(
@@ -133,9 +124,7 @@ export default function NMT({ services }: { services: any }) {
               </Select>
             </VStack>
             <VStack>
-              <FormLabel textColor={"gray.500"}>
-                Enable Transliteration:
-              </FormLabel>
+              <FormLabel textColor={"gray.500"}>Enable Transliteration:</FormLabel>
               <Switch
                 isChecked={transliteration}
                 onChange={() => setTransliteration(!transliteration)}
