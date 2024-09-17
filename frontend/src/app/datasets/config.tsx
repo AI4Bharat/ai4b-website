@@ -13,4 +13,6 @@ export const datasets = [
   { title: "Indic-Align" },
   { title: "Indic-Glue" },
   { title: "rasa" },
+  { title: "bpcc" },
+  { title: "IndicMT-Eval" },
 ];
