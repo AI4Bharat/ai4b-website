@@ -69,7 +69,7 @@ export default function TTS({ services }: { services: any }) {
   const [inputText, setInputText] = useState("");
   const [output, setOutput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [tracking, setTracking] = useState(false);
+  const [tracking, setTracking] = useState(true);
 
   const [success, setSuccess] = useState(false);
 

@@ -105,7 +105,7 @@ export default function ASR({ services }: { services: any }) {
 
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [tracking, setTracking] = useState(false);
+  const [tracking, setTracking] = useState(true);
 
   const toast = useToast();
 
