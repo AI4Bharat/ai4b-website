@@ -10,7 +10,7 @@ import subprocess
 import shutil
 import httpx
 
-
+timeout = httpx.Timeout(None, read=None)
 
 # Create your views here.
 from .models import Dataset, Tool, Model,News,ModelFeedback,Publication
@@ -57,7 +57,7 @@ async def translate(request):
     }
     payload = {
         "controlConfig": {
-            "dataTracking": True
+            "dataTracking": body["track"]
         },
         "config": {
             "serviceId": body["serviceId"],
@@ -76,7 +76,7 @@ async def translate(request):
     }
 
     async with httpx.AsyncClient() as client:
-        inference_result = await client.post(url, headers=headers, json=payload)
+        inference_result = await client.post(url, headers=headers, json=payload,timeout=timeout)
 
     if inference_result.status_code != 200:
         return Response({"message": "Inference Failed"}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
@@ -114,7 +114,7 @@ async def transcribe(request):
     headers = {'x-auth-source': 'API_KEY','Authorization': os.getenv('DHRUVA_API_KEY')}
     payload = {
                                         "controlConfig": {
-                                            "dataTracking": True
+                                            "dataTracking": body["track"]
                                         },
                                         "config": {
                                             "audioFormat": "wav",
@@ -141,7 +141,7 @@ async def transcribe(request):
                                     }
     
     async with httpx.AsyncClient() as client:
-        inferenceResult = await client.post(os.getenv("DHRUVA_ASR_ENDPOINT"),headers=headers,json=payload)
+        inferenceResult = await client.post(os.getenv("DHRUVA_ASR_ENDPOINT"),headers=headers,json=payload,timeout=timeout)
 
     os.remove(webmPath)
     os.remove(wavPath)
@@ -165,7 +165,7 @@ async def convertToAudio(request):
     
     json_payload = {
         "controlConfig": {
-            "dataTracking": True
+            "dataTracking": body["track"]
         },
         "config": {
             "serviceId": body["serviceId"],
@@ -186,7 +186,7 @@ async def convertToAudio(request):
     }
 
     async with httpx.AsyncClient() as client:
-        inference_result = await client.post(url, headers=headers, json=json_payload)
+        inference_result = await client.post(url, headers=headers, json=json_payload,timeout=timeout)
 
     if inference_result.status_code != 200:
         return Response({"message": "Inference Failed"}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
@@ -246,7 +246,8 @@ class ModelFeedbackViewSet(viewsets.ModelViewSet):
 
             modelInput = hashlib.sha256(wav_base64.encode())
             modelInput = modelInput.hexdigest()
-            shutil.copy2(wavPath,f"/home/ai4bharat/ai4b-website/backend/media/audio/{modelInput}.wav")
+            if body["track"]:
+                shutil.copy2(wavPath,f"/home/ai4bharat/ai4b-website/backend/media/audio/{modelInput}.wav")
             os.remove(webmPath)
             os.remove(wavPath)
 
@@ -269,7 +270,7 @@ class DatasetViewSet(viewsets.ModelViewSet):
     queryset = Dataset.objects.all()
     serializer_class = DatasetSerializer
 
-    @method_decorator(cache_page(60*15))
+    # @method_decorator(cache_page(60*15))
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
@@ -281,13 +282,14 @@ class ModelViewSet(viewsets.ModelViewSet):
     queryset = Model.objects.all()
     serializer_class = ModelSerializer
     
-    @method_decorator(cache_page(60*15))
+    # @method_decorator(cache_page(60*15))
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         models = serializer.data
         return Response(models)
-
+    
+    @method_decorator(cache_page(60*15))
     def retrieve(self, request, *args, **kwargs):
 
         
@@ -394,7 +396,8 @@ class ToolViewSet(viewsets.ModelViewSet):
             for item in data
         ]
         return Response(filtered_data)
-
+    
+    @method_decorator(cache_page(60*15))
     def retrieve(self, request, *args, **kwargs):
         title = kwargs.get("title")
         try:
