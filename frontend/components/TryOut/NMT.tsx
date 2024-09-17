@@ -24,12 +24,14 @@ const fetchTranslation = async ({
   input,
   task,
   serviceId,
+  track,
 }: {
   sourceLanguage: string;
   targetLanguage: string;
   input: string;
   task: string;
   serviceId: string;
+  track: boolean;
 }) => {
   try {
     const response = await axios.post(`${API_URL}/inference/translate`, {
@@ -38,6 +40,7 @@ const fetchTranslation = async ({
       input: input,
       task: task,
       serviceId: serviceId,
+      track: track,
     });
     return response;
   } catch (error: any) {
@@ -62,6 +65,7 @@ export default function NMT({ services }: { services: any }) {
   const [outputText, setOutputText] = useState("");
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [tracking, setTracking] = useState(false);
 
   const toast = useToast();
 
@@ -141,6 +145,14 @@ export default function NMT({ services }: { services: any }) {
                 onChange={() => setTransliteration(!transliteration)}
                 colorScheme={"orange"}
               ></Switch>
+              <FormLabel textColor={"gray.500"}>
+                Allow the AI to be improved by usage analysis.
+              </FormLabel>
+              <Switch
+                checked={tracking}
+                onChange={(e) => setTracking(e.target.checked)}
+                colorScheme="orange"
+              />
             </VStack>
           </VStack>
           <VStack w={"full"}>
@@ -176,6 +188,7 @@ export default function NMT({ services }: { services: any }) {
                       input: inputText,
                       task: "translation",
                       serviceId: service,
+                      track: tracking,
                     });
                     setIsLoading(false);
                     if (response.status === 200) {
@@ -240,6 +253,7 @@ export default function NMT({ services }: { services: any }) {
                 sourceLanguage={sourceLanguage}
                 targetLanguage={targetLanguage}
                 domain="general"
+                track={tracking}
               />
             ) : (
               <>

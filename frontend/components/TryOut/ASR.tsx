@@ -15,6 +15,7 @@ import {
   useToast,
   VStack,
   CircularProgress,
+  Switch,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { ChangeEventHandler, useRef, useState } from "react";
@@ -77,6 +78,7 @@ function FileUploadButton({
         ref={inputRef}
         onChange={handleFileChange}
         display="none"
+        accept=".wav"
         onClick={(event: any) => {
           event.target.value = null;
         }}
@@ -103,6 +105,7 @@ export default function ASR({ services }: { services: any }) {
 
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [tracking, setTracking] = useState(false);
 
   const toast = useToast();
 
@@ -131,6 +134,7 @@ export default function ASR({ services }: { services: any }) {
           samplingRate: samplingRate,
           preProcessors: preProcessor,
           postProcessors: postProcessor,
+          track: tracking,
         });
         setIsLoading(false);
         if (response.status === 200) {
@@ -230,6 +234,7 @@ export default function ASR({ services }: { services: any }) {
             samplingRate: samplingRate,
             preProcessors: preProcessor,
             postProcessors: postProcessor,
+            track: tracking,
           });
           setIsLoading(false);
           if (response.status === 200) {
@@ -315,6 +320,7 @@ export default function ASR({ services }: { services: any }) {
               )
             )}
           </Select>
+
           {service !== "ai4bharat/conformer-multilingual-all--gpu-t4" ? (
             <>
               <FormLabel textColor={"gray.500"}>
@@ -380,6 +386,14 @@ export default function ASR({ services }: { services: any }) {
           <FormHelperText>
             Please Choose a domain for your audio. (For evaluation purposes)
           </FormHelperText>
+          <FormLabel textColor={"gray.500"}>
+            Allow the AI to be improved by usage analysis.
+          </FormLabel>
+          <Switch
+            checked={tracking}
+            onChange={(e) => setTracking(e.target.checked)}
+            colorScheme="orange"
+          />
         </VStack>
         <VStack p={5} w={"full"}>
           <HStack>
@@ -391,6 +405,7 @@ export default function ASR({ services }: { services: any }) {
               recorderControls={recorderControls}
             />
             <FileUploadButton handleFileChange={handleFileChange} />
+            <FormHelperText>(Upload .wav files)</FormHelperText>
           </HStack>
           <Textarea value={outputText} isReadOnly></Textarea>
           {success ? (
@@ -402,6 +417,7 @@ export default function ASR({ services }: { services: any }) {
               sourceLanguage={sourceLanguage}
               targetLanguage={""}
               domain={domain}
+              track={tracking}
             />
           ) : (
             <>
