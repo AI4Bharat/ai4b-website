@@ -28,12 +28,14 @@ const fetchAudio = async ({
   gender,
   samplingRate,
   serviceId,
+  track,
 }: {
   sourceLanguage: string;
   input: string;
   gender: string;
   samplingRate: number;
   serviceId: string;
+  track: boolean;
 }) => {
   try {
     const response = await axios.post(`${API_URL}/inference/convert`, {
@@ -43,6 +45,7 @@ const fetchAudio = async ({
       serviceId: serviceId,
       samplingRate: samplingRate,
       gender: gender,
+      track: track,
     });
     return response;
   } catch (error: any) {
@@ -66,6 +69,7 @@ export default function TTS({ services }: { services: any }) {
   const [inputText, setInputText] = useState("");
   const [output, setOutput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [tracking, setTracking] = useState(false);
 
   const [success, setSuccess] = useState(false);
 
@@ -129,6 +133,14 @@ export default function TTS({ services }: { services: any }) {
                     onChange={() => setTransliteration(!transliteration)}
                     colorScheme={"orange"}
                   ></Switch>
+                  <FormLabel textColor={"gray.500"}>
+                    Allow the AI to be improved by usage analysis.
+                  </FormLabel>
+                  <Switch
+                    checked={tracking}
+                    onChange={(e) => setTracking(e.target.checked)}
+                    colorScheme="orange"
+                  />
                 </VStack>
               </HStack>
             </VStack>
@@ -180,6 +192,7 @@ export default function TTS({ services }: { services: any }) {
                     gender: gender,
                     samplingRate: samplingRate,
                     serviceId: service,
+                    track: tracking,
                   });
                   setIsLoading(false);
                   if (response.status === 200) {
@@ -248,6 +261,7 @@ export default function TTS({ services }: { services: any }) {
                 sourceLanguage={sourceLanguage}
                 targetLanguage=""
                 domain="general"
+                track={tracking}
               />
             ) : (
               <>
