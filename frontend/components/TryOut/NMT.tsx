@@ -149,7 +149,7 @@ export default function NMT({ services }: { services: any }) {
                 Allow the AI to be improved by usage analysis.
               </FormLabel>
               <Switch
-                checked={tracking}
+                isChecked={tracking}
                 onChange={(e) => setTracking(e.target.checked)}
                 colorScheme="orange"
               />
