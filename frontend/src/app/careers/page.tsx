@@ -10,6 +10,15 @@ import { Metadata } from "next";
 export const metadata: Metadata = {
   title: 'Careers',
   description: 'AI4Bharat is a research lab at IIT Madras which works on developing open-source datasets, tools, models and applications for Indian languages.',
+  openGraph: {
+    title: 'Careers',
+    description: 'AI4Bharat is a research lab at IIT Madras which works on developing open-source datasets, tools, models and applications for Indian languages.',
+  },
+  twitter: {
+    description: 'AI4Bharat is a research lab at IIT Madras which works on developing open-source datasets, tools, models and applications for Indian languages.',
+    card: 'summary_large_image',
+    creator: '@ai4bharat',
+  },
 }
 
 export default function Careers() {
