@@ -1,64 +1,19 @@
-"use client";
-
 import {
   Box,
-  Button,
   Container,
-  Flex,
-  Heading,
-  Stack,
-  Text,
-  useColorModeValue,
 } from "@chakra-ui/react";
-import { ReactElement } from "react";
-
 import CareerContactBanner from "../../../components/CareerContactBanner";
 import Jobs from "../../../components/CareerJobList";
+import { Metadata } from "next";
 
-interface CardProps {
-  heading: string;
-  description: string;
-  icon: ReactElement;
-  href: string;
+
+export const metadata: Metadata = {
+  title: 'Careers',
+  description: 'AI4Bharat is a research lab at IIT Madras which works on developing open-source datasets, tools, models and applications for Indian languages.',
 }
 
-const Card = ({ heading, description, icon, href }: CardProps) => {
-  return (
-    <Box
-      maxW={{ base: "full", md: "275px" }}
-      w={"full"}
-      borderWidth="1px"
-      borderRadius="lg"
-      overflow="hidden"
-      p={5}
-    >
-      <Stack align={"start"} spacing={2}>
-        <Flex
-          w={16}
-          h={16}
-          align={"center"}
-          justify={"center"}
-          color={"white"}
-          rounded={"full"}
-          bg={useColorModeValue("gray.100", "gray.700")}
-        >
-          {icon}
-        </Flex>
-        <Box mt={2}>
-          <Heading size="md">{heading}</Heading>
-          <Text mt={1} fontSize={"sm"}>
-            {description}
-          </Text>
-        </Box>
-        <Button variant={"link"} colorScheme={"blue"} size={"sm"}>
-          Learn more
-        </Button>
-      </Stack>
-    </Box>
-  );
-};
-
 export default function Careers() {
+
   return (
     <Box p={4}>
       <CareerContactBanner />
