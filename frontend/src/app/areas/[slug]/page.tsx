@@ -66,7 +66,7 @@ export async function generateMetadata({
     },
     twitter: {
       description: `${area?.description}`,
-      card: "summary",
+      card: "summary_large_image",
       creator: "@ai4bharat",
     },
   };
