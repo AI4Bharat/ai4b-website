@@ -49,7 +49,7 @@ export async function generateMetadata({
     },
     twitter: {
       description: `${model.description}`,
-      card: "summary",
+      card: "summary_large_image",
       creator: "@ai4bharat",
     },
   };
