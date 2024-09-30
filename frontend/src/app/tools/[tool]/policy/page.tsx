@@ -150,8 +150,8 @@ export default function PolicyView({ params }: { params: { tool: string } }) {
           <br />
           {(val as any).bullets ? (
             <>
-              {(val as any).bullets.map((idx: number, bullet: string) => (
-                <li key={idx}>{bullet}</li>
+              {(val as any).bullets.map((bullet: string) => (
+                <li key={bullet}>{bullet}</li>
               ))}
             </>
           ) : (
