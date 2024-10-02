@@ -25,7 +25,7 @@ The terms used in this privacy policy have the same meanings as in our terms and
       {
         title: "Log Data",
         description:
-          'We want to inform you that whenever you use our service, in a case of an error in the app we collect data and information (through third-party products) on your phone called log data. This log data may include information such as your device Internet Protocol ("IP") address, device name, operating system version, the configuration of the app when utilizing our service, the time and date of your use of the service, and other statistics.',
+          'We want to inform you that whenever you use our service, in a case of an error in the app we collect data and information (through third-party products) on your phone called log data. This log data may include information such as your device Internet Protocol ("IP") address, device name, device location, operating system version, the configuration of the app when utilizing our service, the time and date of your use of the service, and other statistics.',
       },
       {
         title: "Service Providers",
@@ -61,13 +61,13 @@ The terms used in this privacy policy have the same meanings as in our terms and
     ],
   },
   "Kathbath-Lite": {
-    description: `AI4Bharat built the AI4Bharat Kathbath app as a free app. This service is provided by AI4Bharat at no cost and is intended for use as is.
+    description: `AI4Bharat built the AI4Bharat Kathbath-Lite app as a free app. This service is provided by AI4Bharat at no cost and is intended for use as is.
 
 This page is used to inform visitors regarding our policies with the collection, use, and disclosure of personal information if anyone decided to use our service. 
 
 If you choose to use our service, then you agree to the collection and use of information in relation to this policy. The personal information that we collect is used for providing access to the service. We will not use or share your information with anyone except as described in this Privacy Policy.
 
-The terms used in this privacy policy have the same meanings as in our terms and conditions, which are accessible at AI4Bharat Kathbath unless otherwise defined in this Privacy Policy.
+The terms used in this privacy policy have the same meanings as in our terms and conditions, which are accessible at AI4Bharat Kathbath-Lite unless otherwise defined in this Privacy Policy.
 `,
     content: [
       {
