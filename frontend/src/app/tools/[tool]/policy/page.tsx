@@ -158,17 +158,20 @@ export default function PolicyView({ params }: { params: { tool: string } }) {
           <Text>{(val as any).description}</Text>
           <br />
           {(val as any).link ? (
-            <Link
-              target="_blank"
-              textColor={"blue"}
-              href={(val as any).link.link}
-            >
-              {(val as any).link.alt}
-            </Link>
+            <>
+              <Link
+                target="_blank"
+                textColor={"blue"}
+                href={(val as any).link.link}
+              >
+                {(val as any).link.alt}
+              </Link>
+              <br />
+            </>
           ) : (
             <></>
           )}
-          <br />
+
           {(val as any).bullets ? (
             <>
               {(val as any).bullets.map((bullet: string) => (
