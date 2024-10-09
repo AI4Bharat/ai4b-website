@@ -1,4 +1,4 @@
-import { Container, Heading, Text, Stack, Box } from "@chakra-ui/react";
+import { Container, Heading, Text, Stack, Box, Link } from "@chakra-ui/react";
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
@@ -111,6 +111,15 @@ The terms used in this privacy policy have the same meanings as in our terms and
         description:
           "If you have any questions or suggestions about our Privacy Policy, do not hesitate to contact us at tahir@smail.iitm.ac.in.",
       },
+      {
+        title: "Data Removal Request",
+        description:
+          "Users who wish to request the removal of their data from our system can do so by submitting a request through the below form.",
+        link: {
+          alt: "Data Removal Google Form",
+          link: "https://docs.google.com/forms/d/e/1FAIpQLScXhXg-UhXzr8_W5GI806Q_vhKYcRVZxs_wf1gKoqzFnEywmw/viewform?usp=sf_link",
+        },
+      },
     ],
   },
 };
@@ -148,6 +157,21 @@ export default function PolicyView({ params }: { params: { tool: string } }) {
           <br />
           <Text>{(val as any).description}</Text>
           <br />
+          {(val as any).link ? (
+            <>
+              <Link
+                target="_blank"
+                textColor={"blue"}
+                href={(val as any).link.link}
+              >
+                {(val as any).link.alt}
+              </Link>
+              <br />
+            </>
+          ) : (
+            <></>
+          )}
+
           {(val as any).bullets ? (
             <>
               {(val as any).bullets.map((bullet: string) => (
