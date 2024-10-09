@@ -20,12 +20,14 @@ import {
   useBreakpointValue,
   Wrap,
   Divider,
+  Grid,
 } from "@chakra-ui/react";
 import Image from "next/image";
 import axios from "axios";
 import { useQuery } from "react-query";
 import { API_URL } from "@/app/config";
 import { imagePrefix } from "@/app/config";
+import DataCollectionCarousel from "./DataCollectionCarousel";
 import {
   FaFileAudio,
   FaFileAlt,
@@ -34,6 +36,7 @@ import {
   FaLanguage,
   FaKeyboard,
 } from "react-icons/fa";
+import AI4BContainer from "./AI4BContainer";
 
 const datasetIcons: { [key: string]: React.ReactElement } = {
   llm: <FaFileAlt color="#ff6600" size={50} />,
@@ -99,18 +102,19 @@ export default function Datasets() {
   }, [error, data, isLoading]);
 
   return (
-    <Container maxW={"7xl"}>
-      <Stack
-        align={"center"}
-        spacing={{ base: 8, md: 10 }}
-        p={10}
-        direction={{ base: "column", md: "row" }}
-      >
-        <Stack flex={1} spacing={{ base: 5, md: 10 }}>
+    <AI4BContainer>
+      <DataCollectionCarousel />
+      
+
+      <Flex direction={{ base: "column", md: "row" }} gap={6}>
+        
+      
+        <Box flex={1}>
           <Heading
             lineHeight={1.1}
             fontWeight={600}
             fontSize={{ base: "3xl", sm: "4xl", lg: "6xl" }}
+            py={5}
           >
             <Text as={"span"} color={"a4borange"} position={"relative"}>
               Pioneering
@@ -120,53 +124,20 @@ export default function Datasets() {
               Data Collection!
             </Text>
           </Heading>
-          <Flex
-            flex={2}
-            justify={"center"}
-            align={"center"}
-            position={"relative"}
-            w={"full"}
-          >
-            <Box
-              position={"relative"}
-              rounded={"2xl"}
-              boxShadow={"2xl"}
-              width={"full"}
-              overflow={"hidden"}
-            >
-              <ChakraImage
-                alt={"Hero Image"}
-                src={`${imagePrefix}/assets/data-collection.png`}
-              />
-            </Box>
-          </Flex>
-          <Text>
-            Early on in our journey, we recognized that advancing Indian
-            technology necessitates large-scale datasets. Thus, building and
-            collecting extensive datasets across multiple verticals has become a
-            critical endeavor at AI4Bharat. Thanks to generous grants from
-            MeitY, we are spearheading pioneering efforts in data collection as
-            part of the Data Management Unit of Bhashini. Our nationwide
-            initiative aims to gather 15,000 hours of transcribed data from over
-            400 districts, encompassing all 22 scheduled languages of India. In
-            parallel, our in-house team of over 100 translators is diligently
-            creating a parallel corpus with 2.2 million translation pairs across
-            22 languages. To produce studio-quality data for expressive TTS
-            systems, we have established recording studios in our lab, where
-            professional voice artists contribute their expertise. Additionally,
-            our annotators are meticulously labeling pages for Document Layout
-            Parsing, accommodating the diverse scripts of India. To accelerate
-            the development of Indic Large Language Models (LLMs), we are
-            focused on building pipelines for curating and synthetically
-            generating pre-training data, collecting contextually grounded
-            prompts, and creating evaluation datasets that reflect India’s rich
-            linguistic tapestry. Collecting and annotating data at this scale
-            demands standardization of processes and tools. To meet this
-            challenge, AI4Bharat has invested in developing various open-source
-            data collection and annotation tools, aiming to enhance these
-            efforts not only within India but also in multilingual regions
-            across the globe.
+
+          <Text color={"black"}>
+          Early on in our journey, we recognized that advancing Indian technology necessitates large-scale datasets. Thus, building and collecting extensive datasets across multiple verticals has become a critical endeavor at AI4Bharat. Thanks to generous grants from MeitY, we are spearheading pioneering efforts in data collection as part of the Data Management Unit of Bhashini. Our nationwide initiative aims to gather 15,000 hours of transcribed data from over 400 districts, encompassing all 22 scheduled languages of India. In parallel, our in-house team of over 100 translators is diligently creating a parallel corpus with 2.2 million translation pairs across 22 languages. To produce studio-quality data for expressive TTS systems, we have established recording studios in our lab, where professional voice artists contribute their expertise. Additionally, our annotators are meticulously labeling pages for Document Layout Parsing, accommodating the diverse scripts of India. To accelerate the development of Indic Large Language Models (LLMs), we are focused on building pipelines for curating and synthetically generating pre-training data, collecting contextually grounded prompts, and creating evaluation datasets that reflect India’s rich linguistic tapestry. Collecting and annotating data at this scale demands standardization of processes and tools. To meet this challenge, AI4Bharat has invested in developing various open-source data collection and annotation tools, aiming to enhance these efforts not only within India but also in multilingual regions across the globe.
           </Text>
+        </Box>
+      </Flex>
+
+      <Stack
+        align={"center"}
+        spacing={{ base: 8, md: 10 }}
+        p={10}
+        direction={{ base: "column", md: "row" }}
+      >
+        <Stack flex={1} spacing={{ base: 5, md: 10 }}>
           <HStack p={5}>
             <HStack>
               <FaMicrophone color="#ff6600" size={25} />
@@ -230,6 +201,10 @@ export default function Datasets() {
           )}
         </Stack>
       </Stack>
-    </Container>
+    </AI4BContainer>
   );
 }
+
+// TODO: Data Collection Carousel
+
+//TODO: Redesign datasets with tabs for each area
