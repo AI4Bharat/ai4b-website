@@ -174,10 +174,46 @@ const EntryModal = ({
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>{title}</ModalHeader>
+          <ModalHeader as={Link} href={website_link}>
+            {title}
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <HStack></HStack>
+            <HStack>
+              {github_link ? (
+                <Link target="_blank" href={github_link}>
+                  <FaGithub size={25} />
+                </Link>
+              ) : (
+                <></>
+              )}
+              {colab_link ? (
+                <Link target="_blank" href={colab_link}>
+                  <FaCode size={25} />
+                </Link>
+              ) : (
+                <></>
+              )}
+              {paper_link ? (
+                <Link target="_blank" href={paper_link}>
+                  <FaPaperclip size={25} />
+                </Link>
+              ) : (
+                <></>
+              )}
+              {hf_link ? (
+                <Link target="_blank" href={hf_link}>
+                  <img
+                    src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg"
+                    alt="Hugging Face"
+                    style={{ width: "25px", height: "25px" }}
+                  />
+                </Link>
+              ) : (
+                <></>
+              )}
+            </HStack>
+            <br />
             {description}
           </ModalBody>
 
@@ -454,6 +490,8 @@ const Card = ({
             height={"fit-content"}
             alignItems={"center"}
             justifyContent={"center"}
+            borderColor={"a4borange"}
+            borderWidth={1}
           >
             {model.length !== 0 ? (
               <VStack p={5}>
