@@ -22,6 +22,14 @@ import {
   useCheckbox,
   useCheckboxGroup,
   UseCheckboxProps,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { FaPaperclip, FaGithub, FaCode } from "react-icons/fa";
 import { useQuery } from "react-query";
@@ -111,7 +119,7 @@ const fetchPubFilters = async () => {
 
 const fetchPublications = async () => {
   try {
-    const response = await axios.get(`${API_URL}/publications/`);
+    const response = await axios.get(`${API_URL}/pubs/`);
     return response.data;
   } catch (error) {
     console.error("Error fetching publications:", error);
@@ -125,184 +133,69 @@ interface Publication {
   area: string;
   conference: string;
   published_on: string;
-  colab_link: string;
-  hf_link: string;
+  dataset: any;
+  model: any;
   paper_link: string;
-  github_link: string;
-  type: string;
 }
-
-// const Publications = () => {
-//   const isMobile = useBreakpointValue({ base: true, md: false });
-//   const [filters, setFilters] = useState({
-//     areas: [],
-//     conferences: [],
-//     years: [],
-//   });
-
-//   const [publications, setPublications] = useState<Array<Publication>>([]);
-//   const [filteredPublications, setFilteredPublications] = useState<
-//     Publication[]
-//   >([]);
-
-//   const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
-//   const [selectedYears, setSelectedYears] = useState<string[]>([]);
-//   const [selectedConferences, setSelectedConferences] = useState<string[]>([]);
-
-//   const {
-//     data: filterData,
-//     isLoading: filterLoading,
-//     error: filterError,
-//   } = useQuery("fetchFilters", fetchPubFilters);
-//   const {
-//     data: pubData,
-//     isLoading: pubLoading,
-//     error: pubError,
-//   } = useQuery("fetchPublications", fetchPublications);
-
-//   useEffect(() => {
-//     if (!filterLoading && !filterError) {
-//       setFilters(filterData);
-//     }
-
-//     if (!pubLoading && !pubError) {
-//       setPublications(pubData);
-//       setFilteredPublications(pubData);
-//     }
-//   }, [filterLoading, filterError, filterData, pubLoading, pubError, pubData]);
-
-//   useEffect(() => {
-//     const filtered = publications.filter((pub) => {
-//       const matchesArea =
-//         selectedAreas.length === 0 || selectedAreas.includes(pub.area);
-//       const matchesConference =
-//         selectedConferences.length === 0 ||
-//         selectedConferences.includes(pub.conference);
-//       const matchesYear =
-//         selectedYears.length === 0 ||
-//         selectedYears.includes(
-//           new Date(pub.published_on).getFullYear().toString()
-//         );
-//       return matchesArea && matchesConference && matchesYear;
-//     });
-
-//     setFilteredPublications(filtered);
-//   }, [selectedAreas, selectedConferences, selectedYears, publications]);
-
-//   const handleSelect = (setter: any) => (value: any) => {
-//     setter((prev: any) =>
-//       prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
-//     );
-//   };
-
-//   return (
-//     <Box p={5}>
-//       <chakra.h3 fontSize="4xl" fontWeight="bold" mb={18} textAlign="center">
-//         Publications
-//       </chakra.h3>
-//       <Stack ml={5}>
-//         <HStack>
-//           <Text fontSize={"lg"} as="b">
-//             Area:{" "}
-//           </Text>
-//           <CheckboxGroup value={selectedAreas}>
-//             <Wrap>
-//               {filters.areas.map((value) => (
-//                 <Checkbox
-//                   colorScheme="orange"
-//                   key={value}
-//                   value={value}
-//                   onChange={() => handleSelect(setSelectedAreas)(value)}
-//                 >
-//                   {value}
-//                 </Checkbox>
-//               ))}
-//             </Wrap>
-//           </CheckboxGroup>
-//         </HStack>
-//         <HStack>
-//           <Text fontSize={"lg"} as="b">
-//             Year:{" "}
-//           </Text>
-//           <CheckboxGroup value={selectedYears}>
-//             <Wrap>
-//               {filters.years.map((value) => (
-//                 <Checkbox
-//                   colorScheme="orange"
-//                   key={value}
-//                   value={value}
-//                   onChange={() => handleSelect(setSelectedYears)(value)}
-//                 >
-//                   {value}
-//                 </Checkbox>
-//               ))}
-//             </Wrap>
-//           </CheckboxGroup>
-//         </HStack>
-//         <HStack>
-//           <Text fontSize={"lg"} as="b">
-//             Conference:{" "}
-//           </Text>
-//           <CheckboxGroup value={selectedConferences}>
-//             <Wrap>
-//               {filters.conferences.map((value) => (
-//                 <Checkbox
-//                   colorScheme="orange"
-//                   key={value}
-//                   value={value}
-//                   onChange={() => handleSelect(setSelectedConferences)(value)}
-//                 >
-//                   {value}
-//                 </Checkbox>
-//               ))}
-//             </Wrap>
-//           </CheckboxGroup>
-//         </HStack>
-//         <Button
-//           mt={7}
-//           alignSelf={"center"}
-//           width={"fit-content"}
-//           color={"a4borange"}
-//           onClick={() => {
-//             setSelectedAreas([]);
-//             setSelectedConferences([]);
-//             setSelectedYears([]);
-//           }}
-//         >
-//           Reset Filters
-//         </Button>
-//       </Stack>
-//       <Divider m={5} />
-//       <br />
-//       <Container height={isMobile ? 500 : "auto"} overflowY={"scroll"}>
-//         {filteredPublications.map((pub, index) =>
-//           pub.paper_link ? (
-//             <Flex key={index} mb="10px">
-//               <LineWithDot />
-//               <Card
-//                 title={pub.title}
-//                 categories={[pub.area, pub.conference]}
-//                 description={pub.description}
-//                 date={new Date(pub.published_on)}
-//                 hf_link={pub.hf_link}
-//                 paper_link={pub.paper_link}
-//                 github_link={pub.github_link}
-//                 colab_link={pub.colab_link}
-//                 type={pub.type}
-//               />
-//             </Flex>
-//           ) : (
-//             <></>
-//           )
-//         )}
-//       </Container>
-//     </Box>
-//   );
-// };
 
 interface CheckboxButtonProps extends UseCheckboxProps {
   children: ReactNode;
 }
+
+const EntryModal = ({
+  title,
+  description,
+  paper_link,
+  website_link,
+  github_link,
+  hf_link,
+  colab_link,
+}: {
+  title: string;
+  description: string;
+  paper_link: string;
+  website_link: string;
+  github_link: string;
+  hf_link: string;
+  colab_link: string;
+}) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  return (
+    <>
+      <Button
+        textColor={"white"}
+        bg={"a4borange"}
+        _hover={{ bg: "red.500" }}
+        onClick={onOpen}
+      >
+        {title}
+      </Button>
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{title}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <HStack></HStack>
+            {description}
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              variant={"outline"}
+              colorScheme="orange"
+              mr={3}
+              onClick={onClose}
+            >
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
+  );
+};
 
 const CheckboxButton = (props: CheckboxButtonProps) => {
   const { getInputProps, getCheckboxProps } = useCheckbox(props);
@@ -471,27 +364,24 @@ const Publications = () => {
       </Stack>
       <Divider m={5} />
       <br />
-      <Container height={isMobile ? 500 : "auto"} overflowY={"scroll"}>
-        {filteredPublications.map((pub, index) =>
-          pub.paper_link ? (
-            <Flex key={index} mb="10px">
-              <LineWithDot />
-              <Card
-                title={pub.title}
-                categories={[pub.area, pub.conference]}
-                description={pub.description}
-                date={new Date(pub.published_on)}
-                hf_link={pub.hf_link}
-                paper_link={pub.paper_link}
-                github_link={pub.github_link}
-                colab_link={pub.colab_link}
-                type={pub.type}
-              />
-            </Flex>
-          ) : (
-            <></>
-          )
-        )}
+      <Container
+        width={"100%"}
+        height={isMobile ? 500 : "auto"}
+        overflowY={"scroll"}
+      >
+        {filteredPublications.map((pub, index) => (
+          <Flex key={index} mb="10px">
+            <LineWithDot />
+            <Card
+              title={pub.title}
+              categories={[pub.area, pub.conference]}
+              date={new Date(pub.published_on)}
+              paper_link={pub.paper_link}
+              model={pub.model}
+              dataset={pub.dataset}
+            />
+          </Flex>
+        ))}
       </Container>
     </Box>
   );
@@ -499,26 +389,20 @@ const Publications = () => {
 
 interface CardProps {
   title: string;
-  categories: string[];
-  description: string;
-  date: Date;
-  hf_link: string;
   paper_link: string;
-  github_link: string;
-  colab_link: string;
-  type: string;
+  categories: string[];
+  date: Date;
+  model: any;
+  dataset: any;
 }
 
 const Card = ({
   title,
   categories,
-  description,
-  date,
-  hf_link,
   paper_link,
-  github_link,
-  colab_link,
-  type,
+  date,
+  model,
+  dataset,
 }: CardProps) => {
   return (
     <HStack
@@ -526,7 +410,6 @@ const Card = ({
       bg={useColorModeValue("gray.100", "gray.800")}
       spacing={5}
       rounded="lg"
-      alignItems="center"
       pos="relative"
       _before={{
         content: `""`,
@@ -559,44 +442,82 @@ const Card = ({
             lineHeight={1.2}
             fontWeight="bold"
             w="100%"
+            href={paper_link}
           >
             {title}
           </chakra.h1>
-          <ExpandableText noOfLines={2} text={description} />
-          <HStack>
-            {github_link ? (
-              <Link target="_blank" href={github_link}>
-                <FaGithub size={50} />
-              </Link>
+          <HStack
+            p="2"
+            bg="white"
+            borderRadius={15}
+            width={"100%"}
+            height={"fit-content"}
+            alignItems={"center"}
+            justifyContent={"center"}
+          >
+            {model.length !== 0 ? (
+              <VStack p={5}>
+                <Text as="b" fontSize={"xl"}>
+                  Models
+                </Text>
+                <HStack>
+                  {model.map((entry: any, index: number) => (
+                    <EntryModal
+                      title={entry.title}
+                      description={entry.description}
+                      paper_link={entry.paper_link}
+                      website_link={entry.website_link}
+                      hf_link={entry.hf_link}
+                      github_link={entry.github_link}
+                      colab_link={entry.colab_link}
+                    />
+                  ))}
+                </HStack>
+              </VStack>
             ) : (
               <></>
             )}
-            {colab_link ? (
-              <Link target="_blank" href={colab_link}>
-                <FaCode size={50} />
-              </Link>
-            ) : (
-              <></>
-            )}
-            {paper_link ? (
-              <Link target="_blank" href={paper_link}>
-                <FaPaperclip size={50} />
-              </Link>
-            ) : (
-              <></>
-            )}
-            {hf_link ? (
-              <Link href={hf_link} target="_blank">
-                <img
-                  src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg"
-                  alt="Hugging Face"
-                  style={{ width: "50px", height: "50px" }}
-                />
-              </Link>
+            {dataset.length !== 0 ? (
+              <VStack p={5}>
+                <Text as="b" fontSize={"xl"}>
+                  Datasets
+                </Text>
+                <HStack>
+                  {dataset.map((entry: any, index: number) => (
+                    <EntryModal
+                      title={entry.title}
+                      description={entry.description}
+                      paper_link={entry.paper_link}
+                      website_link={entry.website_link}
+                      hf_link={entry.hf_link}
+                      github_link={entry.github_link}
+                      colab_link={entry.colab_link}
+                    />
+                  ))}
+                </HStack>
+              </VStack>
             ) : (
               <></>
             )}
           </HStack>
+          {/* {model.length !== 0 ? (
+            <HStack p="5" bg="tomato" width={"100%"} height={"200"}>
+              {model.map((idx, entry) => (
+                <EntryModal />
+              ))}
+            </HStack>
+          ) : (
+            <></>
+          )} */}
+          {/* <Button
+            width={"fit-content"}
+            p={2}
+            colorScheme="orange"
+            borderRadius={15}
+            variant={"outline"}
+          >
+            View the Models
+          </Button> */}
         </VStack>
         <Box width={"fit-content"} p={2} bg="a4borange" borderRadius={15}>
           <HStack>
