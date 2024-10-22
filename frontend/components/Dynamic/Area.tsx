@@ -33,7 +33,7 @@ Additionally, we introduced the Bharat Parallel Corpus Collection (BPCC), which 
     description: `At AI4Bharat, our dedication to building language models and datasets for all 22 constitutionally
                     recognized Indian languages is central to our mission. We employ a multifaceted approach, leveraging
                     large-scale data crawling, synthetic data creation, and human annotation/crowd collections to create
-                    comprehensive datasets. Our efforts have resulted in an extensive pretraining corpus of 251 million
+                    comprehensive datasets. Our efforts have resulted in an extensive pretraining corpus of 251 billion
                     tokens across 22 languages, complemented by 74.7 million prompt-response pairs in 20 Indian
                     languages. Tools like Setu play a crucial role in large-scale crawling and data cleaning, enabling
                     us to build state-of-the-art models such as Airavata, IndicBART, and IndicBERT. We also emphasize
