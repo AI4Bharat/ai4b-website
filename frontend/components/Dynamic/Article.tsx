@@ -134,11 +134,9 @@ export default function ArticleComponent({ slug }: { slug: string }) {
       />
       <Box m={3} borderWidth={2} borderRadius={15} p={7}>
         {article.markdown_content !== "" ? (
-          <ReactMarkdown
-            components={ChakraUIRenderer(newTheme)}
-            children={article.markdown_content}
-            skipHtml
-          />
+          <ReactMarkdown components={ChakraUIRenderer(newTheme)} skipHtml>
+            {article.markdown_content}
+          </ReactMarkdown>
         ) : (
           <></>
         )}
