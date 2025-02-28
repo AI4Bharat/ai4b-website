@@ -5,6 +5,9 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { QueryClient, QueryClientProvider, useQuery } from "react-query";
+import Maintenance from "./Maintenance";
+
+const MAINTENANCE_MODE = true;
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 10000 } },
@@ -40,7 +43,7 @@ export default function Layout({
         <ChakraProvider theme={theme}>
           <QueryClientProvider client={queryClient}>
             <Navbar />
-            {children}
+            {MAINTENANCE_MODE ? <Maintenance /> : children}
             <Footer />
           </QueryClientProvider>
         </ChakraProvider>
