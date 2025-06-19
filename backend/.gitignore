@@ -13,8 +13,11 @@
 /media/
 
 # Environment variables
-.env
-
+.env*
+virtualenv/
+myvenv/
+venv/
+env/
 # IDE files
 .vscode/
 .idea/

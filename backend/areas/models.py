@@ -139,12 +139,15 @@ def image_directory_path(instance, filename):
 class News(models.Model):
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=200)
+    date = models.DateField()
     description = models.TextField()
-    published_on = models.DateField(default=date.today)
     image = models.ImageField(upload_to=image_directory_path,null=True,blank=True)
-    related_link = models.URLField(max_length=500, null=True, blank=True)
-    markdown_content = models.TextField(null=True,blank=True)
-
+    authors = models.JSONField() 
+    affiliations = models.JSONField() 
+    publication_links = models.JSONField()  
+    sections = models.JSONField()  
+    team = models.JSONField() 
+    bibtex = models.TextField()
     def __str__(self) -> str:
         return f"{self.title}"
 

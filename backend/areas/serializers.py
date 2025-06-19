@@ -77,11 +77,15 @@ class NewsSerializer(ModelSerializer):
         fields = [
             "id",
             "title",
+            "date",
             "description",
-            "published_on",
             "image",
-            "related_link",
-            "markdown_content"
+            "authors",
+            "affiliations",
+            "publication_links",
+            "sections",
+            "team",
+            "bibtex"
         ]
 
 class PublicationSerializer(ModelSerializer):
