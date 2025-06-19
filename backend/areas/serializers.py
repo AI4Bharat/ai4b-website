@@ -78,7 +78,10 @@ class NewsSerializer(ModelSerializer):
             "id",
             "title",
             "date",
+            "published_on",
             "description",
+            "related_link",
+            "markdown_content"
             "image",
             "authors",
             "affiliations",
