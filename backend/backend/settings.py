@@ -15,7 +15,7 @@ import os
 
 from dotenv import load_dotenv
 
-load_dotenv(dotenv_path="/home/azure/ai4b-website/backend/.env")
+load_dotenv(dotenv_path="/ai4b-website/backend/.env")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
