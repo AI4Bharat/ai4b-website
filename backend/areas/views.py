@@ -308,14 +308,6 @@ class NewsViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=True, methods=['patch'], url_path='edit')
-    def edit_news(self, request, pk=None):
-        news = self.get_object()
-        serializer = self.get_serializer(news, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     @action(detail=False, methods=['patch'], url_path='edit')
     def edit_news(self, request):
         news_id = request.query_params.get('id')
