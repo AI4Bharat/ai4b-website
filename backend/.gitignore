@@ -2,8 +2,6 @@
 *.pyc
 *.pyo
 */__pycache__/
-*/migrations
-/people/media
 *.sqlite3
 
 # Static files

@@ -151,7 +151,7 @@ class News(models.Model):
     sections = models.JSONField(null=True,blank=True)  
     team = models.JSONField(null=True,blank=True) 
     bibtex = models.TextField(null=True,blank=True)
-
+    
 
     def __str__(self) -> str:
         return f"{self.title}"
@@ -161,6 +161,7 @@ class Publication(models.Model):
     title = models.CharField(max_length=200)
     dataset = models.ManyToManyField(Dataset,null=True,blank=True)
     model = models.ManyToManyField(Model,null=True,blank=True,)
+    
 
     def __str__(self) -> str:
         return f"{self.title}"
