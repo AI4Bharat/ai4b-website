@@ -1,3 +1,4 @@
+//blogs sections page
 import {
   Container,
   Heading,

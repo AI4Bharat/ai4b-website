@@ -1,3 +1,4 @@
+//main pages
 import React from 'react';
 import { API_URL } from '../../config';
 import { notFound } from 'next/navigation';

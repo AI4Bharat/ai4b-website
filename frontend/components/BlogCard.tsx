@@ -1,3 +1,4 @@
+//blog cards
 "use client";
 
 import { useState } from "react";
