@@ -1,4 +1,3 @@
-//blog layout 
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -147,22 +146,64 @@ function getIconComponent(iconName: string) {
   return iconMap[iconName?.toLowerCase()] || FaExternalLinkAlt;
 }
 
+// Updated dynamic title formatting function
 function formatTitle(title: string): string {
-  const acronyms = ['LLM', 'AI', 'ML', 'NLP', 'API', 'GPU', 'CPU', 'RAM', 'URL', 'HTTP', 'HTTPS', 'JSON', 'XML', 'SQL', 'NoSQL'];
-  
   return title
     .split(' ')
-    .map((word) => {
-      const upperWord = word.toUpperCase();
-      if (acronyms.includes(upperWord)) {
-        return upperWord;
+    .map((word, index, words) => {
+      const analysis = analyzeWord(word);
+      
+      if (analysis.preserveOriginal) {
+        return word;
       }
-      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      
+      if (analysis.isArticle && index > 0 && index < words.length - 1) {
+        return word.toLowerCase();
+      }
+      
+      return analysis.formatted;
     })
     .join(' ');
 }
+
+function analyzeWord(word: string) {
+  const original = word;
+  const clean = word.replace(/[^\w]/g, '');
+  const lower = clean.toLowerCase();
+  
+  // Preserve original for complex patterns
+  if (isComplexPattern(clean)) {
+    return { preserveOriginal: true, formatted: original };
+  }
+  
+  // Check if it's an article/preposition
+  const articles = ['a', 'an', 'and', 'as', 'at', 'but', 'by', 'for', 'if', 'in', 'nor', 'of', 'on', 'or', 'so', 'the', 'to', 'up', 'yet', 'with'];
+  if (articles.includes(lower)) {
+    return { isArticle: true, formatted: original };
+  }
+  
+  // Standard title case
+  const formatted = original.charAt(0).toUpperCase() + original.slice(1).toLowerCase();
+  return { formatted };
+}
+
+function isComplexPattern(word: string): boolean {
+  if (!word) return false;
+  
+  // Pattern detection rules
+  const patterns = [
+    /^[A-Z]{2,}$/, // All caps: AI, API, LLM
+    /^[A-Z]+\d+[A-Z]*$/i, // Alphanumeric: AI4Bharat, GPT3
+    /[a-z][A-Z]/, // CamelCase: iPhone, JavaScript
+    /[A-Z]{2,}[a-z]/, // Mixed: APIs, URLs
+    /^\d+[A-Z]/i, // Number-letter: 5G, 4K
+    /[A-Z].*'s?$/, // Possessive with caps: McDonald's
+  ];
+  
+  return patterns.some(pattern => pattern.test(word));
+}
+
 function StickyNavigation({ title }: { title: string }) {
-  // ✅ All hooks at the top level
   const [isVisible, setIsVisible] = useState(false);
   const shouldReduceMotion = useReducedMotion();
   const navBg = useColorModeValue('rgba(255, 255, 255, 0.95)', 'rgba(26, 32, 44, 0.95)');
@@ -229,7 +270,6 @@ function StickyNavigation({ title }: { title: string }) {
     </AnimatePresence>
   );
 }
-
 
 function ResponsiveTable({ headers, rows }: { headers: string[]; rows: string[][] }) {
   const borderColor = useColorModeValue('orange.200', 'orange.600');
@@ -424,77 +464,76 @@ function InteractivePromptDemo({ examples }: { examples: any[] }) {
           </CardHeader>
           <CardBody pt={0}>
             <Grid 
-  templateColumns={{ 
-    base: "1fr", 
-    md: "repeat(auto-fit, minmax(280px, 1fr))" 
-  }}
-  gap={{ base: 3, md: 4 }}
->
-  {examples.map((example, index) => (
-    <MotionCard
-      key={example.id}
-      whileHover={shouldReduceMotion ? {} : { 
-        scale: 1.02, 
-        boxShadow: "0 8px 25px rgba(0,0,0,0.15)",
-      }}
-      whileTap={shouldReduceMotion ? {} : { scale: 0.98 }}
-      cursor="pointer"
-      onClick={() => handleTryPrompt(example.prompt)}
-      bg={useColorModeValue('white', 'gray.700')}
-      borderWidth="1px"
-      borderColor={useColorModeValue('gray.200', 'gray.600')}
-      _hover={{ 
-        borderColor: 'orange.300',
-        transform: shouldReduceMotion ? 'none' : 'translateY(-2px)'
-      }}
-      transition="all 0.2s"
-      h="fit-content"
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          handleTryPrompt(example.prompt);
-        }
-      }}
-      aria-label={`Try example: ${example.prompt}`}
-    >
-      <CardBody p={{ base: 3, md: 4 }}>
-        <VStack align="start" spacing={3}>
-          <Badge colorScheme="orange" variant="subtle" size="sm" fontSize="xs">
-            Example {index + 1}
-          </Badge>
-          <Text 
-            fontSize={{ base: "xs", md: "sm" }}
-            fontWeight="medium" 
-            noOfLines={{ base: 6, md: 4 }}
-            lineHeight="1.4"
-          >
-            {example.prompt}
-          </Text>
-          <Button
-            size="sm"
-            colorScheme="orange"
-            variant="ghost"
-            leftIcon={<FaPlay />}
-            isLoading={isGenerating && selectedPrompt === example.prompt}
-            loadingText="Generating..."
-            alignSelf="flex-start"
-            px={4}
-            py={2}
-            h="auto"
-            mt={2}
-            fontSize={{ base: "xs", md: "sm" }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            Try This
-          </Button>
-        </VStack>
-      </CardBody>
-    </MotionCard>
-  ))}
-</Grid>
-
+              templateColumns={{ 
+                base: "1fr", 
+                md: "repeat(auto-fit, minmax(280px, 1fr))" 
+              }}
+              gap={{ base: 3, md: 4 }}
+            >
+              {examples.map((example, index) => (
+                <MotionCard
+                  key={example.id}
+                  whileHover={shouldReduceMotion ? {} : { 
+                    scale: 1.02, 
+                    boxShadow: "0 8px 25px rgba(0,0,0,0.15)",
+                  }}
+                  whileTap={shouldReduceMotion ? {} : { scale: 0.98 }}
+                  cursor="pointer"
+                  onClick={() => handleTryPrompt(example.prompt)}
+                  bg={useColorModeValue('white', 'gray.700')}
+                  borderWidth="1px"
+                  borderColor={useColorModeValue('gray.200', 'gray.600')}
+                  _hover={{ 
+                    borderColor: 'orange.300',
+                    transform: shouldReduceMotion ? 'none' : 'translateY(-2px)'
+                  }}
+                  transition="all 0.2s"
+                  h="fit-content"
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleTryPrompt(example.prompt);
+                    }
+                  }}
+                  aria-label={`Try example: ${example.prompt}`}
+                >
+                  <CardBody p={{ base: 3, md: 4 }}>
+                    <VStack align="start" spacing={3}>
+                      <Badge colorScheme="orange" variant="subtle" size="sm" fontSize="xs">
+                        Example {index + 1}
+                      </Badge>
+                      <Text 
+                        fontSize={{ base: "xs", md: "sm" }}
+                        fontWeight="medium" 
+                        noOfLines={{ base: 6, md: 4 }}
+                        lineHeight="1.4"
+                      >
+                        {example.prompt}
+                      </Text>
+                      <Button
+                        size="sm"
+                        colorScheme="orange"
+                        variant="ghost"
+                        leftIcon={<FaPlay />}
+                        isLoading={isGenerating && selectedPrompt === example.prompt}
+                        loadingText="Generating..."
+                        alignSelf="flex-start"
+                        px={4}
+                        py={2}
+                        h="auto"
+                        mt={2}
+                        fontSize={{ base: "xs", md: "sm" }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Try This
+                      </Button>
+                    </VStack>
+                  </CardBody>
+                </MotionCard>
+              ))}
+            </Grid>
           </CardBody>
         </Card>
       </MotionBox>
@@ -678,7 +717,6 @@ function OptimizedImage({
     </Box>
   );
 }
-
 
 function SimpleTeamSection({ team }: { team: Blog['team'] }) {
   const shouldReduceMotion = useReducedMotion();
@@ -948,40 +986,38 @@ export default function BlogContentDisplay({ blog }: BlogContentDisplayProps) {
         </Container>
       </Box>
 
-
-{coverImageSrc && (
-  <MotionBox
-    initial={shouldReduceMotion ? {} : { opacity: 0, scale: 0.95 }}
-    animate={shouldReduceMotion ? {} : { opacity: 1, scale: 1 }}
-    transition={{ duration: 0.8, delay: 0.2 }}
-    my={{ base: 4, md: 8 }}
-    px={{ base: 2, md: 0 }}
-  >
-    <Container maxW="container.lg">
-      <Center>
-        <Box
-          boxShadow={{ base: "md", md: "xl" }}
-          border="2px solid"
-          borderColor={borderColor}
-          borderRadius="lg"
-          overflow="hidden"
-          w="full"
-          maxW={{ base: "100%", sm: "95%", md: "900px" }}
+      {coverImageSrc && (
+        <MotionBox
+          initial={shouldReduceMotion ? {} : { opacity: 0, scale: 0.95 }}
+          animate={shouldReduceMotion ? {} : { opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          my={{ base: 4, md: 8 }}
+          px={{ base: 2, md: 0 }}
         >
-          <OptimizedImage
-            src={coverImageSrc}
-            alt={coverImageAlt}
-            caption={coverImageCaption}
-            priority={true}
-            maxHeight="auto"
-            fullWidth={false}
-          />
-        </Box>
-      </Center>
-    </Container>
-  </MotionBox>
-)}
-
+          <Container maxW="container.lg">
+            <Center>
+              <Box
+                boxShadow={{ base: "md", md: "xl" }}
+                border="2px solid"
+                borderColor={borderColor}
+                borderRadius="lg"
+                overflow="hidden"
+                w="full"
+                maxW={{ base: "100%", sm: "95%", md: "900px" }}
+              >
+                <OptimizedImage
+                  src={coverImageSrc}
+                  alt={coverImageAlt}
+                  caption={coverImageCaption}
+                  priority={true}
+                  maxHeight="auto"
+                  fullWidth={false}
+                />
+              </Box>
+            </Center>
+          </Container>
+        </MotionBox>
+      )}
 
       <Container maxW="container.lg" my={12} px={4}>
         <MotionBox
@@ -1243,33 +1279,32 @@ export default function BlogContentDisplay({ blog }: BlogContentDisplayProps) {
                   <InteractivePromptDemo examples={section.items} />
                 )}
                 
-{section.type === 'image' && section.image?.src && (
-  <Box my={{ base: 4, md: 8 }} px={{ base: 2, md: 0 }}>
-    <Center>
-      <Box
-        w="full"
-        maxW={section.image.src.includes('indic-voices-dist') ? 
-          { base: "100%", md: "1200px" } : 
-          { base: "100%", md: "800px" }
-        }
-        border="1px solid"
-        borderColor={borderColor}
-        borderRadius="lg"
-        overflow="hidden"
-        boxShadow={{ base: "md", md: "lg" }}
-      >
-        <OptimizedImage
-          src={section.image.src}
-          alt={section.image.alt || 'Section image'}
-          caption={section.image.caption}
-          maxHeight="auto"
-          fullWidth={section.image.src.includes('indic-voices-dist')}
-        />
-      </Box>
-    </Center>
-  </Box>
-)}
-
+                {section.type === 'image' && section.image?.src && (
+                  <Box my={{ base: 4, md: 8 }} px={{ base: 2, md: 0 }}>
+                    <Center>
+                      <Box
+                        w="full"
+                        maxW={section.image.src.includes('indic-voices-dist') ? 
+                          { base: "100%", md: "1200px" } : 
+                          { base: "100%", md: "800px" }
+                        }
+                        border="1px solid"
+                        borderColor={borderColor}
+                        borderRadius="lg"
+                        overflow="hidden"
+                        boxShadow={{ base: "md", md: "lg" }}
+                      >
+                        <OptimizedImage
+                          src={section.image.src}
+                          alt={section.image.alt || 'Section image'}
+                          caption={section.image.caption}
+                          maxHeight="auto"
+                          fullWidth={section.image.src.includes('indic-voices-dist')}
+                        />
+                      </Box>
+                    </Center>
+                  </Box>
+                )}
               </MotionBox>
             ))}
 
