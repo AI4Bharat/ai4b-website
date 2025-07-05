@@ -18,6 +18,7 @@ class Area(models.TextChoices):
     NLP = "NLP"
     NLG = "NLG"
     NLU = "NLU/PEFT"
+    OCR = "OCR"
     
 class License(models.Model):
     id = models.AutoField(primary_key=True)
