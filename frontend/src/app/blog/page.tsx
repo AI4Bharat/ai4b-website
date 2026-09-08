@@ -489,7 +489,7 @@ function BlogCard({ blog, index }: { blog: Blog; index: number }) {
 
           <Button
             as={Link}
-            href={`/blog/${blog.page_url}`}  // ✅ FIXED: Removed || blog.id fallback
+            href={`/blog/${blog.page_url}`}
             colorScheme="orange"
             size="sm"
             variant="solid"
@@ -550,6 +550,63 @@ const fetchBlogList = async (): Promise<Blog[]> => {
       return isValid;
     }) : [];
     
+    // Inject Bodhan ASR static blog
+    const bodhanASRBlog: Blog = {
+      id: 999001,
+      title: "Indic-Transcribe ",
+      description: "Indic-Transcribe is a 1.2B-parameter multilingual speech recognition family for 25 Indian languages.",
+      published_on: "2026-09-08T00:00:00Z",
+      image: "/static-blogs/bodhan-asr/images/bodhan_ai.jpg",
+      related_link: null,
+      markdown_content: "",
+      page_url: "bodhan-asr",
+      authors: [{ name: "AI4Bharat Team" }]
+    };
+    
+    // Inject Bodhan TTS static blog
+    const bodhanTTSBlog: Blog = {
+      id: 999002,
+      title: "Indic-Speak ",
+      description: "A 3.36B language model where punctuation shapes timing, pauses, and emphasis.",
+      published_on: "2026-09-08T00:00:00Z",
+      image: "/static-blogs/bodhan-tts/images/indic-speak.png",
+      related_link: null,
+      markdown_content: "",
+      page_url: "bodhan-tts",
+      authors: [{ name: "AI4Bharat Team & Bodhan AI Team" }]
+    };
+
+    // Inject Bodhan MT static blog
+    const bodhanMTBlog: Blog = {
+      id: 999003,
+      title: "Indic-Translate ",
+      description: "State-of-the-art Machine Translation for India's many languages.",
+      published_on: "2026-09-08T00:00:00Z",
+      image: "/static-blogs/bodhan-mt/images/llm-translate.jpg",
+      related_link: null,
+      markdown_content: "",
+      page_url: "bodhan-mt",
+      authors: [{ name: "Bodhan Translation Team" }]
+    };
+
+    // Inject Bodhan OCR static blog
+    const bodhanOCRBlog: Blog = {
+      id: 999004,
+      title: "IndicOCR ",
+      description: "State-of-the-art Document Parsing for India.",
+      published_on: "2026-09-08T00:00:00Z",
+      image: "/static-blogs/bodhan-ocr/images/indic-ocr.jpg",
+      related_link: null,
+      markdown_content: "",
+      page_url: "bodhan-ocr",
+      authors: [{ name: "Bodhan AI and AI4Bharat" }]
+    };
+
+    validBlogs.unshift(bodhanOCRBlog);
+    validBlogs.unshift(bodhanMTBlog);
+    validBlogs.unshift(bodhanTTSBlog);
+    validBlogs.unshift(bodhanASRBlog);
+
     console.log('[fetchBlogList] Valid blogs count:', validBlogs.length);
     console.log('[fetchBlogList] Available page_urls:', 
       validBlogs.map(b => ({ id: b.id, page_url: b.page_url }))

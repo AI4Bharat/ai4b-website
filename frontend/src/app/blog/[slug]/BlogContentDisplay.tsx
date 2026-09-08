@@ -133,17 +133,15 @@ function renderHeading(heading: string, level: string = 'h2', headingColor: stri
   }, heading);
 }
 
-function getIconComponent(iconName: string) {
-  const iconMap: Record<string, any> = {
-    'github': FaGithub,
-    'arxiv': FaBook,
-    'huggingface': SiHuggingface,
-    'dataset': FaDatabase,
-    'book': FaBook,
-    'code': FaCode,
-    'external': FaExternalLinkAlt,
-  };
-  return iconMap[iconName?.toLowerCase()] || FaExternalLinkAlt;
+function CustomLinkIcon({ iconName }: { iconName: string }) {
+  const name = iconName?.toLowerCase() || 'external';
+  if (name === "huggingface" || name === "hf") return <Text as="span" fontSize="1.15em" mr={1}>🤗</Text>;
+  if (name === "github") return <Icon as={FaGithub} color="gray.600" />;
+  if (name === "arxiv" || name === "book" || name === "docs") return <Icon as={FaBook} color="gray.600" />;
+  if (name === "dataset") return <Icon as={FaDatabase} color="gray.600" />;
+  if (name === "code") return <Icon as={FaCode} color="gray.600" />;
+  if (name === "play" || name === "demo") return <Icon as={FaPlay} color="#E25822" style={{ fontSize: "0.8em" }} />;
+  return <Icon as={FaExternalLinkAlt} color="gray.600" />;
 }
 
 // Updated dynamic title formatting function
@@ -1056,37 +1054,43 @@ export default function BlogContentDisplay({ blog }: BlogContentDisplayProps) {
                       href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      bg={accentColor}
-                      color="white"
-                      _hover={{ bg: linkColor, transform: shouldReduceMotion ? 'none' : 'translateY(-1px)' }}
-                      size="md"
-                      borderRadius="md"
-                      px={6}
-                      leftIcon={<Icon as={getIconComponent(link.icon || 'external')} />}
-                      whileHover={shouldReduceMotion ? {} : { scale: 1.05 }}
-                      whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
+                      bg="white"
+                      color={textColor}
+                      border="1px solid"
+                      borderColor="orange.200"
+                      borderRadius="full"
+                      size="sm"
+                      px={5}
+                      leftIcon={<CustomLinkIcon iconName={link.icon || 'external'} />}
+                      _hover={{ bg: "gray.50", transform: shouldReduceMotion ? 'none' : 'translateY(-1px)', boxShadow: "sm" }}
+                      whileHover={shouldReduceMotion ? {} : { scale: 1.02 }}
+                      whileTap={shouldReduceMotion ? {} : { scale: 0.98 }}
                       transition="all 0.2s"
                       minW={{ base: "200px", md: "auto" }}
+                      boxShadow="xs"
                     >
-                      {link.text}
+                      <Text as="span" fontSize="sm" fontWeight="500">{link.text}</Text>
                     </MotionButton>
                   ))}
                   {blog.bibtex && (
                     <MotionButton
-                      bg={accentColor}
-                      color="white"
-                      _hover={{ bg: linkColor, transform: shouldReduceMotion ? 'none' : 'translateY(-1px)' }}
-                      size="md"
-                      borderRadius="md"
-                      px={6}
-                      leftIcon={<Icon as={FaCopy} />}
-                      whileHover={shouldReduceMotion ? {} : { scale: 1.05 }}
-                      whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
+                      bg="white"
+                      color={textColor}
+                      border="1px solid"
+                      borderColor="orange.200"
+                      borderRadius="full"
+                      size="sm"
+                      px={5}
+                      leftIcon={<Icon as={FaCopy} color="gray.600" />}
+                      _hover={{ bg: "gray.50", transform: shouldReduceMotion ? 'none' : 'translateY(-1px)', boxShadow: "sm" }}
+                      whileHover={shouldReduceMotion ? {} : { scale: 1.02 }}
+                      whileTap={shouldReduceMotion ? {} : { scale: 0.98 }}
                       onClick={handleCopyBibTeX}
                       transition="all 0.2s"
                       minW={{ base: "200px", md: "auto" }}
+                      boxShadow="xs"
                     >
-                      Copy BibTeX
+                      <Text as="span" fontSize="sm" fontWeight="500">Copy BibTeX</Text>
                     </MotionButton>
                   )}
                 </Flex>

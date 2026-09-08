@@ -1,0 +1,901 @@
+/* Indic-Speak post styling.
+ *
+ * The block above is the Bodhan design system (design.css), lifted verbatim from
+ * the website template so the research-* and chart-* classes behave exactly as
+ * they do on the Indic-Translate and IndicOCR posts. This block holds only what
+ * is specific to this post: the token bridge, the hero, and the voice/clip widgets.
+ */
+
+:root {
+  /* Token bridge: post-local names defined in terms of the Bodhan palette. */
+  --surface-1: var(--white);
+  --surface-2: var(--bg-cream-100);
+  --text-secondary: var(--color-10);
+  --text-muted: var(--color-11);
+  --border: rgba(92, 64, 51, 0.12);
+  --border-strong: rgba(92, 64, 51, 0.22);
+  --accent: var(--text-orange-500);
+  --accent-soft: var(--primary-100);
+  --gridline: #E4D8C8;
+  --baseline: #D2C9BA;
+  --bench: #B45309;
+  --font-display: 'EB Garamond', Georgia, serif;
+  --font-body: 'Manrope', 'Noto Sans Devanagari', 'Noto Sans Bengali', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --indic: 'Noto Sans Devanagari', 'Noto Sans Bengali', 'Noto Sans Tamil', 'Noto Sans Telugu',
+    'Noto Sans Malayalam', 'Noto Sans Kannada', 'Noto Sans Gujarati', 'Noto Sans Gurmukhi',
+    'Noto Sans Oriya', 'Noto Sans Ol Chiki', 'Noto Sans Meetei Mayek', 'Noto Nastaliq Urdu',
+    var(--font-body);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; font-family: var(--font-body); color: var(--text-primary); background: var(--bg-cream-50); -webkit-font-smoothing: antialiased; }
+h1, h2, h3, h4 { margin: 0; font-weight: 500; }
+p { margin: 0; }
+a { color: var(--accent); }
+code, .mono { font-family: var(--font-mono); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.indic { font-family: var(--indic); }
+.rtl { direction: rtl; text-align: right; }
+:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+
+/* ── Buttons that answer the hand: a lift on hover, a press on click ── */
+@media (prefers-reduced-motion: reduce) {
+}
+
+/* ── Reading progress ── */
+.progress-bar { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 60; transform-origin: 0 50%; transform: scaleX(0); background: linear-gradient(90deg, var(--text-orange-500), var(--text-orange-400)); }
+
+/* ── Hero ──────────────────────────────────────────────────────────────────
+ * One changing Indian-script glyph sends a restrained ripple through the left
+ * side of the card. The right half stays still, so motion frames the story
+ * instead of competing with the product name and publication links.
+ * ──────────────────────────────────────────────────────────────────────── */
+.hero { position: relative; overflow: hidden; padding: 2.5rem 0 1.5rem; }
+@media (min-width: 768px) { .hero { padding: 3.5rem 0 2rem; } }
+.hero::before {
+  content: ""; position: absolute; inset: -20% -10% auto; height: 120%; pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(255, 107, 53, 0.09) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 40% at 80% 20%, rgba(49, 70, 133, 0.06) 0%, transparent 60%);
+  /* One element animating continuously: the justified use of will-change. */
+  will-change: opacity, transform;
+  animation: hero-breathe 10s ease-in-out infinite;
+}
+@keyframes hero-breathe { 0%, 100% { opacity: 0.85; transform: scale(1); } 50% { opacity: 1; transform: scale(1.03); } }
+.hero-inner { position: relative; }
+.hero-eyebrow { text-align: center; color: var(--text-orange-500); margin-bottom: 1rem; }
+.hero-eyebrow .sep { margin: 0 0.5rem; color: var(--color-14); }
+.hero-eyebrow .date { color: var(--color-11); }
+
+.hero-card {
+  position: relative; overflow: hidden; border-radius: 1rem;
+  border: 1px solid rgba(255, 234, 210, 0.95);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,250,245,0.98)),
+    var(--white);
+  box-shadow: 0 1px 2px rgba(46, 50, 56, 0.03);
+  padding: 3.25rem 1.5rem 2.5rem;
+}
+@media (min-width: 768px) { .hero-card { padding: 4rem 2.5rem 3rem; } }
+.hero-ripple {
+  position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%;
+  display: block; pointer-events: none;
+}
+/* The scripts: the first vowel of each of the twelve scripts the model reads,
+   one language after another, set in that script's own face and lit in that
+   script's hue. On phones it leads the card; on wide screens it sits at the
+   left, a little in from the edge, where the sound is born. */
+.hero-glyph {
+  position: relative; z-index: 3; width: 7rem; height: 6.4rem; margin: -0.6rem auto 0.4rem;
+  font-family: var(--indic); font-weight: 400; line-height: 1;
+}
+.hero-glyph-face {
+  position: absolute; left: 0; right: 0; top: 0; bottom: 1.7rem;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3.5rem;
+  background: linear-gradient(160deg, #A8330E 0%, #C2410C 48%, #D8842F 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  opacity: 0; transform: translateY(10px) scale(0.96);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hero-glyph-face.is-on { opacity: 1; transform: none; }
+/* The language name sits under its letter, like the label on a specimen, and
+   stays inside the letter's own column so it never runs into the links. */
+.hero-glyph-cap {
+  position: absolute; left: 0; right: 0; bottom: 0; text-align: center; white-space: nowrap;
+  font: 600 0.72rem/1.35 var(--font-body); letter-spacing: 0.02em; color: var(--text-muted);
+  transition: opacity 0.35s ease;
+}
+.hero-glyph-cap.is-off { opacity: 0; }
+@media (min-width: 768px) {
+  /* The upper-left lane: between the card's top edge and the links row, which
+     has grown wide enough to cross a letter sitting at mid-height. */
+  .hero-glyph { position: absolute; left: 5.6rem; top: 3.4rem; margin: 0; width: 8rem; height: 7.8rem; }
+  .hero-glyph-face { font-size: 4.2rem; bottom: 1.8rem; }
+}
+.hero-scrim {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background:
+    radial-gradient(ellipse 58% 70% at 50% 48%, rgba(255,255,255,0.94) 30%, rgba(255,255,255,0.66) 56%, rgba(255,255,255,0) 84%),
+    linear-gradient(180deg, rgba(255,255,255,0.36), transparent 24%, transparent 76%, rgba(255,255,255,0.3));
+}
+/* Type and controls sit above the animated field. */
+.hero-card .research-type-title { position: relative; z-index: 3; text-align: center; max-width: 38rem; margin: 0 auto; }
+.hero-card .research-type-title .hero-title-accent { color: var(--accent); }
+.hero-promise {
+  position: relative; z-index: 3; margin: 0.8rem auto 0; text-align: center;
+  max-width: 34rem; font-family: var(--font-body); font-size: 0.9rem;
+  line-height: 1.55; color: var(--text-muted);
+}
+.hero-fallback { position: relative; z-index: 3; margin: 0.85rem 0 0; text-align: center; font: 600 0.82rem/1.4 var(--font-body); }
+.hero-fallback a { color: var(--accent); text-underline-offset: 0.18em; }
+.hero-links {
+  position: relative; z-index: 3; display: flex; flex-wrap: wrap; gap: 0.5rem;
+  justify-content: center; margin-top: 1.1rem;
+}
+/* Both the anchors and the buttons in this nav: a <button> chip that missed this
+   rule fell back to block layout and stacked its icon above its label. */
+.hero-links a,
+.hero-links button { text-decoration: none; display: inline-flex; align-items: center; gap: 0.42rem; }
+/* Deliberately no font declarations: .research-link-chip already sets family,
+   size and weight, and `.hero-links button` is more specific, so declaring them
+   here (even as `inherit`) overrode the chip and made the button chips render
+   lighter and larger than the anchor chips beside them. */
+.hero-links button { appearance: none; cursor: pointer; }
+.hero-links button:disabled { cursor: default; opacity: 0.92; }
+/* Marks inside the chips. GitHub's is Primer's own mark-github octicon and takes
+   the chip's text colour; Hugging Face's is their published logo and keeps its
+   brand colours, so it must not be recoloured. The bolt is ours. */
+.chip-ico { flex: none; width: 0.95rem; height: 0.95rem; display: block; }
+.chip-bolt { width: 0.85rem; height: 0.85rem; color: var(--accent); }
+.chip-try:hover .chip-bolt { color: inherit; }
+.spec-strip {
+  position: relative; z-index: 3; display: flex; flex-wrap: wrap;
+  justify-content: center; gap: 8px; margin-top: 1.45rem;
+}
+.spec-chip {
+  display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 96px;
+  padding: 8px 14px; border-radius: 10px; background: var(--white);
+  border: 1px solid rgba(255, 234, 210, 0.95);
+  box-shadow: 0 2px 10px rgba(46, 50, 56, 0.045);
+}
+.spec-chip .v { font-family: var(--font-display); font-size: 1.05rem; font-weight: 500;
+  color: var(--text-primary); white-space: nowrap; }
+.spec-chip .k { font-family: var(--font-body); font-size: 0.66rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-11); text-align: center; }
+@media (max-width: 600px) {
+  .hero-card { padding: 3.25rem 1.5rem 2.5rem; }
+  .hero-scrim { background: radial-gradient(ellipse 84% 68% at 50% 47%, rgba(255,255,255,0.94) 34%, rgba(255,255,255,0.68) 65%, rgba(255,255,255,0) 100%); }
+  .hero-promise { max-width: 16rem; font-size: 0.84rem; }
+  .spec-strip { gap: 6px; }
+  .spec-chip { min-width: 80px; padding: 6px 10px; }
+}
+
+/* One orchestrated entrance instead of independent elements all drifting in. */
+.hero-card.will-enter .hero-partners,
+.hero-card.will-enter .hero-promise,
+.hero-card.will-enter .hero-links,
+.hero-card.will-enter .spec-chip { opacity: 0; transform: translateY(12px); }
+.hero-card.will-enter.is-ready .hero-partners,
+.hero-card.will-enter.is-ready .hero-promise,
+.hero-card.will-enter.is-ready .hero-links,
+.hero-card.will-enter.is-ready .spec-chip {
+  opacity: 1; transform: none;
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hero-card.will-enter.is-ready .hero-partners { transition-delay: 0.1s; }
+.hero-card.will-enter.is-ready .hero-promise { transition-delay: 0.28s; }
+.hero-card.will-enter.is-ready .hero-links { transition-delay: 0.46s; }
+.hero-card.will-enter.is-ready .spec-chip:nth-child(1) { transition-delay: 0.56s; }
+.hero-card.will-enter.is-ready .spec-chip:nth-child(2) { transition-delay: 0.62s; }
+.hero-card.will-enter.is-ready .spec-chip:nth-child(3) { transition-delay: 0.68s; }
+.hero-card.will-enter.is-ready .spec-chip:nth-child(4) { transition-delay: 0.74s; }
+.hero-card.will-enter.is-ready .spec-chip:nth-child(5) { transition-delay: 0.8s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero::before { animation: none; }
+  .hero-glyph-face { transition: none; }
+  .hero-card.will-enter .hero-partners,
+.hero-card.will-enter .hero-promise,
+  .hero-card.will-enter .hero-links,
+  .hero-card.will-enter .spec-chip { opacity: 1; transform: none; transition: none; }
+}
+
+/* ── Motion hierarchy on scroll ───────────────────────────────────────────
+ * Copy settles, cards lift, rules draw and repeated items cascade. Each target
+ * runs once; the classes do not exist without JS, so the no-script page remains
+ * fully visible.
+ * ──────────────────────────────────────────────────────────────────────── */
+.reveal { transform: translateY(7px); transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1); }
+.reveal.reveal-card { transform: translateY(10px); transition-duration: 0.28s; }
+.reveal.in-view { transform: none; }
+#heroTitle .w.reveal { opacity: 0; transform: translateY(10px); transition: opacity 0.34s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
+#heroTitle .w.reveal.in-view { opacity: 1; transform: none; }
+.reveal-rule .research-section-rule { transform: scaleX(0); transform-origin: left center; transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
+.reveal-rule.in-view .research-section-rule { transform: scaleX(1); }
+.act.reveal-rule { position: relative; border-top-color: transparent; }
+.act.reveal-rule::before { content: ""; position: absolute; left: 0; right: 0; top: -2px; height: 2px; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
+.act.reveal-rule.in-view::before { transform: scaleX(1); }
+.reveal-stagger { opacity: 1; transform: none; }
+.reveal-stagger .research-feature-card,
+.reveal-stagger .research-bullet-item,
+.reveal-stagger .rm-item {
+  transform: translateY(7px);
+  transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal-stagger.in-view .research-feature-card,
+.reveal-stagger.in-view .research-bullet-item,
+.reveal-stagger.in-view .rm-item { opacity: 1; transform: none; }
+.reveal-stagger.in-view > :nth-child(1), .reveal-stagger.in-view li:nth-child(1), .reveal-stagger.in-view .rm-item:nth-child(1), .reveal-stagger.in-view .research-feature-card:nth-child(1) { transition-delay: 0s; }
+.reveal-stagger.in-view > :nth-child(2), .reveal-stagger.in-view li:nth-child(2), .reveal-stagger.in-view .rm-item:nth-child(2), .reveal-stagger.in-view .research-feature-card:nth-child(2) { transition-delay: 0.03s; }
+.reveal-stagger.in-view > :nth-child(3), .reveal-stagger.in-view li:nth-child(3), .reveal-stagger.in-view .rm-item:nth-child(3), .reveal-stagger.in-view .research-feature-card:nth-child(3) { transition-delay: 0.06s; }
+.reveal-stagger.in-view > :nth-child(4), .reveal-stagger.in-view li:nth-child(4), .reveal-stagger.in-view .rm-item:nth-child(4), .reveal-stagger.in-view .research-feature-card:nth-child(4) { transition-delay: 0.09s; }
+.reveal-stagger.in-view li:nth-child(n+5), .reveal-stagger.in-view .rm-item:nth-child(n+5) { transition-delay: 0.12s; }
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .reveal.reveal-card,
+  .reveal-stagger .research-feature-card, .reveal-stagger .research-bullet-item, .reveal-stagger .rm-item {
+    opacity: 1; transform: none; transition: none;
+  }
+  .reveal-rule .research-section-rule, .act.reveal-rule::before { transform: scaleX(1); transition: none; }
+}
+
+/* ── Table of contents ── */
+.toc-hover-zone { display: none; }
+.toc-rail { display: none; }
+@media (min-width: 1280px) {
+  .toc-hover-zone { display: block; position: fixed; left: 0; top: 0; bottom: 0; width: 3.5rem; z-index: 40; }
+  .toc-rail { display: block; position: fixed; left: 1.25rem; top: 50%; transform: translateY(-50%); z-index: 50; font-family: var(--font-body); }
+  .toc-pills { display: none; }
+}
+.toc-rail ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
+.toc-tick { display: flex; align-items: flex-start; width: 100%; border: none; background: none; padding: 0; cursor: pointer; text-align: left; color: var(--color-11); transition: color 0.25s ease; }
+.toc-tick:hover { color: var(--text-primary); }
+.toc-tick.is-active { color: var(--text-orange-500); }
+.toc-tick-mark { margin-top: 0.5rem; height: 1px; width: 0.75rem; flex: none; background: var(--color-14); transition: width 0.3s ease-out, background 0.3s ease-out; }
+.toc-tick:hover .toc-tick-mark { width: 1.25rem; background: var(--color-11); }
+.toc-tick.is-active .toc-tick-mark { width: 1.5rem; background: linear-gradient(90deg, var(--text-orange-500), var(--text-orange-400)); }
+.toc-tick-label { font-size: 12.5px; line-height: 1.35; white-space: nowrap; overflow: hidden; max-width: 0; opacity: 0; margin-left: 0; transition: max-width 0.3s ease-out, opacity 0.3s ease-out, margin-left 0.3s ease-out; }
+.toc-rail.is-expanded .toc-tick-label,
+.toc-rail:focus-within .toc-tick-label { max-width: 12rem; opacity: 1; margin-left: 0.625rem; }
+.toc-tick.is-active .toc-tick-label { font-weight: 500; }
+.toc-pills { margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255, 234, 210, 0.9); font-family: var(--font-body); }
+.toc-pills-title { color: var(--color-11); margin-bottom: 0.75rem; }
+.toc-pills ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem 0.25rem; }
+.toc-pill { border: none; cursor: pointer; font-family: inherit; font-size: 12.5px; padding: 0.25rem 0.625rem; border-radius: 999px; background: none; color: var(--color-11); transition: background 0.2s ease, color 0.2s ease; }
+.toc-pill:hover { color: var(--text-primary); background: var(--bg-cream-100); }
+.toc-pill.is-active { color: var(--text-orange-500); background: var(--primary-100); font-weight: 500; }
+
+/* ── Article rhythm ── */
+.research-type-dek { border-left: 2px solid rgba(194, 65, 12, 0.4); padding-left: 1.25rem; margin: 2.5rem 0; }
+.research-prose section { scroll-margin-top: 7rem; margin-bottom: 3.5rem; }
+.section-num { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; color: var(--accent); }
+.research-prose .research-type-body + .research-type-body,
+.research-prose .research-type-lead + .research-type-body { margin-top: 1rem; }
+.cap-subnote { margin-top: 18px; font-size: 0.9rem; line-height: 1.7; color: var(--color-11); }
+.research-feature-grid.left .research-feature-card { align-items: flex-start; text-align: left; }
+.research-feature-grid .research-feature-card.span-2 { grid-column: 1 / -1; }
+.research-feature-grid.left .research-feature-index { letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; }
+
+/* A pulled aside, in the same idiom as the dek: orange hairline, cream ground. */
+.pull-note {
+  margin: 1.75rem 0; padding: 1rem 1.15rem; border-radius: 12px;
+  border: 1px solid rgba(255, 234, 210, 0.95); border-left: 2px solid var(--accent);
+  background: var(--bg-cream-100);
+  font-family: var(--font-body); font-size: 0.95rem; line-height: 1.7; color: var(--text-secondary);
+}
+.pull-note b { color: var(--text-primary); }
+
+/* A definition list of facts, monospaced keys. */
+.fact-list { display: grid; gap: 0.55rem; margin-top: 0.75rem; }
+.fact-list div { font-family: var(--font-body); font-size: 0.9rem; line-height: 1.6; color: var(--text-secondary); }
+.fact-list b { color: var(--text-primary); font-weight: 650; }
+
+/* ── Voice library ────────────────────────────────────────────────────────
+ * A plot, not a map. See the note in page.js for why the map went.
+ * ──────────────────────────────────────────────────────────────────────── */
+.vspace { position: relative; }
+.vspace svg { width: 100%; height: auto; display: block; overflow: visible; }
+.vs-axis { font-family: var(--font-body); font-size: 11px; font-weight: 600; fill: var(--chart-text-secondary); }
+.vs-label { font-family: var(--font-body); font-size: 10.5px; font-weight: 600; fill: #7A6A58; pointer-events: none; }
+/* 45 names cannot be read in a 284px-wide plot, so below that width the plot is an
+ * overview -- the split between female and male registers, and the spread -- and
+ * names come from a tap or from the table underneath. */
+@media (max-width: 760px) { .vs-label { display: none; } }
+.vs-pt { cursor: default; }
+.vs-pt.has-clip { cursor: pointer; }
+.vs-hit { fill: transparent; pointer-events: all; }
+.vs-dot { transition: transform 0.15s ease; transform-box: fill-box; transform-origin: center; pointer-events: none; }
+.vs-ring { fill: none; stroke-width: 1.1; opacity: 0.5; }
+.vs-pt:hover .vs-dot, .vs-pt:focus .vs-dot, .vs-pt.is-active .vs-dot { transform: scale(1.45); }
+.vs-pt:hover .vs-label, .vs-pt:focus .vs-label, .vs-pt.is-active .vs-label { fill: var(--chart-text-primary); }
+.vs-pt:focus { outline: none; }
+.vs-pt:focus .vs-ring, .vs-pt.is-active .vs-ring { opacity: 1; stroke-width: 1.8; }
+.vs-legend-ring { background: none !important; box-shadow: inset 0 0 0 1.5px #8A7A66; border-radius: 50%; width: 0.62rem; height: 0.62rem; }
+.vs-tip {
+  position: absolute; z-index: 4; width: max-content; max-width: 246px; padding: 10px 12px;
+  border-radius: 10px; background: var(--chart-tooltip-bg); color: var(--chart-tooltip-text);
+  pointer-events: none; opacity: 0; transition: opacity 0.14s ease;
+}
+.vs-tip.show { opacity: 1; }
+.tt-lang { font-size: 0.8125rem; font-weight: 650; margin-bottom: 0.35rem; }
+.tt-row { display: flex; justify-content: space-between; gap: 0.9rem; font-size: 0.72rem; line-height: 1.5; }
+.tt-row span { color: rgba(251, 246, 238, 0.72); }
+.tt-row b { font-variant-numeric: tabular-nums; font-weight: 650; }
+.tt-desc { margin-top: 0.45rem; font-size: 0.72rem; line-height: 1.5; color: rgba(251, 246, 238, 0.86); }
+.tt-desc em { font-style: normal; font-weight: 650; color: #F7C99B; }
+.tt-hint { margin-top: 0.4rem; font-size: 0.66rem; color: #F7C99B; }
+
+/* ── Cross-lingual A/B ── */
+.ab-panel { display: none; }
+.ab-panel.is-active { display: block; }
+.ab-text {
+  font-family: var(--indic); font-size: 0.95rem; line-height: 1.85;
+  color: var(--chart-text-primary); padding: 0.85rem 1rem; border-radius: 10px;
+  background: var(--white); border: 1px solid var(--border);
+}
+.ab-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.75rem; }
+@media (max-width: 700px) { .ab-pair { grid-template-columns: 1fr; } }
+.ab-side {
+  border: 1px solid var(--border); border-radius: 12px; background: var(--white);
+  padding: 0.8rem 0.9rem 0.9rem;
+}
+/* The native reading is the reference the other is heard against, so it is marked
+ * rather than merely first -- on a narrow screen the two stack and order is lost. */
+.ab-side.is-native { border-color: rgba(194, 65, 12, 0.42); background: #FFFCF8; }
+.ab-who { display: flex; flex-direction: column; gap: 2px; margin-bottom: 0.55rem; }
+.ab-who b { font-size: 1rem; font-weight: 700; color: var(--chart-text-primary); }
+.ab-tag { font-family: var(--font-mono); font-size: 0.64rem; text-transform: uppercase;
+  letter-spacing: 0.05em; color: var(--chart-text-secondary); }
+.ab-side.is-native .ab-tag { color: var(--accent); font-weight: 700; }
+.ab-player, .lf-player { margin: 0.1rem 0; }
+.ab-meta { display: block; margin-top: 0.5rem; font-family: var(--font-mono);
+  font-size: 0.64rem; color: var(--chart-text-secondary); }
+
+/* ── Voice sample player ── */
+.vs-player { margin-top: 0.85rem; padding: 0.85rem 1rem 0.95rem; border-radius: 12px;
+  border: 1px solid rgba(194, 65, 12, 0.32); background: var(--white); }
+.vs-player-who { display: flex; flex-direction: column; gap: 2px; margin-bottom: 0.55rem; }
+.vs-player-who b { font-size: 1.05rem; font-weight: 700; color: var(--chart-text-primary); }
+.vs-player-who span { font-family: var(--font-mono); font-size: 0.66rem; color: var(--chart-text-secondary); }
+.vs-player-slot { margin: 0.1rem 0; }
+.vs-player-desc { margin-top: 0.55rem; font-size: 0.85rem; line-height: 1.6; color: var(--chart-text-secondary); }
+.vs-player-desc em { font-style: normal; color: var(--accent); font-weight: 600; }
+.vs-pt.is-playing .vs-dot { transform: scale(1.5); }
+.vs-pt.is-playing .vs-ring { opacity: 1; stroke-width: 2; }
+.vs-pt.is-playing .vs-label { fill: var(--accent); font-weight: 700; }
+
+/* ── Tables in the chart-card idiom ── */
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; font-family: var(--font-body); }
+.data-table th, .data-table td { padding: 0.5rem 0.6rem; border-bottom: 1px solid rgba(92, 64, 51, 0.12); text-align: left; vertical-align: top; }
+.data-table th { color: var(--chart-text-secondary); font-weight: 600; position: sticky; top: 0; background: var(--chart-panel-bg); }
+.data-table td.num, .data-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.data-table tbody tr:hover { background: rgba(255, 234, 210, 0.45); }
+.data-table b { color: var(--chart-text-primary); font-weight: 650; }
+.data-table .vmeta { display: block; font-family: var(--font-mono); font-size: 0.66rem; color: var(--chart-text-secondary); margin-top: 2px; }
+.table-scroll { max-height: 30rem; overflow: auto; border-radius: 12px; }
+.data-table .group-row td { padding-top: 1.1rem; font-family: var(--font-mono); font-size: 0.64rem;
+  font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent);
+  border-bottom: 1px solid rgba(194, 65, 12, 0.35); }
+.data-table .group-row:first-child td { padding-top: 0.2rem; }
+.data-table .group-row:hover { background: none; }
+.data-table .group-count { float: right; color: var(--chart-text-secondary); font-weight: 600; letter-spacing: 0.04em; }
+
+/* ── The audio player ─────────────────────────────────────────────────────
+ * A pill play control, the clip's own waveform as the progress track, mono
+ * timings. The warm copy of the bars sits over the pale one and progress is a
+ * clip-path on it, so playing moves one property and never touches layout.
+ * ──────────────────────────────────────────────────────────────────────── */
+/* Wide enough, the player is one row. Squeezed into a two-column card there is
+   not room for both a 56-bar waveform and the controls, so the waveform takes
+   its own row above them rather than collapsing to sub-pixel bars. */
+
+/* ── Partner marks ────────────────────────────────────────────────────────
+ * The collaboration sits inside the card above the title, with each
+ * organisation's own mark, matching the sibling Indic-Translate post. Assets:
+ * images/bodhan_mark.svg (the current vector mark) and
+ * images/logo_ai4bharat.png (398x400). Both are decorative here -- the name is
+ * beside each one in text, so an alt would be read out twice.
+ * ──────────────────────────────────────────────────────────────────────── */
+.hero-partners {
+  /* z-index 3 like every other element in this card: .hero-scrim sits at 1 and
+     paints over anything left at `auto`, which washed this row out completely. */
+  position: relative; z-index: 3;
+  display: flex; flex-wrap: wrap; align-items: center;
+  justify-content: center; gap: 0.35rem 0.7rem; margin-bottom: 0.75rem;
+}
+.hero-partner-group { display: inline-flex; align-items: center; gap: 0.7rem; }
+.hero-partner {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  font-family: var(--font-body); font-size: 1rem; font-weight: 600;
+  letter-spacing: -0.01em; color: var(--chart-text-primary, #2C241C);
+}
+.hero-partner .chip-mark { width: 22px; height: 22px; flex: none; }
+.hero-x { font-family: var(--font-display); font-size: 1.05rem; color: var(--text-muted); }
+.ecosystem-links .chip-mark { flex: none; width: 20px; height: 20px; display: block; }
+.ecosystem-links .chip-ico { width: 20px; height: 20px; }
+/* A chip that is the logo itself, sized to the text height of its neighbours. */
+.ecosystem-chip-logo .chip-logo { display: block; height: 26px; width: auto; }
+@media (max-width: 480px) {
+  .hero-partner { font-size: 0.9rem; }
+  .hero-partner .chip-mark { width: 19px; height: 19px; }
+}
+
+/* ── Hero demo panel ─────────────────────────────────────────────────────
+   Opens over the ripple rather than pushing the page around, so the card keeps
+   its height and nothing below it moves. */
+/* `display: grid` here beats the [hidden] attribute's own `display: none`, so
+   without the rule below the closed panel still covers the card and swallows
+   every click on the hero chips. */
+.hero-demo[hidden] { display: none; }
+.hero-demo {
+  position: absolute; inset: 0; z-index: 3; display: grid; place-items: center;
+  padding: 1.1rem; border-radius: 1rem;
+  background: rgba(255, 249, 240, 0.94);
+  backdrop-filter: blur(3px);
+}
+.hero-demo-close {
+  position: absolute; top: 0.5rem; right: 0.7rem; z-index: 1;
+  appearance: none; border: 0; background: none; cursor: pointer;
+  font-size: 1.5rem; line-height: 1; color: var(--chart-text-secondary); padding: 0.2rem 0.4rem;
+}
+.hero-demo-close:hover { color: var(--accent); }
+.hero-demo-close:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; border-radius: 6px; }
+.hero-demo-body { width: min(100%, 46rem); }
+.hero-demo-video {
+  display: block; width: 100%; height: auto; border-radius: 0.7rem;
+  border: 1px solid var(--border); background: #2C241C;
+}
+.hero-demo-pending {
+  margin: 0; text-align: center; font-family: var(--font-body); font-size: 0.95rem;
+  line-height: 1.65; color: var(--text-secondary);
+}
+.hero-demo-pending a { color: var(--accent); }
+
+/* ── Read the post aloud ──────────────────────────────────────────────────
+   Sits between the hero and the first paragraph, because that is where someone
+   decides whether to read or to listen. */
+.readaloud:hover .ra-btn,
+.readaloud:focus-within .ra-btn,
+.readaloud:hover .ra-btn span,
+.readaloud:focus-within .ra-btn span,
+.readaloud:hover .ra-note,
+.readaloud:focus-within .ra-note,
+@media (max-width: 560px) {
+}
+@media (prefers-reduced-motion: reduce) {
+}
+
+/* ── API parameters and caveats ───────────────────────────────────────────
+ * The table is exhaustive and deduplicated, so an alias is a footnote on the
+ * row it belongs to rather than a row of its own. The caveats sit below as
+ * cards, each headed by the parameter it constrains: a caveat nobody can
+ * attribute to a field is a caveat nobody acts on.
+ * ──────────────────────────────────────────────────────────────────────── */
+/* Four columns will not fit a phone, so the table scrolls inside its own panel.
+   Without this it pushes the whole document sideways -- measured at 500px against
+   a 390px viewport -- which is the same failure the .prompt-box once caused. */
+.api-panel { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.api-table { min-width: 34rem; }
+.api-table td { vertical-align: top; }
+.api-table .chart-data-key code { font-size: 0.78rem; }
+.api-alias {
+  display: block; margin-top: 0.2rem;
+  font-family: var(--font-body); font-size: 0.68rem; line-height: 1.4;
+  color: var(--text-muted); font-weight: 400;
+}
+.api-alias code { font-size: 0.66rem; }
+.api-type { font-family: var(--font-mono); font-size: 0.72rem; color: var(--chart-text-secondary); }
+.api-req { font-family: var(--font-body); font-size: 0.7rem; text-transform: uppercase;
+  letter-spacing: 0.05em; color: var(--accent); }
+.api-none { font-size: 0.72rem; color: var(--text-muted); }
+.api-what { font-size: 0.84rem; line-height: 1.55; color: var(--text-secondary); }
+
+.api-caveats { display: grid; gap: 0.6rem; margin-top: 1rem; }
+.api-caveat {
+  padding: 0.8rem 0.95rem; border: 1px solid var(--border); border-radius: 10px;
+  background: var(--surface-1);
+}
+.api-caveat-head {
+  margin: 0 0 0.3rem; display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap;
+  font-size: 0.9rem; line-height: 1.45;
+}
+.api-caveat-head code {
+  flex: none; font-size: 0.72rem; padding: 0.12rem 0.4rem; border-radius: 4px;
+  background: var(--primary-100); color: var(--accent);
+}
+.api-caveat-any {
+  flex: none; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--text-muted);
+  padding: 0.12rem 0.4rem; border-radius: 4px; background: var(--surface-2);
+}
+.api-caveat-head b { color: var(--chart-text-primary); font-weight: 600; }
+.api-caveat-body { margin: 0; font-size: 0.86rem; line-height: 1.6; color: var(--text-secondary); }
+
+/* ── Card weight ─────────────────────────────────────────────────────────
+ * The pack's card is a tan frame (#E4D8C8) wrapped around a cream panel. That
+ * double frame is right for a headline exhibit and far too heavy seven times
+ * down one page, where it became the largest painted area on the post. The
+ * quiet variant keeps the whole structure -- title, panel, note -- and drops
+ * the tan ground, so the tan is left to mean "this is the one to look at".
+ * One per page now: the section's own centrepiece.
+ * ──────────────────────────────────────────────────────────────────────── */
+.chart-card.quiet, .editorial-card.quiet {
+  background: none; border: 0; border-radius: 0;
+  padding: 0; margin: 1.75rem 0 2rem;
+  --chart-panel-bg: var(--white);
+  --ed-inner: var(--white);
+}
+.chart-card.quiet > .chart-panel,
+.editorial-card.quiet > .editorial-panel {
+  border: 1px solid rgba(255, 234, 210, 0.95);
+  border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(46, 50, 56, 0.03);
+}
+.chart-card.quiet > .chart-card-header,
+.editorial-card.quiet > .editorial-card-header { padding-left: 0; padding-right: 0; }
+.chart-card.quiet > .chart-card-note { padding-left: 0; padding-right: 0; }
+
+/* ── The three acts ──────────────────────────────────────────────────────
+ * The post is one argument in three moves: hear it, then check it, then
+ * decide. The markers name each move so a reader landing halfway down knows
+ * which one they are in; they carry the arc rather than decorate it.
+ * ──────────────────────────────────────────────────────────────────────── */
+.act {
+  margin: 3.5rem 0 0; padding-top: 1.1rem;
+  border-top: 2px solid var(--accent);
+  display: flex; align-items: baseline; gap: 0.9rem; flex-wrap: wrap;
+}
+.act-label {
+  margin: 0; flex: none;
+  font-family: var(--font-mono); font-size: 0.66rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.11em; color: var(--accent);
+}
+.act-line {
+  margin: 0; flex: 1 1 18rem; min-width: 0;
+  font-family: var(--font-body); font-size: 0.95rem; line-height: 1.55;
+  color: var(--text-secondary);
+}
+@media (max-width: 560px) { .act { gap: 0.3rem; } .act-line { flex-basis: 100%; } }
+
+/* ── The three acts ──────────────────────────────────────────────────────
+ * The post is one argument in three moves: hear it, then check it, then
+ * decide. The markers name each move so a reader landing halfway down knows
+ * which one they are in; they carry the arc rather than decorate it.
+ * ──────────────────────────────────────────────────────────────────────── */
+.act {
+  margin: 3.5rem 0 0; padding-top: 1.1rem;
+  border-top: 2px solid var(--accent);
+  display: flex; align-items: baseline; gap: 0.9rem; flex-wrap: wrap;
+}
+.act-label {
+  margin: 0; flex: none;
+  font-family: var(--font-mono); font-size: 0.66rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.11em; color: var(--accent);
+}
+.act-line {
+  margin: 0; flex: 1 1 18rem; min-width: 0;
+  font-family: var(--font-body); font-size: 0.95rem; line-height: 1.55;
+  color: var(--text-secondary);
+}
+@media (max-width: 560px) { .act { gap: 0.3rem; } .act-line { flex-basis: 100%; } }
+
+.ap { container-type: inline-size; display: flex; flex-wrap: wrap;
+  align-items: center; gap: 0.7rem 0.7rem; }
+.ap audio { display: none; }
+.ap-play {
+  flex: none; width: 2.35rem; height: 2.35rem; border-radius: 50%; cursor: pointer;
+  border: 1px solid rgba(194, 65, 12, 0.35); background: var(--primary-100);
+  color: var(--accent); display: grid; place-items: center; padding: 0;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.12s ease;
+}
+.ap-play:hover { background: #FFDCC0; border-color: var(--accent); }
+.ap-play:active { transform: scale(0.94); }
+.ap-play:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.ap-play svg { width: 1.15rem; height: 1.15rem; fill: currentColor; }
+.ap-play .ap-i-pause { display: none; }
+.ap.is-playing .ap-play { background: var(--accent); border-color: var(--accent); color: #FFF6EE; }
+.ap.is-playing .ap-i-play { display: none; }
+.ap.is-playing .ap-i-pause { display: inline; }
+
+.ap-track {
+  position: relative; flex: 1 1 auto; min-width: 0; height: 2.1rem; cursor: pointer;
+  touch-action: none;
+}
+.ap-track:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; border-radius: 4px; }
+.ap-bars { position: absolute; inset: 0; display: flex; align-items: center; gap: 1.5px; }
+.ap-bars i { flex: 1 1 0; min-width: 0; border-radius: 999px; background: #E4D8C8; }
+/* The warm copy, revealed left to right as the clip plays. */
+.ap-played { position: absolute; inset: 0; clip-path: inset(0 100% 0 0); }
+.ap.is-playing .ap-played { will-change: clip-path; }
+.ap-played .ap-bars i { background: var(--accent); }
+.ap-track:hover .ap-bars i { background: #DAC9B4; }
+.ap-track:hover .ap-played .ap-bars i { background: #A8380A; }
+
+@container (max-width: 30rem) {
+  .ap-track { order: -1; flex-basis: 100%; height: 1.7rem; }
+  .ap { gap: 0.45rem 0.6rem; }
+}
+
+.ap-time { flex: none; font-family: var(--font-mono); font-size: 0.68rem;
+  color: var(--chart-text-secondary); font-variant-numeric: tabular-nums; }
+.ap-time b { color: var(--chart-text-primary); font-weight: 600; }
+.ap-meta { flex: none; font-family: var(--font-mono); font-size: 0.64rem;
+  text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); }
+
+/* Speed: a pill that cycles, and shows it is off-default by going warm. */
+.ap-rate {
+  flex: none; min-width: 2.4rem; padding: 0.2rem 0.45rem; cursor: pointer;
+  border-radius: 999px; border: 1px solid var(--border);
+  background: var(--white); color: var(--chart-text-secondary);
+  font-family: var(--font-mono); font-size: 0.66rem; font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+.ap-rate:hover { border-color: var(--accent); color: var(--accent); }
+.ap-rate.is-set { background: var(--primary-100); border-color: rgba(194, 65, 12, 0.35); color: var(--accent); }
+.ap-rate:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+
+/* Volume: the button is always there, the slider only when wanted. */
+.ap-vol { flex: none; display: flex; align-items: center; gap: 0.3rem; }
+.ap-mute {
+  width: 1.6rem; height: 1.6rem; padding: 0; cursor: pointer; border: 0;
+  background: none; color: var(--chart-text-secondary); display: grid; place-items: center;
+}
+.ap-mute:hover { color: var(--accent); }
+.ap-mute:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; border-radius: 4px; }
+.ap-mute svg { width: 1.05rem; height: 1.05rem; fill: none; stroke: currentColor; stroke-width: 1.7;
+  stroke-linecap: round; stroke-linejoin: round; }
+.ap-mute .ap-i-off { display: none; }
+.ap.is-muted .ap-mute { color: var(--accent); }
+.ap.is-muted .ap-i-on { display: none; }
+.ap.is-muted .ap-i-off { display: inline; }
+.ap-vol-range {
+  width: 0; opacity: 0; padding: 0; accent-color: var(--accent); cursor: pointer;
+  transition: width 0.18s ease, opacity 0.18s ease;
+}
+.ap-vol:hover .ap-vol-range,
+.ap-vol:focus-within .ap-vol-range,
+.ap.is-muted .ap-vol-range { width: 3.6rem; opacity: 1; }
+/* On a phone there is no hover, so the slider is dropped and the button mutes. */
+@media (max-width: 700px) { .ap-vol-range { display: none; } }
+@media (max-width: 560px) { .ap-rate { min-width: 2.1rem; font-size: 0.6rem; } }
+@media (max-width: 560px) {
+  .ap { gap: 0.5rem; }
+  .ap-time { font-size: 0.62rem; }
+}
+
+/* ── Clip browser ── */
+.lang-tabs { display: flex; flex-wrap: wrap; gap: 2px; background: var(--surface-2); border-radius: 999px; padding: 3px; margin-bottom: 1rem; }
+.lang-tab { border: none; background: none; cursor: pointer; font-family: var(--font-mono); font-size: 0.66rem; font-weight: 700; padding: 5px 12px; border-radius: 999px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; transition: background 0.15s ease, color 0.15s ease; }
+.lang-tab:hover:not(.is-active) { color: var(--text-primary); }
+.lang-tab.is-active { background: var(--surface-1); color: var(--accent); box-shadow: 0 1px 3px rgba(92, 64, 51, 0.14); }
+.clip-panel { display: none; }
+.clip-panel.is-active { display: grid; gap: 0.75rem; }
+.clip { border: 1px solid var(--border); border-radius: 12px; background: var(--surface-1); padding: 0.9rem 1rem 1rem; }
+.clip-who { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.6rem; }
+.clip-who b { font-size: 0.98rem; font-weight: 700; color: var(--text-primary); }
+.clip-who span { font-family: var(--font-mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); }
+.clip-who .clip-dur { text-transform: none; }
+.clip-player { margin: 0.15rem 0 0.1rem; }
+.clip .txt { margin-top: 0.6rem; font-size: 0.92rem; line-height: 1.75; color: var(--text-secondary); }
+.clip .txt-spoken { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.35rem; }
+.clip .tag-k { font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); margin-right: 0.4rem; }
+.judge-chip { display: inline-block; margin-top: 0.6rem; font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); background: var(--accent-soft); border-radius: 4px; padding: 3px 7px; }
+.para-list { margin: 0.5rem 0 0; padding-left: 1.4rem; font-size: 0.88rem; line-height: 1.8; color: var(--text-muted); }
+.para-list li { margin-bottom: 0.5rem; }
+.clip .chart-data-toggle { color: var(--text-primary); }
+
+/* ── Style tags ── */
+.style-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.5rem; margin-top: 1rem; }
+
+/* ── Normaliser showcase ── */
+.norm-staging { display: none; }
+.norm-details { margin-top: 0.75rem; border-top: 1px solid var(--border); }
+.norm-details summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 0.85rem 0.15rem 0.15rem; cursor: pointer; list-style: none;
+  font-family: var(--font-body); font-size: 0.78rem; font-weight: 700;
+  color: var(--accent); letter-spacing: 0.01em;
+}
+.norm-details summary::-webkit-details-marker { display: none; }
+.norm-details summary::after {
+  content: '+'; display: grid; place-items: center; flex: none; width: 1.55rem; height: 1.55rem;
+  border: 1px solid currentColor; border-radius: 50%; font-size: 1rem; font-weight: 400;
+  transition: transform 0.24s ease, background-color 0.24s ease, color 0.24s ease;
+}
+.norm-details[open] summary::after { transform: rotate(45deg); background: var(--accent); color: var(--white); }
+.norm-summary-count { margin-left: auto; color: var(--chart-text-secondary); font-family: var(--font-mono); font-size: 0.65rem; font-weight: 500; }
+.norm-details-body { padding-top: 0.85rem; animation: norm-open 0.28s cubic-bezier(0.22, 1, 0.36, 1); }
+.norm-language-note { margin: 1rem 0 0; font-size: 0.82rem; line-height: 1.6; color: var(--chart-text-secondary); }
+.norm-details .io-panel { margin-top: 0.65rem; }
+@keyframes norm-open { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: none; } }
+.norm-panel { display: none; }
+.norm-panel.is-active { display: grid; gap: 0.7rem; }
+.norm-case { border: 1px solid var(--border); border-radius: 12px; background: var(--white); padding: 0.8rem 0.95rem 0.9rem; }
+.norm-note { font-family: var(--font-body); font-size: 0.78rem; line-height: 1.55; color: var(--chart-text-secondary); margin-bottom: 0.6rem; }
+.norm-io { display: grid; grid-template-columns: 4.6rem 1fr; gap: 0.75rem; align-items: baseline; padding: 0.28rem 0; }
+.norm-k { font-family: var(--font-mono); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--chart-text-secondary); }
+.norm-io:last-child .norm-k { color: var(--accent); font-weight: 700; }
+/* The written form arrives as notation, so it is set in mono and allowed to wrap;
+ * the spoken form is what the model reads, so it is set in the reading face. */
+.norm-written { font-family: var(--font-mono); font-size: 0.78rem; line-height: 1.65; color: var(--chart-text-secondary); word-break: break-word; }
+.norm-spoken { font-family: var(--indic); font-size: 0.95rem; line-height: 1.7; color: var(--chart-text-primary); }
+@media (max-width: 600px) { .norm-io { grid-template-columns: 1fr; gap: 0.15rem; } }
+@media (prefers-reduced-motion: reduce) { .norm-details-body { animation: none; } }
+
+/* ── Input / output lines ── */
+.io-panel { margin-top: 1rem; padding: 0.75rem 1.1rem; border-radius: 14px; background: #FBF6EE; border: 1px solid var(--border); }
+.io-line { display: grid; grid-template-columns: 6.5rem 1fr; gap: 0.75rem; padding: 0.65rem 0; border-top: 1px solid var(--border); }
+.io-line:first-child { border-top: none; }
+.io-line .k { font-family: var(--font-mono); font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); padding-top: 0.3rem; }
+.io-line .v { font-size: 0.95rem; line-height: 1.7; color: var(--text-secondary); }
+@media (max-width: 600px) { .io-line { grid-template-columns: 1fr; gap: 0.2rem; } }
+
+/* ── Architecture card ── */
+.arch-card #frameDiagram { width: 100%; height: auto; display: block; overflow: visible; }
+.arch-h { font-family: var(--font-body); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--ed-orange, #C2410C); }
+.arch-legend-list { margin-top: 0.55rem; }
+.arch-slot { font-family: var(--font-body); font-size: 13px; font-weight: 700; }
+.arch-src { font-family: var(--font-mono); font-size: 10.5px; opacity: 0.85; }
+.arch-pos { font-family: var(--font-mono); font-size: 10px; fill: var(--ed-text-2, #5C534A); }
+.arch-legend { font-family: var(--font-body); font-size: 11px; font-weight: 600; fill: var(--ed-text-2, #5C534A); }
+.arch-note { margin-top: 1rem; font-size: 0.875rem; line-height: 1.65; color: var(--ed-text-2, #5C534A); }
+.arch-note b { color: var(--ed-text, #2C241C); }
+.arch-budget { margin-top: 0.85rem; }
+.bud-select { width: min(100%, 22rem); margin-top: 0.45rem; padding: 0.45rem 0.6rem;
+  border-radius: 8px; border: 1px solid var(--ed-border, #D2C9BA); background: var(--white);
+  font-family: var(--font-body); font-size: 0.875rem; color: var(--ed-text, #2C241C); cursor: pointer; }
+.bud-select:focus-visible { outline: 2px solid var(--ed-orange, #C2410C); outline-offset: 2px; }
+.arch-budget .research-type-h4 { margin-bottom: 0.75rem; }
+.arch-formula { margin-top: 0.9rem; padding: 0.6rem 0.8rem; border-radius: 8px;
+  background: var(--ed-inner-2, #F3EEE5); font-family: var(--font-mono); font-size: 0.78rem;
+  line-height: 1.6; color: var(--ed-text-2, #5C534A); overflow-x: auto; }
+.arch-formula b { color: var(--ed-orange, #C2410C); }
+@media (max-width: 640px) { .arch-card #frameDiagram { min-width: 520px; } .editorial-panel { overflow-x: auto; } }
+
+/* ── Parameter breakdown ── */
+.arch-stack { margin-bottom: 0.85rem; }
+.param-list { margin: 0.75rem 0 0; }
+.param-row { display: grid; grid-template-columns: 15rem 1fr; gap: 0.9rem; align-items: center;
+  padding: 0.4rem 0; border-bottom: 1px solid rgba(92, 64, 51, 0.12); }
+.param-row dt { font-size: 0.875rem; color: var(--ed-text, #2C241C); }
+.param-row dd { margin: 0; display: grid; grid-template-columns: 1fr 4.5rem; align-items: center; gap: 0.6rem; }
+.param-bar { height: 9px; border-radius: 999px; background: var(--ed-orange, #C2410C);
+  min-width: 2px; flex: none; }
+.param-row dd b { font-family: var(--font-mono); font-size: 0.78rem; font-variant-numeric: tabular-nums;
+  color: var(--ed-text-2, #5C534A); text-align: right; white-space: nowrap; }
+/* The value column is fixed width so the three bars share one scale and the numbers
+ * form a column; letting it size to content made the longest number wrap. */
+.param-row.is-total dd { grid-template-columns: 1fr 4.5rem; }
+.param-row.is-total { border-bottom: none; padding-top: 0.6rem; }
+.param-row.is-total dt, .param-row.is-total dd b { font-weight: 700; color: var(--ed-orange, #C2410C);
+  text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.8rem; }
+@media (max-width: 640px) { .param-row { grid-template-columns: 1fr; gap: 0.2rem; } }
+
+/* ── Vocabulary band and flow diagram ── */
+#vocabBand, #flowDiagram { width: 100%; height: auto; display: block; overflow: visible; }
+.arch-h-svg { font-family: var(--font-body); font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; fill: var(--chart-text-secondary); }
+.vb-label { font-family: var(--font-body); font-size: 12.5px; font-weight: 700; }
+.vb-count { font-family: var(--font-mono); font-size: 10.5px; opacity: 0.9; }
+.vb-out { font-family: var(--font-body); font-size: 11px; font-weight: 600; fill: var(--chart-text-secondary); }
+.vb-tick { font-family: var(--font-mono); font-size: 10px; fill: var(--chart-text-secondary); }
+.fl-num { font-family: var(--font-mono); font-size: 11px; font-weight: 700; fill: var(--accent); }
+.fl-title { font-family: var(--font-body); font-size: 14px; font-weight: 700; fill: var(--chart-text-primary); }
+.fl-body { font-family: var(--font-body); font-size: 11.5px; fill: var(--chart-text-secondary); }
+.fl-out { font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: 0.04em;
+  fill: var(--accent); }
+
+/* ── The flow draws itself ────────────────────────────────────────────────
+ * Six stages and five wires, staged so one thing moves at a time: a stage lands,
+ * then the wire out of it grows toward the next. Each wire carries pathLength="1",
+ * so one dash offset draws it whatever its real geometry. Per-element delays are
+ * set inline by the renderer, which owns the ordering.
+ *
+ * The undrawn state is scoped to .reveal, a class only the observer adds: with JS
+ * off, or before it runs, the diagram is simply already drawn.
+ * ──────────────────────────────────────────────────────────────────────── */
+#flowDiagram.reveal { transform: none; }
+#flowDiagram.reveal .fl-card { opacity: 0; }
+#flowDiagram.reveal .fl-wire { stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0; }
+#flowDiagram.in-view .fl-card { animation: flRise 0.36s cubic-bezier(0.22, 1, 0.36, 1) both; }
+#flowDiagram.in-view .fl-wire { animation: flDraw 0.3s ease-out both; }
+@keyframes flRise { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: none; } }
+/* Opacity rises with the draw rather than ahead of it: marker-end paints the
+   arrowhead at the far end from the first frame, and a solid arrow waiting for a
+   line that has not arrived is the one thing that gives the trick away. */
+@keyframes flDraw { from { stroke-dashoffset: 1; opacity: 0; } to { stroke-dashoffset: 0; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  #flowDiagram.in-view .fl-card, #flowDiagram.in-view .fl-wire {
+    animation: none; opacity: 1; transform: none; stroke-dashoffset: 0;
+  }
+}
+/* Both diagrams have a floor below which their labels stop fitting, so they scroll
+ * rather than shrink into illegibility. The min-width has to be paired with a
+ * scrolling parent, or it widens the whole page instead of scrolling in place --
+ * which it did: the mobile document went from 390px to 691px wide. */
+@media (max-width: 700px) {
+  .chart-plot { overflow-x: auto; }
+  #flowDiagram { min-width: 620px; }
+  #vocabBand { min-width: 480px; }
+}
+
+/* ── Chart svg text ── */
+svg.chart { width: 100%; height: auto; display: block; overflow: visible; }
+.row-label { font-family: var(--font-body); font-size: 12px; font-weight: 600; fill: var(--chart-text-primary); }
+.bar-label { font-family: var(--font-body); font-size: 11.5px; font-weight: 600; fill: var(--chart-text-secondary); }
+.mean-label { font-family: var(--font-body); font-size: 11px; font-weight: 600; fill: #A8380A; }
+.axis-tick { font-family: var(--font-mono); font-size: 10.5px; fill: var(--chart-text-secondary); }
+rect.bar { fill: var(--chart-series-primary); transition: opacity 0.15s ease; }
+rect.bar:hover { opacity: 0.82; }
+rect.bar.muted { fill: var(--bar-muted, #A89880); }
+
+/* ── Pending work notice ── */
+.pending-note { display: flex; align-items: baseline; gap: 10px; margin-top: 1.5rem; padding: 0.7rem 0.9rem; border-radius: 10px; border: 1px dashed rgba(180, 83, 9, 0.5); background: rgba(255, 234, 210, 0.55); font-family: var(--font-body); font-size: 0.88rem; line-height: 1.6; color: var(--text-secondary); }
+.pending-badge { flex: none; display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-mono); font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #fff; background: var(--text-orange-400); border-radius: 4px; padding: 3px 7px; }
+.pending-badge .pulse { width: 5px; height: 5px; border-radius: 50%; background: #fff; animation: pending-pulse 1.8s ease-in-out infinite; }
+@keyframes pending-pulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .pending-badge .pulse { animation: none; } }
+
+/* ── Roadmap ── */
+.roadmap { display: grid; gap: 0.6rem; margin-top: 1rem; }
+.rm-item { display: flex; align-items: baseline; gap: 0.75rem; padding: 0.75rem 0.9rem; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-1); font-size: 0.93rem; line-height: 1.6; color: var(--text-secondary); }
+/* The pill names the drop rather than guessing its date, so it carries a couple
+   of words and takes the accent to read as a label on a thing, not a status. */
+.rm-when { flex: none; min-width: 8.4rem; font-family: var(--font-mono); font-size: 0.6rem;
+  font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent);
+  background: var(--primary-100); border-radius: 4px; padding: 3px 7px; }
+@media (max-width: 560px) { .rm-when { min-width: 0; } .rm-item { flex-wrap: wrap; gap: 0.4rem; } }
+
+/* ── Code blocks ──────────────────────────────────────────────────────────
+ * The house style for code on the Bodhan posts is a dark slab with light mono
+ * text. `.prompt-box` is the class the reference post uses; it lives in that
+ * post's own stylesheet rather than in design.css, so it is defined here.
+ * Without this rule the element falls back to a bare <pre>, which is
+ * `white-space: pre` and `overflow: visible` -- and a curl command then pushes
+ * the whole document sideways on a phone.
+ * ──────────────────────────────────────────────────────────────────────── */
+.prompt-box {
+  margin: 0.9rem 0 0; padding: 1rem 1.15rem; border-radius: 12px;
+  background: #2C241C; color: #F3EEE5;
+  /* The mono stack has no Indic coverage, and this block carries a Devanagari
+   * prompt, so the Noto faces are appended as the fallback. Without them the
+   * example renders as tofu boxes. */
+  font-family: var(--font-mono), 'Noto Sans Devanagari', 'Noto Sans Bengali',
+    'Noto Sans Tamil', 'Noto Sans Telugu', 'Noto Sans Malayalam', 'Noto Sans Kannada',
+    'Noto Sans Gujarati', 'Noto Sans Gurmukhi', 'Noto Sans Oriya', 'Noto Nastaliq Urdu';
+  font-size: 0.78rem; line-height: 1.7;
+  white-space: pre; overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+.prompt-box .kw { color: #F7C99B; font-weight: 600; }
+
+/* ── Cross-link to the sibling post ── */
+.sibling-link { margin-top: 3rem; padding: 2rem 0 0; border-top: 1px solid rgba(255, 234, 210, 0.9); }
+.sibling-eyebrow { color: var(--accent); margin-bottom: 0.5rem; }
+.sibling-title { margin-bottom: 0.6rem; }
+.sibling-body { margin-bottom: 1.1rem; }
+.sibling-chip { text-decoration: none; display: inline-flex; align-items: center; }
+
+/* ── Citation, ecosystem, footer ── */
+.cite-block { margin-top: 8px; padding: 20px 22px 22px; border-radius: 14px; border: 1px solid var(--border); background: var(--surface-2); }
+.cite-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 12px; }
+.cite-copy { border: 1px solid var(--border); background: var(--white); border-radius: 999px; padding: 6px 14px; cursor: pointer; font-family: var(--font-body); font-size: 0.78rem; font-weight: 600; color: var(--text-primary); transition: border-color 0.18s ease, color 0.18s ease; }
+.cite-copy:hover { border-color: var(--accent); color: var(--accent); }
+.cite-bibtex { margin: 0; padding: 14px 16px; border-radius: 10px; border: 1px solid var(--border); background: var(--white); font-family: var(--font-mono); font-size: 0.78rem; line-height: 1.6; color: var(--text-secondary); overflow-x: auto; white-space: pre; }
+.ecosystem-banner { margin-top: 3rem; padding: 40px 1rem 44px; background: radial-gradient(ellipse 70% 120% at 50% 0%, rgba(255, 218, 193, 0.55) 0%, transparent 70%), linear-gradient(180deg, var(--bg-cream-100), var(--bg-cream-50)); border-top: 1px solid rgba(255, 234, 210, 0.95); }
+.ecosystem-inner { text-align: center; }
+.ecosystem-heading { margin-bottom: 1.25rem; }
+.ecosystem-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; }
+/* Equal-height chips with the marks centred on the text, so the two chips that
+   carry a logo sit level with the three that do not. */
+.ecosystem-links a { text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.6rem; padding-top: 0; padding-bottom: 0; }
+.ecosystem-chip { font-size: 0.9rem; line-height: 1; }
+.post-footer { border-top: 1px solid rgba(255, 234, 210, 0.9); padding: 28px 0 48px; font-size: 0.84rem; color: var(--color-11); text-align: center; }
+.post-footer p + p { margin-top: 6px; }
+
+/* ── Back to top ── */
+#top-btn { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 55; width: 2.5rem; height: 2.5rem; border-radius: 50%; border: 1px solid var(--border); background: var(--white); color: var(--text-primary); cursor: pointer; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; box-shadow: 0 2px 10px rgba(46, 50, 56, 0.08); }
+#top-btn.show { opacity: 1; pointer-events: auto; }
+#top-btn:hover { transform: translateY(-2px); color: var(--accent); border-color: var(--accent); }

@@ -1,0 +1,20 @@
+{
+  "image": "Screenshot 2026-09-05 at 9.19.47 AM.png",
+  "width": 1002,
+  "height": 352,
+  "blocks": [
+    {
+      "order": 1,
+      "label": "Table",
+      "type": "Table",
+      "bbox_yxyx_per_mille": [
+        1.4,
+        6.6,
+        998,
+        982.2
+      ],
+      "conf": 0.978,
+      "text": "<table>\n<thead>\n<tr>\n<th rowspan=\"2\">किस्तों<br/>की<br/>संख्या</th>\n<th colspan=\"2\">माँग राशि</th>\n<th colspan=\"4\">बकाया के साथ इस<br/>महिना का माँग राशि</th>\n<th colspan=\"3\">ऋण वापसी का विवरण</th>\n<th colspan=\"2\">बकाया विवरण</th>\n<th rowspan=\"2\">शेष<br/>ऋण<br/>राशि</th>\n<th rowspan=\"2\">रोकड बही<br/>पृष्ठ<br/>संख्या</th>\n</tr>\n<tr>\n<th>दिनांक</th>\n<th>किस्त राशि</th>\n<th>ब्याज</th>\n<th>किस्त राशि</th>\n<th>ब्याज</th>\n<th>दिनांक</th>\n<th>किस्त राशि</th>\n<th>ब्याज</th>\n<th>कुल</th>\n<th>किस्त राशि</th>\n<th>ब्याज</th>\n</tr>\n<tr>\n<th>1</th>\n<th>2</th>\n<th>3</th>\n<th>4</th>\n<th>5</th>\n<th>6</th>\n<th>7</th>\n<th>8</th>\n<th>9</th>\n<th>10</th>\n<th>11</th>\n<th>12</th>\n<th>13</th>\n<th>14</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>1</td>\n<td>30/4/23</td>\n<td>27969</td>\n<td>4195</td>\n<td>440627</td>\n<td>4195</td>\n<td>—</td>\n<td>—</td>\n<td>—</td>\n<td>—</td>\n<td>440627</td>\n<td>4195</td>\n<td>839057</td>\n<td>—</td>\n</tr>\n<tr>\n<td>2</td>\n<td>31/5/23</td>\n<td>27969</td>\n<td>4055</td>\n<td>468596</td>\n<td>8390</td>\n<td>—</td>\n<td>—</td>\n<td>—</td>\n<td>—</td>\n<td>468596</td>\n<td>8390</td>\n<td>839037</td>\n<td>—</td>\n</tr>\n<tr>\n<td>3</td>\n<td>30/6/23</td>\n<td>27069</td>\n<td>3915</td>\n<td>496565</td>\n<td>12585</td>\n<td>—</td>\n<td>—</td>\n<td>—</td>\n<td>—</td>\n<td>496565</td>\n<td>12585</td>\n<td>839057</td>\n<td>—</td>\n</tr>\n<tr>\n<td>4</td>\n<td>31/7/23</td>\n<td>27969</td>\n<td>3775</td>\n<td>524534</td>\n<td>16781</td>\n<td>28/7/23</td>\n<td>39057</td>\n<td>16789</td>\n<td>55838</td>\n<td>485477</td>\n<td>—</td>\n<td>800000</td>\n<td>—</td>\n</tr>\n<tr>\n<td>5</td>\n<td>31/8/23</td>\n<td>27969</td>\n<td>3635</td>\n<td>513446</td>\n<td>4000</td>\n<td>22/8/23</td>\n<td>6000</td>\n<td>4000</td>\n<td>14000</td>\n<td>507448</td>\n<td>—</td>\n<td>794</td>\n<td>—</td>\n</tr>\n<tr>\n<td>6</td>\n<td>30/9/23</td>\n<td>27969</td>\n<td>3495</td>\n<td>535412</td>\n<td>3970</td>\n<td>22/9/23</td>\n<td>10000</td>\n<td>3970</td>\n<td>3990</td>\n<td>525412</td>\n<td>—</td>\n<td>784000</td>\n<td>—</td>\n</tr>\n<tr>\n<td>7</td>\n<td>31/10/23</td>\n<td>27969</td>\n<td>3355</td>\n<td>553381</td>\n<td>3970</td>\n<td>22/10/23</td>\n<td>10600</td>\n<td>3970</td>\n<td>14020</td>\n<td>543381</td>\n<td>—</td>\n<td>-</td>\n<td>774020</td>\n</tr>\n<tr>\n<td>8</td>\n<td>30/11/23</td>\n<td>27969</td>\n<td>3215</td>\n<td>571350</td>\n<td>3870</td>\n<td>22/11/23</td>\n<td>—</td>\n<td>3870</td>\n<td>387</td>\n<td>571350</td>\n<td>—</td>\n<td>774000</td>\n<td>—</td>\n</tr>\n<tr>\n<td>9</td>\n<td>31/12/23</td>\n<td>27969</td>\n<td>3075</td>\n<td>599322</td>\n<td>3870</td>\n<td>22/11/23</td>\n<td>40000</td>\n<td>3870</td>\n<td>43870</td>\n<td>559322</td>\n<td>—</td>\n<td>734000</td>\n<td>—</td>\n</tr>\n<tr>\n<td>10</td>\n<td>31/1/24</td>\n<td>27969</td>\n<td>2935</td>\n<td>587291</td>\n<td>3670</td>\n<td>22/1/24</td>\n<td>10000</td>\n<td>3670</td>\n<td>13670</td>\n<td>577291</td>\n<td>—</td>\n<td>72400</td>\n<td>—</td>\n</tr>\n<tr>\n<td>11</td>\n<td>26/2/24</td>\n<td>27969</td>\n<td>2795</td>\n<td>605260</td>\n<td>3620</td>\n<td>22/2/24</td>\n<td>10000</td>\n<td>3620</td>\n<td>13620</td>\n<td>595260</td>\n<td>—</td>\n<td>714000</td>\n<td>—</td>\n</tr>\n<tr>\n<td>12</td>\n<td>31/3/24</td>\n<td>27969</td>\n<td>2655</td>\n<td>623229</td>\n<td>3570</td>\n<td>22/3/24</td>\n<td>10000</td>\n<td>3570</td>\n<td>13570</td>\n<td>613229</td>\n<td>—</td>\n<td>704000</td>\n<td>—</td>\n</tr>\n</tbody>\n</table>"
+    }
+  ]
+}

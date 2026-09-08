@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Announcing IndicOCR — Bodhan AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Manrope:wght@400;500;600;700;800&family=Poppins:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans+Bengali:wght@400;600&family=Noto+Sans+Tamil:wght@400;600&family=Noto+Sans+Telugu:wght@400;600&family=Noto+Sans+Malayalam:wght@400;600&family=Noto+Sans+Kannada:wght@400;600&family=Noto+Sans+Gujarati:wght@400;600&family=Noto+Sans+Gurmukhi:wght@400;600&family=Noto+Sans+Oriya:wght@400;600&family=Noto+Sans+Ol+Chiki:wght@400;600&family=Noto+Nastaliq+Urdu:wght@400;600&family=Noto+Serif+Devanagari:wght@400;600&family=Noto+Serif+Bengali:wght@400;600&family=Noto+Serif+Tamil:wght@400;600&family=Noto+Serif+Telugu:wght@400;600&family=Noto+Serif+Malayalam:wght@400;600&family=Noto+Serif+Kannada:wght@400;600&family=Noto+Serif+Gujarati:wght@400;600&family=Noto+Serif+Gurmukhi:wght@400;600&family=Noto+Serif+Oriya:wght@400;600&family=Noto+Sans+Meetei+Mayek:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <!-- site-patch: applied by the Bodhan website when this build is mounted.
+         1. Scroll-in reveals: the bundle animates sections into view with
+            framer-motion's whileInView (IntersectionObserver). The site shows
+            content at rest, so every observed element is reported as in view
+            at once; the real observer is kept for the host page's own use.
+         2. Image skeletons: any <img> shows a cream shimmer until it has
+            loaded, including images the sliders swap in later. -->
+    <script>
+      (function () {
+        var Real = window.IntersectionObserver;
+        window.__RealIntersectionObserver = Real;
+        function AlwaysInView(callback) {
+          this._cb = callback; this._targets = new Set();
+          this.root = null; this.rootMargin = '0px'; this.thresholds = [0];
+        }
+        AlwaysInView.prototype.observe = function (el) {
+          if (this._targets.has(el)) return;
+          this._targets.add(el);
+          var self = this;
+          Promise.resolve().then(function () {
+            if (!self._targets.has(el)) return;
+            var rect = el.getBoundingClientRect();
+            self._cb([{ target: el, isIntersecting: true, intersectionRatio: 1,
+              boundingClientRect: rect, intersectionRect: rect, rootBounds: null, time: performance.now() }], self);
+          });
+        };
+        AlwaysInView.prototype.unobserve = function (el) { this._targets.delete(el); };
+        AlwaysInView.prototype.disconnect = function () { this._targets.clear(); };
+        AlwaysInView.prototype.takeRecords = function () { return []; };
+        window.IntersectionObserver = AlwaysInView;
+      })();
+    </script>
+    <style>
+      img.is-loading {
+        color: transparent;
+        background: linear-gradient(90deg, #efe6da 25%, #f9f3ea 40%, #efe6da 55%);
+        background-size: 400% 100%;
+        animation: site-skeleton 1.3s ease-in-out infinite;
+      }
+      img.is-loading:not([width]):not([height]) { min-height: 140px; }
+      @keyframes site-skeleton { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
+      @media (prefers-reduced-motion: reduce) { img.is-loading { animation: none; background: #efe6da; } }
+    </style>
+    <script>
+      (function () {
+        var skip = /\/logos\//;
+        function mark(img) {
+          if (skip.test(img.getAttribute('src') || '')) return;
+          if (img.complete && img.naturalWidth > 0) { img.classList.remove('is-loading'); return; }
+          img.classList.add('is-loading');
+          var done = function () { img.classList.remove('is-loading'); };
+          img.addEventListener('load', done, { once: true });
+          img.addEventListener('error', done, { once: true });
+        }
+        function scan(root) {
+          if (root.nodeType !== 1) return;
+          if (root.tagName === 'IMG') mark(root);
+          root.querySelectorAll && root.querySelectorAll('img').forEach(mark);
+        }
+        new MutationObserver(function (records) {
+          records.forEach(function (r) {
+            if (r.type === 'attributes') { mark(r.target); return; }
+            r.addedNodes.forEach(scan);
+          });
+        }).observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['src', 'srcset'] });
+        document.addEventListener('DOMContentLoaded', function () { scan(document.documentElement); });
+      })();
+    </script>
+    <script type="module" crossorigin src="./_app/index-927rbFxZ.js"></script>
+    <link rel="stylesheet" crossorigin href="./_app/index-CkaXJFCS.css">
+
+    <!-- Site overrides: this post is shown inside bodhan.ai's own chrome (see
+         src/features/research/indic-ocr-post/IndicOcrPostPage.jsx). Static so it
+         applies on every load, before the bundle renders. -->
+    <style id="site-overrides">
+      /* ── Hero link chips ──
+         The bundle shipped its own `.pill` row (Hugging Face / GitHub / API docs /
+         Video). The four model posts now carry one lineup -- Hugging Face, GitHub,
+         Demo, Documentation, Try it out -- built from the same `.research-link-chip`
+         the sibling posts use, so the chips are patched into the bundle (search it
+         for `hero-pills`) and styled here, where the class does not otherwise exist.
+         These four tokens are the sibling posts'; the bundle defines the rest. */
+      :root {
+        --brand-orange: #FF6600;
+        --text-secondary: #44403C;
+        --text-muted: #57534E;
+        --accent: var(--text-orange-500);
+      }
+      .research-link-chip {
+        font-family: var(--font-manrope);
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        min-height: 2.5rem;
+        padding: 0.45rem 0.95rem;
+        border-radius: 9999px;
+        border: 1.5px solid transparent;
+        background:
+          linear-gradient(var(--bg-cream-50), var(--bg-cream-50)) padding-box,
+          linear-gradient(135deg, var(--text-orange-400), var(--text-orange-500), var(--brand-orange)) border-box;
+        transition: color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .research-link-chip:hover { color: var(--text-orange-500); box-shadow: 0 2px 14px rgba(255, 107, 53, 0.18); transform: translateY(-1px); }
+      /* Keyed on the chip class, not the tag: two of the five are inert <span>s and
+         one is a <button>, and a rule matching `a` alone stacks their icons. */
+      .hero-pills .research-link-chip { text-decoration: none; display: inline-flex; align-items: center; gap: 0.42rem; }
+      .hero-pills button.research-link-chip { appearance: none; cursor: pointer; }
+      /* Chips whose destination is not public yet: the chip's shape, a dashed edge,
+         no link affordance, so nobody is sent to a 404. */
+      .research-link-chip.is-soon { cursor: default; border-style: dashed; }
+      .research-link-chip.is-soon:hover { color: var(--text-primary); box-shadow: none; transform: none; }
+      .research-link-chip.is-soon .chip-label { color: var(--text-secondary); }
+      .research-link-chip.is-soon .chip-ico { opacity: 0.6; }
+      .chip-soon { font-size: 0.68em; font-weight: 600; letter-spacing: 0.04em; text-transform: lowercase; color: var(--text-muted); white-space: nowrap; padding-left: 0.5em; margin-left: 0.1em; border-left: 1px solid var(--border); }
+      /* Marks inside the chips. Hugging Face's keeps its own brand colours; every
+         other mark takes the chip's text colour and follows its hover state. The
+         bolt sits lit at rest and takes the hover colour with the label. */
+      .chip-ico { flex: none; width: 0.95rem; height: 0.95rem; display: block; }
+      .chip-bolt { width: 0.85rem; height: 0.85rem; color: var(--accent); }
+      .chip-try:hover .chip-bolt { color: inherit; }
+
+      /* ── Demo video lightbox ──
+         The same lightbox the Indic-Speak and Indic-Transcribe posts use, so all
+         four demos behave alike. `top` and `height` are set from script: in a
+         content-sized frame `position: fixed` resolves against the whole article
+         rather than the reader's viewport. */
+      body.modal-open { overflow: hidden; }
+      .video-modal { position: absolute; left: 0; right: 0; bottom: auto; margin: 0; z-index: 90; display: grid; place-items: center; padding: 1rem; }
+      .video-modal[hidden] { display: none; }
+      .video-backdrop { position: absolute; inset: 0; background: rgba(44, 36, 28, 0.82); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+      .video-box { position: relative; width: min(100%, 64rem); aspect-ratio: 16 / 9; border-radius: 14px; overflow: hidden; background: #000; box-shadow: 0 18px 60px rgba(0, 0, 0, 0.45); }
+      .video-box iframe { display: block; width: 100%; height: 100%; border: 0; }
+      .video-close { position: absolute; top: 0.6rem; right: 0.6rem; z-index: 2; width: 2.2rem; height: 2.2rem; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.35); background: rgba(44, 36, 28, 0.7); color: #FBF6EE; font-size: 1.3rem; line-height: 1; cursor: pointer; }
+      .video-close:hover { background: var(--accent); border-color: var(--accent); }
+
+      /* ── Partner lockup ──
+         The bundle sized the marks at 1.5em of a clamped font-size, so they rendered
+         between 22.8 and 32.4px wide depending on the viewport while the sibling posts
+         hold theirs at a fixed 22px. One height across all four; the width still
+         follows, since the Bodhan mark is 126x140 and a square box squashes it. */
+      .hero-partner img { height: 22px !important; width: auto !important; }
+      @media (max-width: 600px) { .hero-partner img { height: 19px !important; } }
+
+      /* Chrome the site provides itself. */
+      footer, .footer, .progress, .rail, .ecosystem { display: none !important; }
+      /* The frame never scrolls itself; the page surface shows through it. */
+      html, body { overflow: hidden !important; background: transparent !important; }
+      /* Publications' column geometry: the 1.25rem gutter inside the 56rem/64rem columns. */
+      .page { padding: 0 !important; }
+      .column { max-width: min(56rem, calc(100vw - 2rem)) !important; padding: 0 1.25rem; box-sizing: border-box; }
+      .wide { max-width: min(64rem, calc(100vw - 2rem)) !important; padding: 0 1.25rem; box-sizing: border-box; }
+      .section-header { margin: 3rem 0 1.25rem !important; }
+
+      /* Tables: one header style; benchmark headers are model names, so no capitals. */
+      table.md { width: 100% !important; table-layout: auto; }
+      table.md thead th { text-transform: none !important; letter-spacing: 0 !important; font-size: .75rem !important; font-weight: 700 !important; color: var(--text-primary) !important; text-align: center !important; }
+      table.md thead th:first-child { text-align: left !important; }
+      .bench-module table.md th, .bench-module table.md td { white-space: normal !important; }
+      .tbl-html th { font-weight: 700; background: rgba(255, 247, 237, .9); }
+      /* Demo captions share the small-caps eyebrow used by the section labels. */
+      .tbl-cap { font-size: .6875rem !important; font-weight: 700 !important; letter-spacing: .1em !important; text-transform: uppercase !important; color: var(--text-orange-500) !important; }
+      /* The Table Recognition tab strip renders bare labels; style them exactly like the
+         book demos' tabs (Printed / Handwritten), including the active tab's surface. */
+      .bk-pill { --panel-bg: #fffdf9; }
+      .bk-pill:not(:has(.bk-pill-en)) { font-family: var(--font-manrope) !important; font-size: .6875rem !important; font-weight: 700 !important; letter-spacing: .05em !important; text-transform: uppercase !important; color: var(--color-11) !important; }
+      .bk-pill.on:not(:has(.bk-pill-en)) { color: var(--text-orange-500) !important; background: #fffdf9 !important; box-shadow: inset 0 2px 0 var(--text-orange-500) !important; }
+      /* Benchmark tabs (OmniDocBench, olmOCR, IndicOCR-Printed, IndicOCR-Handwriting): the
+         same tab treatment as the demo strips, minus the capitals (these are proper names). */
+      .folder-tabs { background: linear-gradient(180deg, #fbf0e2, #fefaf4) !important; }
+      .folder-tab { font-family: var(--font-manrope) !important; font-size: .75rem !important; font-weight: 700 !important; letter-spacing: .02em !important; color: var(--color-11) !important; padding: .7rem 1.1rem .72rem !important; border-right: 1px solid rgba(46, 50, 56, .06) !important; }
+      /* Share the strip's full width between the tabs, like the demo strips' grid, so the
+         last tab ends at the panel's right edge instead of leaving a gap. */
+      .folder-tabs { display: flex !important; }
+      .folder-tab { flex: 1 1 0 !important; min-width: 0; text-align: center; white-space: normal !important; }
+      .folder-tab:last-child { border-right: 0 !important; }
+      .folder-tab:hover { background: #ffffffb3 !important; color: var(--text-primary) !important; }
+      .folder-tab.on { color: var(--text-orange-500) !important; background: #fffdf9 !important; box-shadow: inset 0 2px 0 var(--text-orange-500) !important; }
+      /* Small screens: the table scrolls sideways; the label column stays put with a rule. */
+      @media (max-width: 700px) {
+        table.md th:first-child, table.md td:first-child { position: sticky; left: 0; z-index: 1; background: var(--bg-cream-50, #fff9f0); border-right: 1px solid var(--hairline, rgba(92, 64, 51, .18)); }
+        table.md tr.ours td:first-child { background: #fff0e8; }
+        /* Tab strips reflow to fewer columns here, so the tab that was last in its row on
+           desktop (no right rule) can land mid-row: give every tab the rule. */
+        .langtab, .langtab.end-col, .bk-pill, .bk-pill:last-child, .folder-tab, .folder-tab:last-child { border-right: 1px solid var(--border) !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- The opening frame lives here rather than in the bundle: rendered by
+         React it could only appear once the bundle had downloaded, which on a
+         slow connection is exactly when it is wanted. -->
+    <style>
+      body { margin: 0; background: #fffaf3; }
+      #splash {
+        position: fixed;
+        inset: 0;
+        z-index: 999;
+        display: grid;
+        place-items: center;
+        background: #fffaf3;
+        transition: opacity 0.6s ease, visibility 0.6s ease;
+      }
+      #splash.out { opacity: 0; visibility: hidden; pointer-events: none; }
+      /* splash-off: the site shows this post inside its own chrome and has no load
+         animation on other pages, so the splash is disabled here. */
+      #splash { display: none !important; }
+      #splash img {
+        width: clamp(84px, 12vw, 132px);
+        height: auto;
+        animation: splash-breathe 2.4s ease-in-out infinite;
+      }
+      @keyframes splash-breathe {
+        0%, 100% { opacity: 0.45; transform: scale(0.96); }
+        50% { opacity: 1; transform: scale(1.02); }
+      }
+      @media (prefers-reduced-motion: reduce) { #splash img { animation: none; opacity: 0.9; } }
+    </style>
+    <div id="splash" role="status" aria-label="Loading">
+      <img src="./assets/logos/bodhan-logo.svg" alt="" />
+    </div>
+    <div id="root"></div>
+
+    <!-- The demo lightbox. It lives here rather than in the bundle because the
+         bundle's hero chip only calls window.__bodhanOpenDemo, and because a node
+         outside #root is one React can never unmount. Same markup and script as the
+         Indic-Speak post: the player is told the embedding origin, since YouTube
+         refuses an embed it cannot attribute to a page ("configuration error 153"),
+         and a frame inside a frame is exactly that case. -->
+    <div class="video-modal" id="videoModal" hidden role="dialog" aria-modal="true" aria-label="Demo video">
+      <div class="video-backdrop" data-close></div>
+      <div class="video-box">
+        <button type="button" class="video-close" data-close aria-label="Close">&times;</button>
+        <iframe id="demoEmbed" title="IndicOCR demo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" hidden></iframe>
+      </div>
+    </div>
+    <script>
+      (function () {
+        var DEMO_EMBED = "https://www.youtube-nocookie.com/embed/9MJs_bc2I6c?rel=0";
+        var modal = document.getElementById("videoModal");
+        var embed = document.getElementById("demoEmbed");
+        if (!modal || !embed) return;
+        var framed = window.parent !== window;
+        var frame = framed ? window.frameElement : null;
+        var host = framed ? window.parent : window;
+        var locked = null;
+
+        function place() {
+          if (!frame) return;
+          try {
+            modal.style.setProperty("top", (-frame.getBoundingClientRect().top) + "px", "important");
+            modal.style.setProperty("height", host.innerHeight + "px", "important");
+          } catch (e) { /* cross-origin: leave it */ }
+        }
+        function lock(on) {
+          try {
+            var el = host.document.documentElement;
+            if (on) { locked = el.style.overflow; el.style.overflow = "hidden"; }
+            else if (locked !== null) { el.style.overflow = locked; locked = null; }
+          } catch (e) { /* not ours to lock */ }
+        }
+        function close() {
+          if (modal.hidden) return;
+          embed.removeAttribute("src");        // stops the player
+          embed.hidden = true;
+          modal.hidden = true;
+          document.body.classList.remove("modal-open");
+          lock(false);
+        }
+
+        window.__bodhanOpenDemo = function (src) {
+          var url = src || DEMO_EMBED;
+          if (!url) return;
+          var origin = (framed ? host.location.origin : location.origin);
+          embed.hidden = false;
+          embed.src = url + (url.indexOf("?") < 0 ? "?" : "&")
+            + "autoplay=1&playsinline=1&origin=" + encodeURIComponent(origin);
+          modal.hidden = false;
+          place();
+          lock(true);
+          document.body.classList.add("modal-open");
+          modal.querySelector(".video-close").focus();
+        };
+
+        modal.querySelectorAll("[data-close]").forEach(function (b) {
+          b.addEventListener("click", close);
+        });
+        document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
+        host.addEventListener("resize", function () { if (!modal.hidden) place(); });
+        host.addEventListener("scroll", function () { if (!modal.hidden) place(); }, { passive: true });
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,218 @@
+/* ── The script wall ───────────────────────────────────────────────────────
+ * How you pick a language on this page: 22 languages, each written the way its own
+ * speakers write it, grouped by the script they arrive in.
+ *
+ * The grouping is the point rather than the decoration. Eight of the 22 share
+ * Devanagari and nine have a script to themselves, so the rows come out ragged —
+ * one long row and a tail of single tiles — and that raggedness is the fact a
+ * text-to-speech model has to deal with: the same glyphs, eight different languages,
+ * no language tag on the input. Sorting the rows by size is what makes it visible.
+ * ──────────────────────────────────────────────────────────────────────── */
+.vw { margin-top: 18px; }
+
+.vw-rows {
+  display: grid;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--white);
+}
+.vw-row {
+  display: grid;
+  grid-template-columns: 9.5rem minmax(0, 1fr);
+  align-items: center;
+  border-top: 1px solid var(--border);
+}
+.vw-row:first-child { border-top: 0; }
+/* The row's ground is its share of the alphabet: how many languages use that
+   script. src/voices.js sets it, tinted from the accent so the board stays one
+   family; the eight-language row sits deepest and each one-language script is
+   lightest. */
+
+.vw-script {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 0.7rem 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--chart-text-secondary);
+}
+.vw-script b {
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  color: var(--text-primary);
+}
+
+/* The script names its row; the rule separates the label from the languages that
+   use it and runs the full height of the row.
+ *
+ * The tiles are a column grid rather than a flex strip so that every tile in the
+ * wall is the same width, the columns line up down the whole board, and a row
+ * that wraps puts its second line under the first on the same columns instead of
+ * a fresh ragged run. `auto-fill` keeps the empty trailing tracks, which is what
+ * holds the columns identical between a row of eight and a row of two. */
+.vw-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(6.4rem, 1fr));
+  border-left: 1px solid var(--border);
+}
+
+/* A tile is the language's own name, at reading size, with the Latin name under it
+   for anyone who cannot place the script. No icon: the writing IS the icon. */
+.vw-tile {
+  min-width: 0;
+  display: grid;
+  justify-items: start;
+  align-content: start;
+  gap: 2px;
+  padding: 0.6rem 0.8rem 0.65rem;
+  border: 0;
+  /* The right rule divides the columns and the top rule divides wrapped lines;
+     the negative margin folds the first line's rule onto the row's own border so
+     it is not drawn twice. */
+  border-right: 1px solid var(--border);
+  border-top: 1px solid var(--border);
+  margin-top: -1px;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+.vw-tile:hover { background: var(--accent-soft); }
+.vw-tile:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.vw-endonym {
+  font-family: var(--indic);
+  font-size: 1.12rem;
+  line-height: 1.45;
+  color: var(--text-primary);
+}
+.vw-latin {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--chart-text-secondary);
+}
+.vw-tile.is-active { background: var(--accent); }
+.vw-tile.is-active .vw-endonym,
+.vw-tile.is-active .vw-latin { color: var(--white); }
+
+/* The wall settles in when it is reached, row by row, rather than at page load
+   twelve thousand pixels above the reader. Tiles are visible without the class, so
+   nothing depends on the script running. */
+.vw-rows.is-in .vw-row {
+  animation: vw-settle 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes vw-settle {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vw-rows.is-in .vw-row { animation: none; }
+}
+
+/* ── the panel: the two voices to start with ────────────────────────────── */
+.vw-detail { margin-top: 14px; }
+.vw-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin: 0 0 0.7rem;
+}
+.vw-head-name {
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.vw-head-endonym { font-family: var(--indic); font-size: 1.05rem; color: var(--accent); }
+.vw-head-note {
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.02em;
+  color: var(--chart-text-secondary);
+  margin-left: auto;
+}
+
+.cv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 0.75rem; }
+.cv-card {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--white);
+  padding: 0.75rem 0.85rem 0.8rem;
+}
+.cv-name {
+  display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap;
+  margin: 0;
+  font-family: var(--font-body); font-weight: 700; font-size: 1rem;
+  color: var(--text-primary);
+}
+.cv-gender {
+  font-family: var(--font-mono); font-size: 0.6rem; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.08em; color: var(--chart-text-secondary);
+}
+.cv-meta {
+  display: block; margin-top: 0.15rem;
+  font-family: var(--font-mono); font-size: 0.68rem; color: var(--chart-text-secondary);
+}
+.cv-desc {
+  margin: 0.45rem 0 0;
+  font-family: var(--font-body); font-size: 0.82rem; line-height: 1.55;
+  color: var(--text-secondary);
+}
+.cv-listen { display: flex; align-items: center; gap: 0.6rem; margin-top: 0.7rem; }
+.cv-play {
+  flex: none; width: 2.1rem; height: 2.1rem; border-radius: 50%;
+  border: 1px solid var(--accent); background: var(--accent-soft);
+  color: var(--accent); cursor: pointer;
+  display: grid; place-items: center; padding: 0;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+.cv-play:hover { background: var(--accent); color: var(--white); transform: scale(1.06); }
+.cv-play:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.cv-play svg { width: 0.85rem; height: 0.85rem; display: block; }
+/* The clip a voice has is not always in the language you picked: 24 of the 45
+   samples are that voice reading somewhere else. The label says which, always. */
+.cv-reads { font-family: var(--font-mono); font-size: 0.66rem; line-height: 1.5; color: var(--chart-text-secondary); }
+.cv-reads b { color: var(--accent); font-weight: 700; }
+
+@media (max-width: 640px) {
+  .vw-row { grid-template-columns: 1fr; }
+  /* stacked: the rule between label and tiles becomes the rule above them */
+  .vw-tiles { border-left: 0; }
+  .vw-script { padding-bottom: 0; }
+  .vw-tiles { grid-template-columns: repeat(auto-fill, minmax(5.6rem, 1fr)); }
+}
+
+/* In the unshared row a tile names its own script, where that is not simply the
+   language's name again. */
+/* The script's own name is secondary to the language's: GURMUKHI under PUNJABI,
+   OL CHIKI under SANTALI. On its own line, and a step down in size, so the tile
+   reads the language first and the script as the note beneath it. */
+.vw-latin i {
+  display: block;
+  margin-top: 1px;
+  font-style: normal;
+  color: var(--accent);
+  font-size: 0.62rem;
+  letter-spacing: 0.05em;
+}
+
+/* An inert cell that completes a wrapped line's rules; it carries borders and
+   nothing else. */
+.vw-fill {
+  border-right: 1px solid var(--border);
+  border-top: 1px solid var(--border);
+  margin-top: -1px;
+}

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 660">
+  <defs>
+    <linearGradient id="og" gradientUnits="userSpaceOnUse" x1="90" y1="90" x2="520" y2="600">
+      <stop offset="0" stop-color="#FFC24B"/>
+      <stop offset=".45" stop-color="#FF8A1E"/>
+      <stop offset="1" stop-color="#E23A05"/>
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke="url(#og)" stroke-linecap="round" stroke-linejoin="round">
+    <path stroke-width="15" d="M300 108 C246 108 208 120 208 138 C208 156 246 168 300 168 C354 168 392 156 392 138 C392 120 354 108 300 108 Z"/>
+    <path stroke-width="9" d="M258 124 C280 116 326 116 348 124"/>
+    <path stroke-width="15" d="M226 158 C230 186 236 202 226 216 C154 258 104 330 104 414 C104 522 192 596 300 596 C408 596 496 522 496 414 C496 330 446 258 374 216 C364 202 370 186 374 158"/>
+    <path stroke-width="8" d="M244 200 C272 212 328 212 356 200"/>
+    <path stroke-width="8" d="M170 268 C230 306 370 306 430 268"/>
+    <path stroke-width="8" d="M114 356 C196 410 404 410 486 356"/>
+    <path stroke-width="20" d="M170 300 C136 344 122 388 122 424"/>
+    <path stroke-width="13" d="M130 466 C142 512 168 550 202 574"/>
+    <path stroke-width="8" d="M300 118 C264 118 238 127 238 138 C238 149 264 158 300 158 C336 158 362 149 362 138 C362 127 336 118 300 118 Z"/>
+  </g>
+</svg>

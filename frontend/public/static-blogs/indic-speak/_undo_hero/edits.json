@@ -1,0 +1,1057 @@
+[
+ {
+  "file": "src/page.js",
+  "old": "  /* ── Hero: the ripple ────────────────────────────────────────────────────\n   * Speech is pressure radiating from a source, so that is what the hero draws.\n   *\n   * One arc per codec frame, leaving a source off the left edge at the model's\n   * own rate of 11.72 frames a second. A ring's life is exactly one pass of the\n   * envelope, so the whole utterance is on the card at once and the loop closes\n   * on itself with no seam. Weight and opacity are the clip's measured loudness\n   * at the instant that ring was emitted, from HERO.amp -- it is this voice's\n   * envelope in polar form, and no other voice draws it.\n   *\n   * Two things learned the hard way. There is NO alpha floor: adding a constant\n   * to every ring's opacity made all 56 render at similar weight and the field\n   * read as wood grain, because the envelope's silences never became gaps.\n   * And the wide mass pass takes a flat colour while only the hairline pays for\n   * the gradient -- a radial gradient evaluated across a 25px stroke at this\n   * radius was once the most expensive thing on the page.\n   * ──────────────────────────────────────────────────────────────────────── */\n  (function () {\n    var cv = need('heroRipple');\n    if (!cv) return;\n    var ctx = cv.getContext('2d');\n    if (!ctx) return;\n\n    var AMP = HERO.amp, N = AMP.length;\n    var FPS = 11.719;              // codec frames a second: 24000 / 2048\n    var LIFE = N / FPS;            // one full pass of the envelope\n    var W = 0, H = 0, ox = 0, oy = 0, reach = 0, edge = null;\n\n    // Duotone: the near field is warm because that is where the energy is, and\n    // the far field cools into the pack's teal so the rings read against a warm\n    // ground instead of dissolving into it.\n    var MASS = ['#E0A279', '#CB5A22', '#A8330E'];\n    var EDGE = [[0, '#5E1F2B'], [0.14, '#9B2F12'], [0.34, '#C2410C'], [0.54, '#D8842F'],\n                [0.72, '#B79A57'], [0.87, '#5C9080'], [1, '#2F8B80']];\n\n    function layout() {\n      var r = cv.getBoundingClientRect();\n      // 1.5, not 2: the field is wide soft arcs, so the last half-step of\n      // resolution buys nothing visible and costs a third of the fill. At 1x it\n      // was mush; at 2x it cost 4 marginal frames per 199 on software rendering.\n      var dpr = Math.min(1.5, window.devicePixelRatio || 1);\n      W = Math.max(120, Math.round(r.width)); H = Math.max(90, Math.round(r.height));\n      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);\n      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);\n      ox = -W * 0.06; oy = H * 0.5;\n      reach = Math.sqrt((W - ox) * (W - ox) + oy * oy) * 1.02;\n      edge = ctx.createRadialGradient(ox, oy, 0, ox, oy, reach);\n      EDGE.forEach(function (s) { edge.addColorStop(s[0], s[1]); });\n    }\n\n    function draw(t) {\n      ctx.clearRect(0, 0, W, H);\n      var newest = Math.floor(t * FPS);\n      var oldest = newest - N;\n      for (var i = newest; i > oldest; i--) {\n        var age = t - i / FPS;\n        if (age < 0) continue;\n        var k = age / LIFE;                          // 0 at the source, 1 at the rim\n        var a = AMP[((i % N) + N) % N];\n        var fade = Math.min(1, k * 13) * (0.42 + 0.58 * Math.pow(1 - k, 1.9));\n        var w = Math.pow(a, 2.1);                    // no floor: a pause vanishes\n        if (fade * w < 0.004) continue;\n        // A loud wavefront carries further around than a quiet one, so the rings\n        // stop being perfectly concentric and the field stops looking machined.\n        var arcH = (0.42 + 0.58 * a) * (Math.PI / 2.02);\n        ctx.beginPath();\n        ctx.arc(ox, oy, k * reach, -arcH, arcH);\n        ctx.globalAlpha = Math.min(1, fade * 0.42 * w * (1 - 0.34 * k));\n        ctx.lineWidth = 1.5 + 8 * w;\n        ctx.strokeStyle = a > 0.6 ? MASS[2] : a > 0.3 ? MASS[1] : MASS[0];\n        ctx.stroke();\n        ctx.globalAlpha = Math.min(1, fade * 1.15 * w);\n        ctx.lineWidth = 0.55 + 1.7 * w;\n        ctx.strokeStyle = edge;\n        ctx.stroke();\n      }\n      ctx.globalAlpha = 1;\n    }\n\n    var running = false, visible = true, t0 = 0, painted = 0;\n    var STEP = 1000 / 30;          // the field drifts slowly; 60fps buys nothing\n    function frame(now) {\n      if (!running) return;\n      // Clamped: rAF reports the frame's START time, which can precede the\n      // performance.now() captured just before the loop began. A negative\n      // elapsed time here becomes a negative arc radius, which throws.\n      if (visible && now - painted >= STEP) { painted = now; draw(Math.max(0, now - t0) / 1000); }\n      requestAnimationFrame(frame);\n    }\n    layout();\n    if (REDUCED) {\n      draw(LIFE * 0.5);            // one settled frame, no loop\n    } else {\n      t0 = performance.now(); running = true;\n      requestAnimationFrame(frame);\n    }\n    if (window.ResizeObserver) new ResizeObserver(function () { layout(); }).observe(cv);\n    if (window.IntersectionObserver) {\n      new IntersectionObserver(function (es) { visible = es[0].isIntersecting; }).observe(cv);\n    }\n\n  })();\n\n",
+  "new": "  /* ── Legacy ripple fallback (inactive when the bar field is present) ─────\n   * Speech is pressure radiating from a source, so that is what the hero draws.\n   *\n   * One arc per envelope bar, leaving a source on the card's left edge at the\n   * bar rate of HERO.amp -- N bars over HERO.seconds -- so the field plays at\n   * the clip's own speed. A ring lives LIFE seconds, and after the sentence the\n   * card rests for REST seconds before it starts again, so the loop reads as a\n   * new utterance rather than a seam. Weight and opacity are the clip's measured\n   * loudness at the instant that ring was emitted: this voice's envelope in\n   * polar form, and no other voice draws it. The source itself glows with the\n   * loudness of the moment, so the rings visibly come from somewhere.\n   *\n   * Two things learned the hard way. There is NO alpha floor: adding a constant\n   * to every ring's opacity made every ring render at similar weight and the\n   * field read as wood grain, because the envelope's silences never became\n   * gaps. And the wide glow pass takes a flat colour while only the crest pays\n   * for the gradient -- a radial gradient evaluated across a 25px stroke at\n   * this radius was once the most expensive thing on the page.\n   * ──────────────────────────────────────────────────────────────────────── */\n  (function () {\n    var cv = need('heroRipple');\n    if (!cv) return;\n    var ctx = cv.getContext('2d');\n    if (!ctx) return;\n\n    var AMP = HERO.amp, N = AMP.length;\n    var RATE = N / HERO.seconds;   // bars a second: the clip's own clock\n    var LIFE = 6.5;                // seconds a ring takes to cross the card\n    var REST = 1.4;                // the breath between two passes of the sentence\n    var SPAN = HERO.seconds + REST;\n    var W = 0, H = 0, ox = 0, oy = 0, reach = 0, crest = null;\n\n    // Duotone: the near field is warm because that is where the energy is, and\n    // the far field cools into the pack's teal so the rings read against a warm\n    // ground instead of dissolving into it.\n    var GLOW = ['#E8B08A', '#D9773E', '#B8431A'];\n    var CREST = [[0, '#5E1F2B'], [0.14, '#9B2F12'], [0.34, '#C2410C'], [0.54, '#D8842F'],\n                 [0.72, '#B79A57'], [0.87, '#5C9080'], [1, '#2F8B80']];\n\n    function layout() {\n      var r = cv.getBoundingClientRect();\n      // 1.5, not 2: the field is wide soft arcs, so the last half-step of\n      // resolution buys nothing visible and costs a third of the fill.\n      var dpr = Math.min(1.5, window.devicePixelRatio || 1);\n      W = Math.max(120, Math.round(r.width)); H = Math.max(90, Math.round(r.height));\n      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);\n      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);\n      ox = 0; oy = H * 0.5;\n      reach = Math.sqrt(W * W + oy * oy) * 1.02;\n      crest = ctx.createRadialGradient(ox, oy, 0, ox, oy, reach);\n      CREST.forEach(function (s) { crest.addColorStop(s[0], s[1]); });\n    }\n\n    // The loudness right now, between bars, and zero during the rest.\n    function level(t) {\n      var u = t % SPAN;\n      if (u >= HERO.seconds) return 0;\n      var x = u * RATE, i = Math.floor(x), f = x - i;\n      return AMP[i % N] * (1 - f) + AMP[(i + 1) % N] * f;\n    }\n\n    function ring(age, a) {\n      var k = age / LIFE;                          // 0 at the source, 1 at the rim\n      var w = Math.pow(a, 2.4);                    // no floor: a pause vanishes\n      var fade = Math.min(1, k * 9) * Math.pow(1 - k, 0.85);\n      if (fade * w < 0.006) return;\n      var r = k * reach;\n      ctx.beginPath();\n      ctx.arc(ox, oy, r, -Math.PI / 2.01, Math.PI / 2.01);\n      // A wide, soft body: the pressure itself, dispersing as it travels.\n      ctx.globalAlpha = fade * 0.22 * w;\n      ctx.lineWidth = (6 + 34 * w) * (1 + 1.3 * k);\n      ctx.strokeStyle = a > 0.62 ? GLOW[2] : a > 0.32 ? GLOW[1] : GLOW[0];\n      ctx.stroke();\n      // The crest: the one crisp line the eye follows, cooling as it travels.\n      ctx.globalAlpha = Math.min(1, fade * 1.05 * w);\n      ctx.lineWidth = 0.7 + 3.6 * w;\n      ctx.strokeStyle = crest;\n      ctx.stroke();\n      // Light on the leading edge, so the crest reads as a raised wave.\n      ctx.beginPath();\n      ctx.arc(ox, oy, r + 0.9 + 1.6 * w, -Math.PI / 2.01, Math.PI / 2.01);\n      ctx.globalAlpha = fade * 0.5 * w;\n      ctx.lineWidth = 0.6 + 0.9 * w;\n      ctx.strokeStyle = '#FFF7EE';\n      ctx.stroke();\n    }\n\n    function draw(t) {\n      ctx.clearRect(0, 0, W, H);\n      // The source: a warm glow that swells with the loudness of the moment.\n      var a = level(t), sr = 70 + 170 * a;\n      var g = ctx.createRadialGradient(ox, oy, 0, ox, oy, sr);\n      g.addColorStop(0, 'rgba(194, 65, 12, ' + (0.18 + 0.36 * a) + ')');\n      g.addColorStop(0.5, 'rgba(216, 132, 47, ' + (0.08 + 0.18 * a) + ')');\n      g.addColorStop(1, 'rgba(216, 132, 47, 0)');\n      ctx.globalAlpha = 1;\n      ctx.fillStyle = g;\n      ctx.fillRect(0, oy - sr, sr, sr * 2);\n      // Rings, oldest first so the newest crests sit on top near the source.\n      var p = Math.floor(t / SPAN);\n      for (var q = p - 1; q <= p; q++) {\n        if (q < 0) continue;\n        for (var i = 0; i < N; i++) {\n          var age = t - (q * SPAN + i / RATE);\n          if (age < 0 || age >= LIFE) continue;\n          ring(age, AMP[i]);\n        }\n      }\n      ctx.globalAlpha = 1;\n    }\n\n    var running = false, visible = true, t0 = 0, painted = 0;\n    var STEP = 1000 / 30;          // the field drifts slowly; 60fps buys nothing\n    function frame(now) {\n      if (!running) return;\n      // Clamped: rAF reports the frame's START time, which can precede the\n      // performance.now() captured just before the loop began. A negative\n      // elapsed time here becomes a negative arc radius, which throws.\n      if (visible && now - painted >= STEP) { painted = now; draw(Math.max(0, now - t0) / 1000); }\n      requestAnimationFrame(frame);\n    }\n    layout();\n    if (REDUCED) {\n      draw(LIFE * 0.9);            // one settled frame, no loop\n    } else {\n      t0 = performance.now(); running = true;\n      requestAnimationFrame(frame);\n    }\n    if (window.ResizeObserver) new ResizeObserver(function () { layout(); }).observe(cv);\n    if (window.IntersectionObserver) {\n      new IntersectionObserver(function (es) { visible = es[0].isIntersecting; }).observe(cv);\n    }\n\n  })();\n\n"
+ },
+ {
+  "file": "src/post.css",
+  "old": ".hero-scrim {\n  position: absolute; inset: 0; z-index: 1; pointer-events: none;\n  background:\n    radial-gradient(ellipse 59% 72% at 50% 48%, rgba(255,255,255,0.985) 38%, rgba(255,255,255,0.82) 57%, rgba(255,255,255,0) 82%),\n    linear-gradient(180deg, rgba(255,255,255,0.5), transparent 24%, transparent 76%, rgba(255,255,255,0.42));\n}",
+  "new": ".hero-scrim {\n  position: absolute; inset: 0; z-index: 1; pointer-events: none;\n  background:\n    radial-gradient(ellipse 54% 76% at 50% 49%, rgba(255,255,255,0.98) 30%, rgba(255,255,255,0.82) 53%, rgba(255,255,255,0.12) 84%),\n    linear-gradient(180deg, rgba(255,255,255,0.55), transparent 25%, transparent 76%, rgba(255,255,255,0.62));\n}"
+ },
+ {
+  "file": "src/post.css",
+  "old": "  .hero-scrim { background: radial-gradient(ellipse 84% 68% at 50% 47%, rgba(255,255,255,0.98) 38%, rgba(255,255,255,0.76) 65%, rgba(255,255,255,0) 100%); }",
+  "new": "  .hero-scrim { background: radial-gradient(ellipse 84% 68% at 50% 47%, rgba(255,255,255,0.94) 34%, rgba(255,255,255,0.68) 65%, rgba(255,255,255,0) 100%); }"
+ },
+ {
+  "file": "src/body-capability.html",
+  "old": "      <div class=\"hero-bars\" id=\"heroBars\" role=\"img\" aria-label=\"Animated voice levels shaped by a real Indic-Speak sample\"></div>",
+  "new": "      <canvas class=\"hero-ripple\" id=\"heroRipple\" aria-hidden=\"true\"></canvas>\n      <div class=\"hero-glyph\" id=\"heroGlyph\" role=\"img\" aria-label=\"The first vowel of each of the twelve scripts Indic-Speak reads, one after another\"><span class=\"hero-glyph-face\" id=\"heroGlyphA\"></span><span class=\"hero-glyph-face\" id=\"heroGlyphB\"></span><span class=\"hero-glyph-cap\" id=\"heroGlyphCap\"></span></div>"
+ },
+ {
+  "file": "src/body-technical.html",
+  "old": "      <div class=\"hero-bars\" id=\"heroBars\" role=\"img\" aria-label=\"Animated voice levels shaped by a real Indic-Speak sample\"></div>",
+  "new": "      <canvas class=\"hero-ripple\" id=\"heroRipple\" aria-hidden=\"true\"></canvas>\n      <div class=\"hero-glyph\" id=\"heroGlyph\" role=\"img\" aria-label=\"The first vowel of each of the twelve scripts Indic-Speak reads, one after another\"><span class=\"hero-glyph-face\" id=\"heroGlyphA\"></span><span class=\"hero-glyph-face\" id=\"heroGlyphB\"></span><span class=\"hero-glyph-cap\" id=\"heroGlyphCap\"></span></div>"
+ },
+ {
+  "file": "src/post.css",
+  "old": ".hero-bars {\n  position: absolute; inset: 0.9rem 0.75rem; z-index: 0;\n  display: flex; align-items: center; justify-content: center; gap: 4px;\n  pointer-events: none; overflow: hidden; opacity: 0.72;\n  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);\n  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);\n}\n.hero-bar {\n  flex: 1 1 0; min-width: 2px; max-width: 10px; border-radius: 999px;\n  background: linear-gradient(180deg, rgba(194,65,12,0.78), rgba(216,132,47,0.34));\n  transform-origin: 50% 50%;\n  animation: hero-bar-pulse 2.8s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;\n}\n.hero-bar:nth-child(7n), .hero-bar:nth-child(11n) {\n  background: linear-gradient(180deg, rgba(47,139,128,0.62), rgba(49,70,133,0.24));\n}\n@keyframes hero-bar-pulse {\n  0% { opacity: 0.36; transform: scaleY(0.48); }\n  55% { opacity: 0.82; transform: scaleY(0.88); }\n  100% { opacity: 1; transform: scaleY(1); }\n}",
+  "new": ".hero-ripple {\n  position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%;\n  display: block; pointer-events: none;\n}\n/* The scripts: the first vowel of each of the twelve scripts the model reads,\n   one after another, set in that script's own face and lit by the same warm\n   gradient as the rings that leave it. On phones it leads the card; on wide\n   screens it sits at the left, where the sound is born. */\n.hero-glyph {\n  position: relative; z-index: 3; width: 8rem; height: 8.6rem; margin: -0.6rem auto 0.4rem;\n  font-family: var(--indic); font-weight: 400; line-height: 1;\n}\n.hero-glyph-face {\n  position: absolute; left: 0; right: 0; top: 0; bottom: 2.4rem;\n  display: flex; align-items: center; justify-content: center;\n  font-size: 5.4rem;\n  background: linear-gradient(160deg, #A8330E 0%, #C2410C 48%, #D8842F 100%);\n  -webkit-background-clip: text; background-clip: text; color: transparent;\n  opacity: 0; transform: translateY(10px) scale(0.96);\n  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);\n}\n.hero-glyph-face.is-on { opacity: 1; transform: none; }\n.hero-glyph-cap {\n  position: absolute; left: -1rem; right: -1rem; bottom: 0; text-align: center;\n  font: 600 0.74rem/1.35 var(--font-body); color: var(--text-muted);\n  transition: opacity 0.35s ease;\n}\n.hero-glyph-cap .k { display: block; font-weight: 500; color: var(--color-11); }\n.hero-glyph-cap.is-off { opacity: 0; }\n@media (min-width: 768px) {\n  .hero-glyph { position: absolute; left: 1.9rem; top: 50%; margin: 0; transform: translateY(-58%); width: 9.6rem; height: 11rem; }\n  .hero-glyph-face { font-size: 7.4rem; bottom: 2.6rem; }\n}"
+ },
+ {
+  "file": "src/post.css",
+  "old": "  .hero-bar { animation: none; opacity: 0.7; transform: none; }",
+  "new": "  .hero-glyph-face { transition: none; }"
+ },
+ {
+  "file": "src/page.js",
+  "old": "  /* ── Hero: voice bars ────────────────────────────────────────────────────\n   * A chart-like field borrowed from the sibling OCR story, shaped here by a\n   * real Indic-Speak envelope. CSS owns the motion, so the hero needs no paint\n   * loop while the reader scrolls.\n   * ──────────────────────────────────────────────────────────────────────── */\n  (function () {\n    var field = need('heroBars');\n    if (!field) return;\n    var amp = HERO.amp;\n    var count = 56;\n    for (var i = 0; i < count; i++) {\n      var from = Math.floor(i * amp.length / count);\n      var to = Math.max(from + 1, Math.floor((i + 1) * amp.length / count));\n      var level = 0;\n      for (var j = from; j < to; j++) level = Math.max(level, amp[j]);\n      var bar = document.createElement('span');\n      bar.className = 'hero-bar';\n      bar.style.height = (12 + level * 72).toFixed(1) + '%';\n      bar.style.animationDelay = (-i * 0.075).toFixed(3) + 's';\n      bar.style.animationDuration = (2.4 + (i % 7) * 0.16).toFixed(2) + 's';\n      field.appendChild(bar);\n    }\n  })();\n\n",
+  "new": "  /* ── Hero: the scripts ───────────────────────────────────────────────────\n   * The first vowel of each of the twelve scripts the model reads, one after\n   * another, with the script's name and how many of the 22 languages write in\n   * it. The scripts and their languages come from the language table, so the\n   * hero cannot disagree with the rest of the post. The rings below are born\n   * from this letter: the text is the source of the sound.\n   * ──────────────────────────────────────────────────────────────────────── */\n  (function () {\n    var box = need('heroGlyph');\n    if (!box) return;\n    var faces = [need('heroGlyphA'), need('heroGlyphB')], cap = need('heroGlyphCap');\n    var VOWEL = { 'Devanagari': 'अ', 'Bengali–Assamese': 'অ', 'Gujarati': 'અ', 'Gurmukhi': 'ਅ',\n                  'Odia': 'ଅ', 'Tamil': 'அ', 'Telugu': 'అ', 'Kannada': 'ಅ', 'Malayalam': 'അ',\n                  'Perso-Arabic': 'ا', 'Meitei Mayek': 'ꯑ', 'Ol Chiki': 'ᱟ' };\n    var by = {}, scripts = [];\n    D.languages.forEach(function (l) {\n      if (!by[l.script]) { by[l.script] = { name: l.script, glyph: VOWEL[l.script], langs: [] }; scripts.push(by[l.script]); }\n      by[l.script].langs.push(l.name);\n    });\n    // Most-written scripts first, so the card opens on Devanagari.\n    scripts.sort(function (p, q) { return q.langs.length - p.langs.length; });\n\n    function label(s) {\n      var k = s.langs.length > 1 ? s.langs.length + ' languages'\n            : s.langs[0] !== s.name ? s.langs[0] : '';\n      return esc(s.name) + (k ? '<span class=\"k\">' + esc(k) + '</span>' : '');\n    }\n    var i = 0, on = 0;\n    function show(s) {\n      var next = faces[1 - on];\n      next.textContent = s.glyph;\n      faces[on].classList.remove('is-on');\n      next.classList.add('is-on');\n      on = 1 - on;\n      cap.classList.add('is-off');\n      setTimeout(function () { cap.innerHTML = label(s); cap.classList.remove('is-off'); }, 300);\n    }\n    show(scripts[0]);\n    if (REDUCED) return;\n    var HOLD = 2600, visible = true;\n    setInterval(function () {\n      if (!visible) return;\n      i = (i + 1) % scripts.length;\n      show(scripts[i]);\n    }, HOLD);\n    if (window.IntersectionObserver) {\n      new IntersectionObserver(function (es) { visible = es[0].isIntersecting; }).observe(box);\n    }\n  })();\n\n"
+ },
+ {
+  "file": "src/page.js",
+  "old": "  /* ── Legacy ripple fallback (inactive when the bar field is present) ─────\n   * Speech is pressure radiating from a source, so that is what the hero draws.\n   *\n   * One arc per envelope bar, leaving a source on the card's left edge at the\n   * bar rate of HERO.amp",
+  "new": "  /* ── Hero: the ripple ────────────────────────────────────────────────────\n   * Speech is pressure radiating from a source, so that is what the hero draws.\n   *\n   * One ring per envelope bar, born at the script glyph at the bar rate of\n   * HERO.amp"
+ },
+ {
+  "file": "src/page.js",
+  "old": "   * polar form, and no other voice draws it. The source itself glows with the\n   * loudness of the moment, so the rings visibly come from somewhere.\n",
+  "new": "   * polar form, and no other voice draws it. The glyph is lit by the loudness\n   * of the moment, so the rings visibly come from the letter.\n"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    var W = 0, H = 0, ox = 0, oy = 0, reach = 0, crest = null;\n",
+  "new": "    var W = 0, H = 0, ox = 0, oy = 0, reach = 0, crest = null;\n    var glyph = need('heroGlyphA');\n"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);\n      ox = 0; oy = H * 0.5;\n      reach = Math.sqrt(W * W + oy * oy) * 1.02;\n",
+  "new": "      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);\n      // The source is the centre of the letter, wherever the layout put it.\n      if (glyph) {\n        var g = glyph.getBoundingClientRect();\n        ox = g.left - r.left + g.width / 2; oy = g.top - r.top + g.height / 2;\n      } else { ox = 0; oy = H * 0.5; }\n      reach = Math.sqrt(Math.max(ox, W - ox) * Math.max(ox, W - ox) + Math.max(oy, H - oy) * Math.max(oy, H - oy)) * 1.02;\n"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      var r = k * reach;\n      ctx.beginPath();\n      ctx.arc(ox, oy, r, -Math.PI / 2.01, Math.PI / 2.01);\n      // A wide, soft body: the pressure itself, dispersing as it travels.\n      ctx.globalAlpha = fade * 0.22 * w;",
+  "new": "      var r = k * reach;\n      ctx.beginPath();\n      ctx.arc(ox, oy, r, 0, Math.PI * 2);\n      // A wide, soft body: the pressure itself, dispersing as it travels.\n      ctx.globalAlpha = fade * 0.18 * w;"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      ctx.globalAlpha = Math.min(1, fade * 1.05 * w);\n      ctx.lineWidth = 0.7 + 3.6 * w;",
+  "new": "      ctx.globalAlpha = Math.min(1, fade * 0.9 * w);\n      ctx.lineWidth = 0.7 + 3.2 * w;"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      ctx.arc(ox, oy, r + 0.9 + 1.6 * w, -Math.PI / 2.01, Math.PI / 2.01);\n      ctx.globalAlpha = fade * 0.5 * w;",
+  "new": "      ctx.arc(ox, oy, r + 0.9 + 1.6 * w, 0, Math.PI * 2);\n      ctx.globalAlpha = fade * 0.45 * w;"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      // The source: a warm glow that swells with the loudness of the moment.\n      var a = level(t), sr = 70 + 170 * a;\n      var g = ctx.createRadialGradient(ox, oy, 0, ox, oy, sr);\n      g.addColorStop(0, 'rgba(194, 65, 12, ' + (0.18 + 0.36 * a) + ')');\n      g.addColorStop(0.5, 'rgba(216, 132, 47, ' + (0.08 + 0.18 * a) + ')');\n      g.addColorStop(1, 'rgba(216, 132, 47, 0)');\n      ctx.globalAlpha = 1;\n      ctx.fillStyle = g;\n      ctx.fillRect(0, oy - sr, sr, sr * 2);\n",
+  "new": "      // Behind the letter: a warm glow that swells with the loudness of the moment.\n      var a = level(t), sr = 60 + 120 * a;\n      var g = ctx.createRadialGradient(ox, oy, 0, ox, oy, sr);\n      g.addColorStop(0, 'rgba(216, 132, 47, ' + (0.16 + 0.3 * a) + ')');\n      g.addColorStop(0.5, 'rgba(216, 132, 47, ' + (0.06 + 0.14 * a) + ')');\n      g.addColorStop(1, 'rgba(216, 132, 47, 0)');\n      ctx.globalAlpha = 1;\n      ctx.fillStyle = g;\n      ctx.fillRect(ox - sr, oy - sr, sr * 2, sr * 2);\n"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    if (window.ResizeObserver) new ResizeObserver(function () { layout(); }).observe(cv);\n    if (window.IntersectionObserver) {\n      new IntersectionObserver(function (es) { visible = es[0].isIntersecting; }).observe(cv);\n    }\n\n  })();",
+  "new": "    if (window.ResizeObserver) new ResizeObserver(function () { layout(); }).observe(cv);\n    // The glyph's face may arrive after first paint and move the source.\n    if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);\n    if (window.IntersectionObserver) {\n      new IntersectionObserver(function (es) { visible = es[0].isIntersecting; }).observe(cv);\n    }\n\n  })();"
+ },
+ {
+  "file": "src/body-capability.html",
+  "old": "      <div class=\"hero-bars\" id=\"heroBars\" role=\"img\" aria-label=\"Animated voice levels shaped by a real Indic-Speak sample\"></div>",
+  "new": "      <canvas class=\"hero-ripple\" id=\"heroRipple\" aria-hidden=\"true\"></canvas>\n      <div class=\"hero-glyph\" id=\"heroGlyph\" role=\"img\" aria-label=\"The first vowel of each of the twelve scripts Indic-Speak reads, one after another\"><span class=\"hero-glyph-face\" id=\"heroGlyphA\"></span><span class=\"hero-glyph-face\" id=\"heroGlyphB\"></span><span class=\"hero-glyph-cap\" id=\"heroGlyphCap\"></span></div>"
+ },
+ {
+  "file": "src/body-technical.html",
+  "old": "      <div class=\"hero-bars\" id=\"heroBars\" role=\"img\" aria-label=\"Animated voice levels shaped by a real Indic-Speak sample\"></div>",
+  "new": "      <canvas class=\"hero-ripple\" id=\"heroRipple\" aria-hidden=\"true\"></canvas>\n      <div class=\"hero-glyph\" id=\"heroGlyph\" role=\"img\" aria-label=\"The first vowel of each of the twelve scripts Indic-Speak reads, one after another\"><span class=\"hero-glyph-face\" id=\"heroGlyphA\"></span><span class=\"hero-glyph-face\" id=\"heroGlyphB\"></span><span class=\"hero-glyph-cap\" id=\"heroGlyphCap\"></span></div>"
+ },
+ {
+  "file": "src/post.css",
+  "old": ".hero-bars {\n  position: absolute; inset: 0.9rem 0.75rem; z-index: 0;\n  display: flex; align-items: center; justify-content: center; gap: 4px;\n  pointer-events: none; overflow: hidden; opacity: 0.72;\n  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);\n  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);\n}\n.hero-bar {\n  flex: 1 1 0; min-width: 2px; max-width: 10px; border-radius: 999px;\n  background: linear-gradient(180deg, rgba(194,65,12,0.78), rgba(216,132,47,0.34));\n  transform-origin: 50% 50%;\n  animation: hero-bar-pulse 2.8s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;\n}\n.hero-bar:nth-child(7n), .hero-bar:nth-child(11n) {\n  background: linear-gradient(180deg, rgba(47,139,128,0.62), rgba(49,70,133,0.24));\n}\n@keyframes hero-bar-pulse {\n  0% { opacity: 0.36; transform: scaleY(0.48); }",
+  "new": ".hero-ripple {\n  position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%;\n  display: block; pointer-events: none;\n}\n/* The scripts: the first vowel of each of the twelve scripts the model reads,\n   one after another, set in that script's own face and lit by the same warm\n   gradient as the rings that leave it. On phones it leads the card; on wide\n   screens it sits at the left, where the sound is born. */\n.hero-glyph {\n  position: relative; z-index: 3; width: 8rem; height: 8.6rem; margin: -0.6rem auto 0.4rem;\n  font-family: var(--indic); font-weight: 400; line-height: 1;\n}\n.hero-glyph-face {\n  position: absolute; left: 0; right: 0; top: 0; bottom: 2.4rem;\n  display: flex; align-items: center; justify-content: center;\n  font-size: 5.4rem;\n  background: linear-gradient(160deg, #A8330E 0%, #C2410C 48%, #D8842F 100%);\n  -webkit-background-clip: text; background-clip: text; color: transparent;\n  opacity: 0; transform: translateY(10px) scale(0.96);\n  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);\n}\n.hero-glyph-face.is-on { opacity: 1; transform: none; }\n.hero-glyph-cap {\n  position: absolute; left: -1rem; right: -1rem; bottom: 0; text-align: center;\n  font: 600 0.74rem/1.35 var(--font-body); color: var(--text-muted);\n  transition: opacity 0.35s ease;\n}\n.hero-glyph-cap .k { display: block; font-weight: 500; color: var(--color-11); }\n.hero-glyph-cap.is-off { opacity: 0; }\n@media (min-width: 768px) {\n  .hero-glyph { position: absolute; left: 1.9rem; top: 50%; margin: 0; transform: translateY(-58%); width: 9.6rem; height: 11rem; }\n  .hero-glyph-face { font-size: 7.4rem; bottom: 2.6rem; }\n}"
+ },
+ {
+  "file": "src/post.css",
+  "old": "  .hero-bar { animation: none; opacity: 0.7; transform: none; }",
+  "new": "  .hero-glyph-face { transition: none; }"
+ },
+ {
+  "file": "src/page.js",
+  "old": "  /* ── Hero: voice bars ────────────────────────────────────────────────────\n   * A chart-like field borrowed from the sibling OCR story, shaped here by a\n   * real Indic-Speak envelope. CSS owns the motion, so the hero needs no paint\n   * loop while the reader scrolls.\n   * ──────────────────────────────────────────────────────────────────────── */\n  (function () {\n    var field = need('heroBars');\n    if (!field) return;\n    var amp = HERO.amp;\n    var count = 56;\n    for (var i = 0; i < count; i++) {\n      var from = Math.floor(i * amp.length / count);\n      var to = Math.max(from + 1, Math.floor((i + 1) * amp.length / count));\n      var level = 0;\n      for (var j = from; j < to; j++) level = Math.max(level, amp[j]);\n      var bar = document.createElement('span');\n      bar.className = 'hero-bar';\n      bar.style.height = (12 + level * 72).toFixed(1) + '%';\n      bar.style.animationDelay = (-i * 0.075).toFixed(3) + 's';\n      bar.style.animationDuration = (2.4 + (i % 7) * 0.16).toFixed(2) + 's';\n      field.appendChild(bar);\n    }\n  })();\n\n  /* ── Legacy script motif (inactive without its former markup) ────────────\n   * The first vowel of each of the twelve scripts the model reads, one after\n   * another, with the script's name and how many of the 22 languages write in\n   * it. The scripts and their languages come from the language table, so the\n   * hero cannot disagree with the rest of the post. The rings below are born\n   * from this letter: the text is the source of the sound.\n   * ──────────────────────────────────────────────────────────────────────── */\n  (function () {\n    var box = need('heroGlyph');\n    if (!box) return;\n    var faces = [need('heroGlyphA'), need('heroGlyphB')], cap = need('heroGlyphCap');\n    var VOWEL = { 'Devanagari': 'अ', 'Bengali–Assamese': 'অ', 'Gujarati': 'અ', 'Gurmukhi': 'ਅ',\n                  'Odia': 'ଅ', 'Tamil': 'அ', 'Telugu': 'అ', 'Kannada': 'ಅ', 'Malayalam': 'അ',\n                  'Perso-Arabic': 'ا', 'Meitei Mayek': 'ꯑ', 'Ol Chiki': 'ᱟ' };\n    var by = {}, scripts = [];\n    D.languages.forEach(function (l) {\n      if (!by[l.script]) { by[l.script] = { name: l.script, glyph: VOWEL[l.script], langs: [] }; scripts.push(by[l.script]); }\n      by[l.script].langs.push(l.name);\n    });\n    // Most-written scripts first, so the card opens on Devanagari.\n    scripts.sort(function (p, q) { return q.langs.length - p.langs.length; });\n\n    function label(s) {\n      var k = s.langs.length > 1 ? s.langs.length + ' languages'\n            : s.langs[0] !== s.name ? s.langs[0] : '';\n      return esc(s.name) + (k ? '<span class=\"k\">' + esc(k) + '</span>' : '');\n    }\n    var i = 0, on = 0;\n    function show(s) {\n      var next = faces[1 - on];\n      next.textContent = s.glyph;\n      faces[on].classList.remove('is-on');\n      next.classList.add('is-on');\n      on = 1 - on;\n      cap.classList.add('is-off');\n      setTimeout(function () { cap.innerHTML = label(s); cap.classList.remove('is-off'); }, 300);\n    }\n    show(scripts[0]);\n    if (REDUCED) return;\n    var HOLD = 2600, visible = true;\n    setInterval(function () {\n      if (!visible) return;\n      i = (i + 1) % scripts.length;\n      show(scripts[i]);\n    }, HOLD);\n    if (window.IntersectionObserver) {\n      new IntersectionObserver(function (es) { visible = es[0].isIntersecting; }).observe(box);\n    }\n  })();\n\n  /* ── Hero: the ripple ────────────────────────────────────────────────────\n   * Speech is pressure radiating from a source, so that is what the hero draws.\n   *\n   * One ring per envelope bar, born at the script glyph at the bar rate of\n   * HERO.amp -- N bars over HERO.seconds -- so the field plays at\n   * the clip's own speed. A ring lives LIFE seconds, and after the sentence the\n   * card rests for REST seconds before it starts again, so the loop reads as a\n   * new utterance rather than a seam. Weight and opacity are the clip's measured\n   * loudness at the instant that ring was emitted: this voice's envelope in\n   * polar form, and no other voice draws it. The glyph is lit by the loudness\n   * of the moment, so the rings visibly come from the letter.\n   *\n   * Two things learned the hard way. There is NO alpha floor: adding a constant\n   * to every ring's opacity made every ring render at similar weight and the\n   * field read as wood grain, because the envelope's silences never became\n   * gaps. And the wide glow pass takes a flat colour while only the crest pays\n   * for the gradient -- a radial gradient evaluated across a 25px stroke at\n   * this radius was once the most expensive thing on the page.\n   * ──────────────────────────────────────────────────────────────────────── */\n  (function () {\n    var cv = need('heroRipple');\n    if (!cv) return;\n    var ctx = cv.getContext('2d');\n    if (!ctx) return;\n\n    var AMP = HERO.amp, N = AMP.length;\n    var RATE = N / HERO.seconds;   // bars a second: the clip's own clock\n    var LIFE = 6.5;                // seconds a ring takes to cross the card\n    var REST = 1.4;                // the breath between two passes of the sentence\n    var SPAN = HERO.seconds + REST;\n    var W = 0, H = 0, ox = 0, oy = 0, reach = 0, crest = null;\n    var glyph = need('heroGlyphA');\n\n    // Duotone: the near field is warm because that is where the energy is, and\n    // the far field cools into the pack's teal so the rings read against a warm\n    // ground instead of dissolving into it.\n    var GLOW = ['#E8B08A', '#D9773E', '#B8431A'];\n    var CREST = [[0, '#5E1F2B'], [0.14, '#9B2F12'], [0.34, '#C2410C'], [0.54, '#D8842F'],\n                 [0.72, '#B79A57'], [0.87, '#5C9080'], [1, '#2F8B80']];\n\n    function layout() {\n      var r = cv.getBoundingClientRect();\n      // 1.5, not 2: the field is wide soft arcs, so the last half-step of\n      // resolution buys nothing visible and costs a third of the fill.\n      var dpr = Math.min(1.5, window.devicePixelRatio || 1);\n      W = Math.max(120, Math.round(r.width)); H = Math.max(90, Math.round(r.height));\n      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);\n      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);\n      // The source is the centre of the letter, wherever the layout put it.\n      if (glyph) {\n        var g = glyph.getBoundingClientRect();\n        ox = g.left - r.left + g.width / 2; oy = g.top - r.top + g.height / 2;\n      } else { ox = 0; oy = H * 0.5; }\n      reach = Math.sqrt(Math.max(ox, W - ox) * Math.max(ox, W - ox) + Math.max(oy, H - oy) * Math.max(oy, H - oy)) * 1.02;\n      crest = ctx.createRadialGradient(ox, oy, 0, ox, oy, reach);\n      CREST.forEach(function (s) { crest.addColorStop(s[0], s[1]); });\n    }\n\n    // The loudness right now, between bars, and zero during the rest.\n    function level(t) {\n      var u = t % SPAN;\n      if (u >= HERO.seconds) return 0;\n      var x = u * RATE, i = Math.floor(x), f = x - i;\n      return AMP[i % N] * (1 - f) + AMP[(i + 1) % N] * f;\n    }\n\n    function ring(age, a) {\n      var k = age / LIFE;                          // 0 at the source, 1 at the rim\n      var w = Math.pow(a, 2.4);                    // no floor: a pause vanishes\n      var fade = Math.min(1, k * 9) * Math.pow(1 - k, 0.85);\n      if (fade * w < 0.006) return;\n      var r = k * reach;\n      ctx.beginPath();\n      ctx.arc(ox, oy, r, 0, Math.PI * 2);\n      // A wide, soft body: the pressure itself, dispersing as it travels.\n      ctx.globalAlpha = fade * 0.18 * w;\n      ctx.lineWidth = (6 + 34 * w) * (1 + 1.3 * k);\n      ctx.strokeStyle = a > 0.62 ? GLOW[2] : a > 0.32 ? GLOW[1] : GLOW[0];\n      ctx.stroke();\n      // The crest: the one crisp line the eye follows, cooling as it travels.\n      ctx.globalAlpha = Math.min(1, fade * 0.9 * w);\n      ctx.lineWidth = 0.7 + 3.2 * w;\n      ctx.strokeStyle = crest;\n      ctx.stroke();\n      // Light on the leading edge, so the crest reads as a raised wave.\n      ctx.beginPath();\n      ctx.arc(ox, oy, r + 0.9 + 1.6 * w, 0, Math.PI * 2);\n      ctx.globalAlpha = fade * 0.45 * w;\n      ctx.lineWidth = 0.6 + 0.9 * w;\n      ctx.strokeStyle = '#FFF7EE';\n      ctx.stroke();\n    }\n\n    function draw(t) {\n      ctx.clearRect(0, 0, W, H);\n      // Behind the letter: a warm glow that swells with the loudness of the moment.\n      var a = level(t), sr = 60 + 120 * a;\n      var g = ctx.createRadialGradient(ox, oy, 0, ox, oy, sr);\n      g.addColorStop(0, 'rgba(216, 132, 47, ' + (0.16 + 0.3 * a) + ')');\n      g.addColorStop(0.5, 'rgba(216, 132, 47, ' + (0.06 + 0.14 * a) + ')');\n      g.addColorStop(1, 'rgba(216, 132, 47, 0)');\n      ctx.globalAlpha = 1;\n      ctx.fillStyle = g;\n      ctx.fillRect(ox - sr, oy - sr, sr * 2, sr * 2);\n      // Rings, oldest first so the newest crests sit on top near the source.\n      var p = Math.floor(t / SPAN);\n      for (var q = p - 1; q <= p; q++) {\n        if (q < 0) continue;\n        for (var i = 0; i < N; i++) {\n          var age = t - (q * SPAN + i / RATE);\n          if (age < 0 || age >= LIFE) continue;\n          ring(age, AMP[i]);\n        }\n      }\n      ctx.globalAlpha = 1;\n    }\n\n    var running = false, visible = true, t0 = 0, painted = 0;\n    var STEP = 1000 / 30;          // the field drifts slowly; 60fps buys nothing\n    function frame(now) {\n      if (!running) return;\n      // Clamped: rAF reports the frame's START time, which can precede the\n      // performance.now() captured just before the loop began. A negative\n      // elapsed time here becomes a negative arc radius, which throws.\n      if (visible && now - painted >= STEP) { painted = now; draw(Math.max(0, now - t0) / 1000); }\n      requestAnimationFrame(frame);\n    }\n    layout();\n    if (REDUCED) {\n      draw(LIFE * 0.9);            // one settled frame, no loop\n    } else {\n      t0 = performance.now(); running = true;\n      requestAnimationFrame(frame);\n    }\n    if (window.ResizeObserver) new ResizeObserver(function () { layout(); }).observe(cv);\n    // The glyph's face may arrive after first paint and move the source.\n    if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);\n    if (window.IntersectionObserver) {\n      new IntersectionObserver(function (es) { visible = es[0].isIntersecting; }).observe(cv);\n    }\n\n  })();\n\n",
+  "new": "  /* ── Hero: the scripts ───────────────────────────────────────────────────\n   * The twelve scripts the model reads, each shown by its first vowel. One is\n   * featured large with its name and how many of the 22 languages write in it;\n   * all twelve drift slowly along the card's edge, and the featured one is lit\n   * there too. The scripts and their languages come from the language table,\n   * so the hero cannot disagree with the rest of the post. Behind them, the\n   * ripple is born from the featured letter and lights each small letter as\n   * the wavefront passes it: one voice, reaching every script.\n   * ──────────────────────────────────────────────────────────────────────── */\n  var VOWEL = { 'Devanagari': 'अ', 'Bengali–Assamese': 'অ', 'Gujarati': 'અ', 'Gurmukhi': 'ਅ',\n                'Odia': 'ଅ', 'Tamil': 'அ', 'Telugu': 'అ', 'Kannada': 'ಅ', 'Malayalam': 'അ',\n                'Perso-Arabic': 'ا', 'Meitei Mayek': 'ꯑ', 'Ol Chiki': 'ᱟ' };\n  var SCRIPTS = (function () {\n    var by = {}, out = [];\n    D.languages.forEach(function (l) {\n      if (!by[l.script]) { by[l.script] = { name: l.script, glyph: VOWEL[l.script], langs: [] }; out.push(by[l.script]); }\n      by[l.script].langs.push(l.name);\n    });\n    // Most-written scripts first, so the card opens on Devanagari.\n    out.sort(function (p, q) { return q.langs.length - p.langs.length; });\n    return out;\n  })();\n  var heroActive = 0;            // which script is featured right now\n\n  (function () {\n    var box = need('heroGlyph');\n    if (!box) return;\n    var faces = [need('heroGlyphA'), need('heroGlyphB')], cap = need('heroGlyphCap');\n    function label(s) {\n      var k = s.langs.length > 1 ? s.langs.length + ' languages'\n            : s.langs[0] !== s.name ? s.langs[0] : '';\n      return esc(s.name) + (k ? '<span class=\"k\">' + esc(k) + '</span>' : '');\n    }\n    var on = 0;\n    function show(i) {\n      var s = SCRIPTS[i], next = faces[1 - on];\n      heroActive = i;\n      next.textContent = s.glyph;\n      faces[on].classList.remove('is-on');\n      next.classList.add('is-on');\n      on = 1 - on;\n      cap.classList.add('is-off');\n      setTimeout(function () { cap.innerHTML = label(s); cap.classList.remove('is-off'); }, 300);\n    }\n    show(0);\n    if (REDUCED) return;\n    var HOLD = 2600, visible = true;\n    setInterval(function () { if (visible) show((heroActive + 1) % SCRIPTS.length); }, HOLD);\n    if (window.IntersectionObserver) {\n      new IntersectionObserver(function (es) { visible = es[0].isIntersecting; }).observe(box);\n    }\n  })();\n\n  /* ── Hero: the ripple and the drifting letters ───────────────────────────\n   * Speech is pressure radiating from a source, so that is what the canvas\n   * draws behind the letters: one ring per envelope bar, born at the featured\n   * letter at the bar rate of HERO.amp -- N bars over HERO.seconds -- so the\n   * field plays at the clip's own speed. A ring lives LIFE seconds, and after\n   * the sentence the card rests for REST seconds before it starts again, so\n   * the loop reads as a new utterance rather than a seam. Weight and opacity\n   * are the clip's measured loudness at the instant that ring was emitted.\n   *\n   * The twelve small letters drift along the card's own outline, inset, and\n   * each one brightens as a wavefront crosses it. They are drawn on the canvas\n   * rather than as DOM nodes so the flash and the ring share one clock and one\n   * coordinate system.\n   *\n   * Two things learned the hard way. There is NO alpha floor: adding a constant\n   * to every ring's opacity made every ring render at similar weight and the\n   * field read as wood grain, because the envelope's silences never became\n   * gaps. And the wide glow pass takes a flat colour while only the crest pays\n   * for the gradient -- a radial gradient evaluated across a 25px stroke at\n   * this radius was once the most expensive thing on the page.\n   * ──────────────────────────────────────────────────────────────────────── */\n  (function () {\n    var cv = need('heroRipple');\n    if (!cv) return;\n    var ctx = cv.getContext('2d');\n    if (!ctx) return;\n\n    var AMP = HERO.amp, N = AMP.length;\n    var RATE = N / HERO.seconds;   // bars a second: the clip's own clock\n    var LIFE = 6.5;                // seconds a ring takes to cross the card\n    var REST = 1.4;                // the breath between two passes of the sentence\n    var SPAN = HERO.seconds + REST;\n    var DRIFT = 9;                 // px a second the letters travel along the edge\n    var W = 0, H = 0, ox = 0, oy = 0, reach = 0, crest = null, letter = 0, track = null;\n    var glyph = need('heroGlyphA');\n    var INDIC = getComputedStyle(document.documentElement).getPropertyValue('--indic') || 'sans-serif';\n\n    // Duotone: the near field is warm because that is where the energy is, and\n    // the far field cools into the pack's teal so the rings read against a warm\n    // ground instead of dissolving into it.\n    var GLOW = ['#E8B08A', '#D9773E', '#B8431A'];\n    var CREST = [[0, '#5E1F2B'], [0.14, '#9B2F12'], [0.34, '#C2410C'], [0.54, '#D8842F'],\n                 [0.72, '#B79A57'], [0.87, '#5C9080'], [1, '#2F8B80']];\n\n    function layout() {\n      var r = cv.getBoundingClientRect();\n      var dpr = Math.min(2, window.devicePixelRatio || 1);\n      W = Math.max(120, Math.round(r.width)); H = Math.max(90, Math.round(r.height));\n      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);\n      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);\n      // The source is the centre of the featured letter, wherever the layout put it.\n      if (glyph) {\n        var g = glyph.getBoundingClientRect();\n        ox = g.left - r.left + g.width / 2; oy = g.top - r.top + g.height / 2;\n      } else { ox = 0; oy = H * 0.5; }\n      reach = Math.sqrt(Math.max(ox, W - ox) * Math.max(ox, W - ox) + Math.max(oy, H - oy) * Math.max(oy, H - oy)) * 1.02;\n      crest = ctx.createRadialGradient(ox, oy, 0, ox, oy, reach);\n      CREST.forEach(function (s) { crest.addColorStop(s[0], s[1]); });\n      // The letters' track: the card's outline, inset, with soft corners.\n      var wide = W >= 700, inset = wide ? 24 : 15;\n      letter = wide ? 27 : 19;\n      var rc = Math.min(58, (Math.min(W, H) - 2 * inset) / 3);\n      var tw = W - 2 * inset - 2 * rc, th = H - 2 * inset - 2 * rc;\n      track = { x0: inset, y0: inset, x1: W - inset, y1: H - inset, rc: rc, w: tw, h: th,\n                q: Math.PI * rc / 2, P: 2 * tw + 2 * th + 2 * Math.PI * rc };\n    }\n\n    // A point s pixels along the track, clockwise from the top-left corner.\n    function at(s) {\n      var t = track, rc = t.rc, a;\n      s = ((s % t.P) + t.P) % t.P;\n      if (s < t.w) return [t.x0 + rc + s, t.y0]; s -= t.w;\n      if (s < t.q) { a = -Math.PI / 2 + s / rc; return [t.x1 - rc + rc * Math.cos(a), t.y0 + rc + rc * Math.sin(a)]; } s -= t.q;\n      if (s < t.h) return [t.x1, t.y0 + rc + s]; s -= t.h;\n      if (s < t.q) { a = s / rc; return [t.x1 - rc + rc * Math.cos(a), t.y1 - rc + rc * Math.sin(a)]; } s -= t.q;\n      if (s < t.w) return [t.x1 - rc - s, t.y1]; s -= t.w;\n      if (s < t.q) { a = Math.PI / 2 + s / rc; return [t.x0 + rc + rc * Math.cos(a), t.y1 - rc + rc * Math.sin(a)]; } s -= t.q;\n      if (s < t.h) return [t.x0, t.y1 - rc - s]; s -= t.h;\n      a = Math.PI + s / rc; return [t.x0 + rc + rc * Math.cos(a), t.y0 + rc + rc * Math.sin(a)];\n    }\n\n    // The loudness right now, between bars, and zero during the rest.\n    function level(t) {\n      var u = t % SPAN;\n      if (u >= HERO.seconds) return 0;\n      var x = u * RATE, i = Math.floor(x), f = x - i;\n      return AMP[i % N] * (1 - f) + AMP[(i + 1) % N] * f;\n    }\n\n    var pos = [], flash = [];\n    function ring(age, a) {\n      var k = age / LIFE;                          // 0 at the source, 1 at the rim\n      var w = Math.pow(a, 2.4);                    // no floor: a pause vanishes\n      var fade = Math.min(1, k * 9) * Math.pow(1 - k, 0.85);\n      if (fade * w < 0.006) return;\n      var r = k * reach;\n      // Each small letter lights up as this wavefront crosses it.\n      for (var j = 0; j < pos.length; j++) {\n        var d = Math.sqrt((pos[j][0] - ox) * (pos[j][0] - ox) + (pos[j][1] - oy) * (pos[j][1] - oy)) - r;\n        var f = fade * w * 2.2 * Math.exp(-(d * d) / 500);\n        if (f > flash[j]) flash[j] = f;\n      }\n      ctx.beginPath();\n      ctx.arc(ox, oy, r, 0, Math.PI * 2);\n      // A wide, soft body: the pressure itself, dispersing as it travels.\n      ctx.globalAlpha = fade * 0.16 * w;\n      ctx.lineWidth = (6 + 34 * w) * (1 + 1.3 * k);\n      ctx.strokeStyle = a > 0.62 ? GLOW[2] : a > 0.32 ? GLOW[1] : GLOW[0];\n      ctx.stroke();\n      // The crest: the one crisp line the eye follows, cooling as it travels.\n      ctx.globalAlpha = Math.min(1, fade * 0.8 * w);\n      ctx.lineWidth = 0.7 + 3 * w;\n      ctx.strokeStyle = crest;\n      ctx.stroke();\n      // Light on the leading edge, so the crest reads as a raised wave.\n      ctx.beginPath();\n      ctx.arc(ox, oy, r + 0.9 + 1.6 * w, 0, Math.PI * 2);\n      ctx.globalAlpha = fade * 0.4 * w;\n      ctx.lineWidth = 0.6 + 0.9 * w;\n      ctx.strokeStyle = '#FFF7EE';\n      ctx.stroke();\n    }\n\n    function draw(t) {\n      ctx.clearRect(0, 0, W, H);\n      // Where each small letter is right now.\n      var n = SCRIPTS.length, step = track.P / n;\n      for (var j = 0; j < n; j++) { pos[j] = at(j * step + DRIFT * t); flash[j] = 0; }\n      // Behind the featured letter: a warm glow that swells with the loudness of the moment.\n      var a = level(t), sr = 60 + 120 * a;\n      var g = ctx.createRadialGradient(ox, oy, 0, ox, oy, sr);\n      g.addColorStop(0, 'rgba(216, 132, 47, ' + (0.16 + 0.3 * a) + ')');\n      g.addColorStop(0.5, 'rgba(216, 132, 47, ' + (0.06 + 0.14 * a) + ')');\n      g.addColorStop(1, 'rgba(216, 132, 47, 0)');\n      ctx.globalAlpha = 1;\n      ctx.fillStyle = g;\n      ctx.fillRect(ox - sr, oy - sr, sr * 2, sr * 2);\n      // Rings, oldest first so the newest crests sit on top near the source.\n      var p = Math.floor(t / SPAN);\n      for (var q = p - 1; q <= p; q++) {\n        if (q < 0) continue;\n        for (var i = 0; i < N; i++) {\n          var age = t - (q * SPAN + i / RATE);\n          if (age < 0 || age >= LIFE) continue;\n          ring(age, AMP[i]);\n        }\n      }\n      // The twelve letters on their track: the featured one lit, the others\n      // quiet until a wavefront reaches them.\n      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';\n      for (j = 0; j < n; j++) {\n        var hot = j === heroActive ? 1 : 0, lit = Math.min(1, Math.max(hot, flash[j]));\n        var size = letter * (1 + 0.42 * hot + 0.3 * Math.min(1, flash[j]));\n        ctx.font = '500 ' + size.toFixed(1) + 'px ' + INDIC;\n        if (lit > 0.35) {\n          ctx.globalAlpha = 0.5 * lit;\n          ctx.fillStyle = '#F2BB86';\n          ctx.beginPath(); ctx.arc(pos[j][0], pos[j][1], size * 0.95, 0, Math.PI * 2); ctx.fill();\n        }\n        ctx.globalAlpha = 0.5 + 0.5 * lit;\n        ctx.fillStyle = hot ? '#C2410C' : '#A8380A';\n        ctx.fillText(SCRIPTS[j].glyph, pos[j][0], pos[j][1]);\n      }\n      ctx.globalAlpha = 1;\n    }\n\n    var running = false, visible = true, t0 = 0, painted = 0;\n    var STEP = 1000 / 30;          // the field drifts slowly; 60fps buys nothing\n    function frame(now) {\n      if (!running) return;\n      // Clamped: rAF reports the frame's START time, which can precede the\n      // performance.now() captured just before the loop began. A negative\n      // elapsed time here becomes a negative arc radius, which throws.\n      if (visible && now - painted >= STEP) { painted = now; draw(Math.max(0, now - t0) / 1000); }\n      requestAnimationFrame(frame);\n    }\n    layout();\n    if (REDUCED) {\n      draw(LIFE * 0.9);            // one settled frame, no loop\n    } else {\n      t0 = performance.now(); running = true;\n      requestAnimationFrame(frame);\n    }\n    if (window.ResizeObserver) new ResizeObserver(function () { layout(); }).observe(cv);\n    // The letters' faces may arrive after first paint and move the source.\n    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { layout(); if (REDUCED) draw(LIFE * 0.9); });\n    if (window.IntersectionObserver) {\n      new IntersectionObserver(function (es) { visible = es[0].isIntersecting; }).observe(cv);\n    }\n\n  })();\n\n"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    var RATE = N / HERO.seconds;   // bars a second: the clip's own clock\n    var LIFE = 6.5;                // seconds a ring takes to cross the card\n    var REST = 1.4;",
+  "new": "    var RATE = N / HERO.seconds;   // bars a second: the clip's own clock\n    // A ring per syllable, not per bar: only the envelope's local peaks emit,\n    // so the waves are spaced by the rhythm of the sentence rather than by the\n    // analysis frame rate, and each can carry more weight.\n    var PEAK = AMP.map(function (a, i) { return a >= AMP[(i + N - 1) % N] && a > AMP[(i + 1) % N] && a > 0.08; });\n    var LIFE = 6.5;                // seconds a ring takes to cross the card\n    var REST = 1.4;"
+ },
+ {
+  "file": "src/page.js",
+  "old": "          if (age < 0 || age >= LIFE) continue;\n          ring(age, AMP[i]);",
+  "new": "          if (age < 0 || age >= LIFE || !PEAK[i]) continue;\n          ring(age, AMP[i]);"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      var w = Math.pow(a, 2.4);                    // no floor: a pause vanishes",
+  "new": "      var w = Math.pow(a, 1.6);                    // no floor: a pause vanishes"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    var CREST = [[0, '#5E1F2B'], [0.14, '#9B2F12'],",
+  "new": "    var CREST = [[0, '#8A2A12'], [0.14, '#9B2F12'],"
+ },
+ {
+  "file": "src/page.js",
+  "old": "        if (lit > 0.35) {\n          ctx.globalAlpha = 0.5 * lit;\n          ctx.fillStyle = '#F2BB86';\n          ctx.beginPath(); ctx.arc(pos[j][0], pos[j][1], size * 0.95, 0, Math.PI * 2); ctx.fill();\n        }\n        ctx.globalAlpha = 0.5 + 0.5 * lit;",
+  "new": "        if (lit > 0.35) {\n          ctx.globalAlpha = 0.34 * lit;\n          ctx.fillStyle = '#F2BB86';\n          ctx.beginPath(); ctx.arc(pos[j][0], pos[j][1], size * 0.72, 0, Math.PI * 2); ctx.fill();\n        }\n        ctx.globalAlpha = 0.62 + 0.38 * lit;"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    // A ring per syllable, not per bar: only the envelope's local peaks emit,\n    // so the waves are spaced by the rhythm of the sentence rather than by the\n    // analysis frame rate, and each can carry more weight.\n    var PEAK = AMP.map(function (a, i) { return a >= AMP[(i + N - 1) % N] && a > AMP[(i + 1) % N] && a > 0.08; });\n    var LIFE = 6.5;                // seconds a ring takes to cross the card\n    var REST = 1.4;",
+  "new": "    // A ring per stressed syllable: an envelope peak at least 0.4 s after the\n    // last one, so the waves are spaced by the rhythm of the sentence and the\n    // field stays calm. Quiet bars and the analysis frame rate never show.\n    var EMIT = [], last = -N;\n    for (var b = 0; b < N; b++) {\n      var v = AMP[b];\n      if (v > 0.3 && v >= AMP[(b + N - 1) % N] && v > AMP[(b + 1) % N] && (b - last) / RATE >= 0.4) { EMIT.push(b); last = b; }\n    }\n    var LIFE = 9;                  // seconds a ring takes to cross the card\n    var REST = 1.6;"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    var GLOW = ['#E8B08A', '#D9773E', '#B8431A'];\n    var CREST = [[0, '#8A2A12'], [0.14, '#9B2F12'], [0.34, '#C2410C'], [0.54, '#D8842F'],\n                 [0.72, '#B79A57'], [0.87, '#5C9080'], [1, '#2F8B80']];",
+  "new": "    var GLOW = ['#F2C9A6', '#EBB58A', '#E39A68'];\n    var CREST = [[0, '#D9773E'], [0.4, '#D8842F'], [0.75, '#B79A57'], [1, '#5C9080']];"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      var k = age / LIFE;                          // 0 at the source, 1 at the rim\n      var w = Math.pow(a, 1.6);                    // no floor: a pause vanishes\n      var fade = Math.min(1, k * 9) * Math.pow(1 - k, 0.85);\n      if (fade * w < 0.006) return;",
+  "new": "      var k = age / LIFE;                          // 0 at the source, 1 at the rim\n      var w = 0.35 + 0.65 * a;                     // every wave is whole; loud ones are heavier\n      var fade = Math.min(1, k * 7) * Math.pow(1 - k, 1.1);\n      if (fade < 0.01) return;"
+ },
+ {
+  "file": "src/page.js",
+  "old": "        var f = fade * w * 2.2 * Math.exp(-(d * d) / 500);",
+  "new": "        var f = fade * w * 1.2 * Math.exp(-(d * d) / 600);"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      // A wide, soft body: the pressure itself, dispersing as it travels.\n      ctx.globalAlpha = fade * 0.16 * w;\n      ctx.lineWidth = (6 + 34 * w) * (1 + 1.3 * k);\n      ctx.strokeStyle = a > 0.62 ? GLOW[2] : a > 0.32 ? GLOW[1] : GLOW[0];\n      ctx.stroke();\n      // The crest: the one crisp line the eye follows, cooling as it travels.\n      ctx.globalAlpha = Math.min(1, fade * 0.8 * w);\n      ctx.lineWidth = 0.7 + 3 * w;\n      ctx.strokeStyle = crest;\n      ctx.stroke();\n      // Light on the leading edge, so the crest reads as a raised wave.\n      ctx.beginPath();\n      ctx.arc(ox, oy, r + 0.9 + 1.6 * w, 0, Math.PI * 2);\n      ctx.globalAlpha = fade * 0.4 * w;\n      ctx.lineWidth = 0.6 + 0.9 * w;\n      ctx.strokeStyle = '#FFF7EE';\n      ctx.stroke();",
+  "new": "      // A wide, soft body: the pressure itself, dispersing as it travels.\n      ctx.globalAlpha = fade * 0.11 * w;\n      ctx.lineWidth = (14 + 22 * w) * (1 + 1.6 * k);\n      ctx.strokeStyle = a > 0.62 ? GLOW[2] : a > 0.45 ? GLOW[1] : GLOW[0];\n      ctx.stroke();\n      // The crest: one thin line the eye can follow, cooling as it travels.\n      ctx.globalAlpha = fade * 0.42 * w;\n      ctx.lineWidth = 1 + 1.4 * w;\n      ctx.strokeStyle = crest;\n      ctx.stroke();\n      // Light on the leading edge, so the crest reads as a raised wave.\n      ctx.beginPath();\n      ctx.arc(ox, oy, r + 1.5, 0, Math.PI * 2);\n      ctx.globalAlpha = fade * 0.5 * w;\n      ctx.lineWidth = 0.8;\n      ctx.strokeStyle = '#FFF7EE';\n      ctx.stroke();"
+ },
+ {
+  "file": "src/page.js",
+  "old": "        for (var i = 0; i < N; i++) {\n          var age = t - (q * SPAN + i / RATE);\n          if (age < 0 || age >= LIFE || !PEAK[i]) continue;\n          ring(age, AMP[i]);\n        }",
+  "new": "        for (var e = 0; e < EMIT.length; e++) {\n          var i = EMIT[e], age = t - (q * SPAN + i / RATE);\n          if (age < 0 || age >= LIFE) continue;\n          ring(age, AMP[i]);\n        }"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      if (!by[l.script]) { by[l.script] = { name: l.script, glyph: VOWEL[l.script], langs: [] }; out.push(by[l.script]); }\n      by[l.script].langs.push(l.name);\n    });\n    // Most-written scripts first, so the card opens on Devanagari.\n    out.sort(function (p, q) { return q.langs.length - p.langs.length; });\n    return out;\n  })();\n  var heroActive = 0;            // which script is featured right now\n",
+  "new": "      if (!by[l.script]) { by[l.script] = { name: l.script, glyph: VOWEL[l.script], langs: [] }; out.push(by[l.script]); }\n      by[l.script].langs.push(l);\n    });\n    // Most-written scripts first, and within a script the benchmarked\n    // languages first, so the card opens on Hindi.\n    out.sort(function (p, q) { return q.langs.length - p.langs.length; });\n    out.forEach(function (s) { s.langs.sort(function (p, q) { return (q.benchmarked ? 1 : 0) - (p.benchmarked ? 1 : 0); }); });\n    return out;\n  })();\n  // Every language gets a turn. Each script's languages are spread evenly over\n  // the 22 slots, so the eight Devanagari languages do not run back to back.\n  var TURNS = (function () {\n    var n = D.languages.length, slots = [];\n    SCRIPTS.forEach(function (s) {\n      s.langs.forEach(function (l, j) {\n        var at = Math.floor(j * n / s.langs.length);\n        while (slots[at % n]) at++;\n        slots[at % n] = { script: s, lang: l.name };\n      });\n    });\n    return slots;\n  })();\n  var heroActive = 0;            // which script is featured right now\n"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    function label(s) {\n      var k = s.langs.length > 1 ? s.langs.length + ' languages'\n            : s.langs[0] !== s.name ? s.langs[0] : '';\n      return esc(s.name) + (k ? '<span class=\"k\">' + esc(k) + '</span>' : '');\n    }\n    var on = 0;\n    function show(i) {\n      var s = SCRIPTS[i], next = faces[1 - on];\n      heroActive = i;\n      next.textContent = s.glyph;",
+  "new": "    var on = 0, turn = 0;\n    function show(i) {\n      var s = TURNS[i].script, next = faces[1 - on];\n      turn = i; heroActive = SCRIPTS.indexOf(s);\n      next.textContent = s.glyph;"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      setTimeout(function () { cap.innerHTML = label(s); cap.classList.remove('is-off'); }, 300);",
+  "new": "      setTimeout(function () { cap.textContent = TURNS[turn].lang; cap.classList.remove('is-off'); }, 300);"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    var HOLD = 2600, visible = true;\n    setInterval(function () { if (visible) show((heroActive + 1) % SCRIPTS.length); }, HOLD);",
+  "new": "    var HOLD = 2400, visible = true;\n    setInterval(function () { if (visible) show((turn + 1) % TURNS.length); }, HOLD);"
+ },
+ {
+  "file": "src/post.css",
+  "old": ".hero-glyph-cap .k { display: block; font-weight: 500; color: var(--color-11); }\n.hero-glyph-cap.is-off { opacity: 0; }",
+  "new": ".hero-glyph-cap.is-off { opacity: 0; }"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    var INDIC = getComputedStyle(document.documentElement).getPropertyValue('--indic') || 'sans-serif';",
+  "new": "    var INDIC = (typeof getComputedStyle === 'function' && getComputedStyle(document.documentElement).getPropertyValue('--indic')) || 'sans-serif';"
+ },
+ {
+  "file": "src/post.css",
+  "old": "  position: relative; z-index: 3; width: 8rem; height: 8.6rem; margin: -0.6rem auto 0.4rem;",
+  "new": "  position: relative; z-index: 3; width: 8rem; height: 7.8rem; margin: -0.6rem auto 0.4rem;"
+ },
+ {
+  "file": "src/post.css",
+  "old": "  font-size: 5.4rem;\n  background: linear-gradient(160deg, #A8330E 0%, #C2410C 48%, #D8842F 100%);",
+  "new": "  font-size: 4.6rem;\n  background: linear-gradient(160deg, #A8330E 0%, #C2410C 48%, #D8842F 100%);"
+ },
+ {
+  "file": "src/post.css",
+  "old": "  .hero-glyph { position: absolute; left: 1.9rem; top: 50%; margin: 0; transform: translateY(-58%); width: 9.6rem; height: 11rem; }\n  .hero-glyph-face { font-size: 7.4rem; bottom: 2.6rem; }",
+  "new": "  .hero-glyph { position: absolute; left: 1.9rem; top: 50%; margin: 0; transform: translateY(-58%); width: 9.6rem; height: 9.8rem; }\n  .hero-glyph-face { font-size: 6.2rem; bottom: 2.6rem; }"
+ },
+ {
+  "file": "src/smoke.js",
+  "old": "// The hero keeps one visual idea: a real-envelope bar field behind the title.\nt('hero uses one bar field, not a tile field', /id=\"heroBars\"/.test(html) && !/id=\"tokenField\"/.test(html), true);",
+  "new": "// The hero keeps one visual idea: the scripts, as letters, with the ripple born\n// from the featured one -- no bar field and no tile field.\nt('hero uses the script letters and the ripple', /id=\"heroGlyph\"/.test(html) && /id=\"heroRipple\"/.test(html) && !/id=\"heroBars\"|id=\"tokenField\"/.test(html), true);"
+ },
+ {
+  "file": "src/smoke.js",
+  "old": "t('hero bar field populated', stub('heroBars').children.filter((c) => c.classes.has('hero-bar')).length, 56);\nt('hero bars carry measured heights', stub('heroBars').children.every((c) => /%$/.test(c.style.height)), true);",
+  "new": "// The featured letter is a real first vowel and the caption is a language name\n// from the language table, so the hero cannot disagree with the rest of the post.\nt('hero letter is one script glyph', [...stub('heroGlyphA').textContent].length, 1);\nt('hero opens on Hindi', D.languages.find((l) => l.code === 'hi').script, 'Devanagari');\nt('hero letter opens on Devanagari', stub('heroGlyphA').textContent, '\\u0905');"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    var on = 0, turn = 0;\n    function show(i) {",
+  "new": "    var on = 1, turn = 0;          // so the first letter lands in face A\n    function show(i) {"
+ },
+ {
+  "file": "src/page.js",
+  "old": "  var SCRIPTS = (function () {\n    var by = {}, out = [];\n    D.languages.forEach(function (l) {\n      if (!by[l.script]) { by[l.script] = { name: l.script, glyph: VOWEL[l.script], langs: [] }; out.push(by[l.script]); }",
+  "new": "  // One muted hue per script, so colour means something: the letters wear it,\n  // and every wave keeps the hue of the language that was speaking when it\n  // was born. All twelve sit at similar depth so none of them shouts.\n  var HUE = { 'Devanagari': '#C2410C', 'Perso-Arabic': '#1F7A8C', 'Bengali–Assamese': '#A63D5C',\n              'Gujarati': '#D4870A', 'Kannada': '#6A7F1C', 'Malayalam': '#2E7D5B',\n              'Meitei Mayek': '#5B4B9E', 'Odia': '#8C5A2B', 'Gurmukhi': '#B8651B',\n              'Ol Chiki': '#3B6FB6', 'Tamil': '#9C2F3F', 'Telugu': '#7A3F8A' };\n  // A colour moved toward white by f, with an optional alpha.\n  function tint(hex, f, alpha) {\n    var n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255;\n    r = Math.round(r + (255 - r) * f); g = Math.round(g + (255 - g) * f); b = Math.round(b + (255 - b) * f);\n    return alpha == null ? 'rgb(' + r + ',' + g + ',' + b + ')' : 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';\n  }\n  var SCRIPTS = (function () {\n    var by = {}, out = [];\n    D.languages.forEach(function (l) {\n      if (!by[l.script]) { by[l.script] = { name: l.script, glyph: VOWEL[l.script], hue: HUE[l.script] || '#C2410C', langs: [] }; out.push(by[l.script]); }"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      turn = i; heroActive = SCRIPTS.indexOf(s);\n      next.textContent = s.glyph;",
+  "new": "      turn = i; heroActive = SCRIPTS.indexOf(s);\n      next.textContent = s.glyph;\n      next.style.backgroundImage = 'linear-gradient(160deg, ' + s.hue + ' 0%, ' + tint(s.hue, 0.32) + ' 100%)';"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    var W = 0, H = 0, ox = 0, oy = 0, reach = 0, crest = null, letter = 0, track = null;",
+  "new": "    var W = 0, H = 0, ox = 0, oy = 0, reach = 0, crests = [], letter = 0, track = null;"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    var GLOW = ['#F2C9A6', '#EBB58A', '#E39A68'];\n    var CREST = [[0, '#D9773E'], [0.4, '#D8842F'], [0.75, '#B79A57'], [1, '#5C9080']];\n\n    function layout() {",
+  "new": "\n    function layout() {"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      crest = ctx.createRadialGradient(ox, oy, 0, ox, oy, reach);\n      CREST.forEach(function (s) { crest.addColorStop(s[0], s[1]); });\n",
+  "new": "      // One crest gradient per script: its own hue near the letter, cooling\n      // into the pack's teal at the rim.\n      crests = SCRIPTS.map(function (s) {\n        var g = ctx.createRadialGradient(ox, oy, 0, ox, oy, reach);\n        g.addColorStop(0, s.hue); g.addColorStop(0.45, tint(s.hue, 0.2)); g.addColorStop(1, '#5C9080');\n        return g;\n      });\n"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    var pos = [], flash = [];\n    function ring(age, a) {",
+  "new": "    var pos = [], flash = [], born = {};\n    function ring(age, a, s) {"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      ctx.globalAlpha = fade * 0.11 * w;\n      ctx.lineWidth = (14 + 22 * w) * (1 + 1.6 * k);\n      ctx.strokeStyle = a > 0.62 ? GLOW[2] : a > 0.45 ? GLOW[1] : GLOW[0];\n      ctx.stroke();\n      // The crest: one thin line the eye can follow, cooling as it travels.\n      ctx.globalAlpha = fade * 0.42 * w;\n      ctx.lineWidth = 1 + 1.4 * w;\n      ctx.strokeStyle = crest;",
+  "new": "      ctx.globalAlpha = fade * 0.12 * w;\n      ctx.lineWidth = (14 + 22 * w) * (1 + 1.6 * k);\n      ctx.strokeStyle = tint(s.hue, a > 0.62 ? 0.45 : 0.6);\n      ctx.stroke();\n      // The crest: one thin line the eye can follow, cooling as it travels.\n      ctx.globalAlpha = fade * 0.42 * w;\n      ctx.lineWidth = 1 + 1.4 * w;\n      ctx.strokeStyle = crests[SCRIPTS.indexOf(s)];"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      var a = level(t), sr = 60 + 120 * a;\n      var g = ctx.createRadialGradient(ox, oy, 0, ox, oy, sr);\n      g.addColorStop(0, 'rgba(216, 132, 47, ' + (0.16 + 0.3 * a) + ')');\n      g.addColorStop(0.5, 'rgba(216, 132, 47, ' + (0.06 + 0.14 * a) + ')');\n      g.addColorStop(1, 'rgba(216, 132, 47, 0)');",
+  "new": "      var a = level(t), sr = 60 + 120 * a, hue = SCRIPTS[heroActive].hue;\n      var g = ctx.createRadialGradient(ox, oy, 0, ox, oy, sr);\n      g.addColorStop(0, tint(hue, 0.5, 0.18 + 0.3 * a));\n      g.addColorStop(0.5, tint(hue, 0.6, 0.06 + 0.14 * a));\n      g.addColorStop(1, tint(hue, 0.6, 0));"
+ },
+ {
+  "file": "src/page.js",
+  "old": "        for (var e = 0; e < EMIT.length; e++) {\n          var i = EMIT[e], age = t - (q * SPAN + i / RATE);\n          if (age < 0 || age >= LIFE) continue;\n          ring(age, AMP[i]);\n        }",
+  "new": "        for (var e = 0; e < EMIT.length; e++) {\n          var i = EMIT[e], age = t - (q * SPAN + i / RATE), key = q * N + i;\n          if (age < 0) continue;\n          if (age >= LIFE) { delete born[key]; continue; }\n          if (!(key in born)) born[key] = SCRIPTS[heroActive];\n          ring(age, AMP[i], born[key]);\n        }"
+ },
+ {
+  "file": "src/page.js",
+  "old": "        if (lit > 0.35) {\n          ctx.globalAlpha = 0.34 * lit;\n          ctx.fillStyle = '#F2BB86';\n          ctx.beginPath(); ctx.arc(pos[j][0], pos[j][1], size * 0.72, 0, Math.PI * 2); ctx.fill();\n        }\n        ctx.globalAlpha = 0.62 + 0.38 * lit;\n        ctx.fillStyle = hot ? '#C2410C' : '#A8380A';",
+  "new": "        if (lit > 0.35) {\n          ctx.globalAlpha = 0.3 * lit;\n          ctx.fillStyle = tint(SCRIPTS[j].hue, 0.62);\n          ctx.beginPath(); ctx.arc(pos[j][0], pos[j][1], size * 0.72, 0, Math.PI * 2); ctx.fill();\n        }\n        ctx.globalAlpha = 0.66 + 0.34 * lit;\n        ctx.fillStyle = SCRIPTS[j].hue;"
+ },
+ {
+  "file": "src/post.css",
+  "old": "  position: relative; z-index: 3; width: 8rem; height: 7.8rem; margin: -0.6rem auto 0.4rem;",
+  "new": "  position: relative; z-index: 3; width: 7rem; height: 6.4rem; margin: -0.6rem auto 0.4rem;"
+ },
+ {
+  "file": "src/post.css",
+  "old": "  position: absolute; left: 0; right: 0; top: 0; bottom: 2.4rem;\n  display: flex; align-items: center; justify-content: center;\n  font-size: 4.6rem;",
+  "new": "  position: absolute; left: 0; right: 0; top: 0; bottom: 2rem;\n  display: flex; align-items: center; justify-content: center;\n  font-size: 3.5rem;"
+ },
+ {
+  "file": "src/post.css",
+  "old": "  .hero-glyph { position: absolute; left: 1.9rem; top: 50%; margin: 0; transform: translateY(-58%); width: 9.6rem; height: 9.8rem; }\n  .hero-glyph-face { font-size: 6.2rem; bottom: 2.6rem; }",
+  "new": "  .hero-glyph { position: absolute; left: 2.4rem; top: 50%; margin: 0; transform: translateY(-58%); width: 8rem; height: 7.8rem; }\n  .hero-glyph-face { font-size: 4.2rem; bottom: 2.2rem; }"
+ },
+ {
+  "file": "src/post.css",
+  "old": "  position: relative; z-index: 3; width: 7rem; height: 6.4rem; margin: -0.6rem auto 0.4rem;",
+  "new": "  position: relative; z-index: 3; width: 7rem; height: 6.2rem; margin: -0.8rem auto 0.5rem;"
+ },
+ {
+  "file": "src/post.css",
+  "old": "  .hero-glyph { position: absolute; left: 2.4rem; top: 50%; margin: 0; transform: translateY(-58%); width: 8rem; height: 7.8rem; }\n  .hero-glyph-face { font-size: 4.2rem; bottom: 2.2rem; }",
+  "new": "  .hero-glyph { width: 8rem; height: 6.8rem; margin: -1.4rem auto 0.7rem; }\n  .hero-glyph-face { font-size: 4rem; bottom: 2.1rem; }"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    var LIFE = 9;                  // seconds a ring takes to cross the card\n    var REST = 1.6;",
+  "new": "    var LIFE = 10.5;               // seconds a ring takes to cross the card\n    var REST = 1.8;"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    var DRIFT = 9;                 // px a second the letters travel along the edge",
+  "new": "    var DRIFT = 7;                 // px a second the letters travel along the edge"
+ },
+ {
+  "file": "src/page.js",
+  "old": "        var f = fade * w * 1.2 * Math.exp(-(d * d) / 600);",
+  "new": "        var f = fade * w * 1.0 * Math.exp(-(d * d) / 600);"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      ctx.globalAlpha = fade * 0.12 * w;\n      ctx.lineWidth = (14 + 22 * w) * (1 + 1.6 * k);",
+  "new": "      ctx.globalAlpha = fade * 0.1 * w;\n      ctx.lineWidth = (14 + 22 * w) * (1 + 1.6 * k);"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      ctx.globalAlpha = fade * 0.42 * w;\n      ctx.lineWidth = 1 + 1.4 * w;",
+  "new": "      ctx.globalAlpha = fade * 0.34 * w;\n      ctx.lineWidth = 1 + 1.2 * w;"
+ },
+ {
+  "file": "src/post.css",
+  "old": "  position: relative; z-index: 3; width: 7rem; height: 6.2rem; margin: -0.8rem auto 0.5rem;",
+  "new": "  position: relative; z-index: 3; width: 7rem; height: 6.4rem; margin: -0.6rem auto 0.4rem;"
+ },
+ {
+  "file": "src/post.css",
+  "old": "  .hero-glyph { width: 8rem; height: 6.8rem; margin: -1.4rem auto 0.7rem; }\n  .hero-glyph-face { font-size: 4rem; bottom: 2.1rem; }",
+  "new": "  .hero-glyph { position: absolute; left: 4.6rem; top: 50%; margin: 0; transform: translateY(-56%); width: 8rem; height: 7.8rem; }\n  .hero-glyph-face { font-size: 4.2rem; bottom: 2.2rem; }"
+ },
+ {
+  "file": "src/body-capability.html",
+  "old": "      <div class=\"hero-glyph\" id=\"heroGlyph\" role=\"img\" aria-label=\"The first vowel of each of the twelve scripts Indic-Speak reads, one after another\"><span class=\"hero-glyph-face\" id=\"heroGlyphA\"></span><span class=\"hero-glyph-face\" id=\"heroGlyphB\"></span><span class=\"hero-glyph-cap\" id=\"heroGlyphCap\"></span></div>",
+  "new": "      <div class=\"hero-glyphs\" id=\"heroGlyph\" role=\"img\" aria-label=\"The first vowel of each of the twelve scripts Indic-Speak reads, one language after another\"><div class=\"hero-glyph hero-glyph-l\"><span class=\"hero-glyph-face\" id=\"heroGlyphA\"></span><span class=\"hero-glyph-cap\" id=\"heroGlyphCapA\"></span></div><div class=\"hero-glyph hero-glyph-r\"><span class=\"hero-glyph-face\" id=\"heroGlyphB\"></span><span class=\"hero-glyph-cap\" id=\"heroGlyphCapB\"></span></div></div>"
+ },
+ {
+  "file": "src/body-technical.html",
+  "old": "      <div class=\"hero-glyph\" id=\"heroGlyph\" role=\"img\" aria-label=\"The first vowel of each of the twelve scripts Indic-Speak reads, one after another\"><span class=\"hero-glyph-face\" id=\"heroGlyphA\"></span><span class=\"hero-glyph-face\" id=\"heroGlyphB\"></span><span class=\"hero-glyph-cap\" id=\"heroGlyphCap\"></span></div>",
+  "new": "      <div class=\"hero-glyphs\" id=\"heroGlyph\" role=\"img\" aria-label=\"The first vowel of each of the twelve scripts Indic-Speak reads, one language after another\"><div class=\"hero-glyph hero-glyph-l\"><span class=\"hero-glyph-face\" id=\"heroGlyphA\"></span><span class=\"hero-glyph-cap\" id=\"heroGlyphCapA\"></span></div><div class=\"hero-glyph hero-glyph-r\"><span class=\"hero-glyph-face\" id=\"heroGlyphB\"></span><span class=\"hero-glyph-cap\" id=\"heroGlyphCapB\"></span></div></div>"
+ },
+ {
+  "file": "src/post.css",
+  "old": ".hero-glyph {\n  position: relative; z-index: 3; width: 7rem; height: 6.4rem; margin: -0.6rem auto 0.4rem;\n  font-family: var(--indic); font-weight: 400; line-height: 1;\n}",
+  "new": ".hero-glyphs { position: relative; z-index: 3; display: flex; justify-content: center; gap: 2.2rem; margin: -0.6rem 0 0.4rem; }\n.hero-glyph {\n  position: relative; width: 7rem; height: 6.4rem;\n  font-family: var(--indic); font-weight: 400; line-height: 1;\n}"
+ },
+ {
+  "file": "src/post.css",
+  "old": "  .hero-glyph { position: absolute; left: 4.6rem; top: 50%; margin: 0; transform: translateY(-56%); width: 8rem; height: 7.8rem; }\n  .hero-glyph-face { font-size: 4.2rem; bottom: 2.2rem; }",
+  "new": "  /* On wide screens the two slots flank the title, one language on the left,\n     the next on the right; the wrapper stays static so they position against the card. */\n  .hero-glyphs { position: static; display: block; margin: 0; }\n  .hero-glyph { position: absolute; z-index: 3; top: 50%; transform: translateY(-56%); width: 8rem; height: 7.8rem; }\n  .hero-glyph-l { left: 4.6rem; }\n  .hero-glyph-r { right: 4.6rem; }\n  .hero-glyph-face { font-size: 4.2rem; bottom: 2.2rem; }"
+ },
+ {
+  "file": "src/page.js",
+  "old": "  var heroActive = 0;            // which script is featured right now\n",
+  "new": "  var heroActive = 0;            // which script is featured right now\n  var heroSide = 0;              // and on which side: 0 left, 1 right\n"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    var faces = [need('heroGlyphA'), need('heroGlyphB')], cap = need('heroGlyphCap');",
+  "new": "    var faces = [need('heroGlyphA'), need('heroGlyphB')], caps = [need('heroGlyphCapA'), need('heroGlyphCapB')];"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    var on = 1, turn = 0;          // so the first letter lands in face A\n    function show(i) {\n      var s = TURNS[i].script, next = faces[1 - on];\n      turn = i; heroActive = SCRIPTS.indexOf(s);",
+  "new": "    // Languages alternate sides: face A is the left slot, face B the right.\n    var on = 1, turn = 0;          // so the first letter lands on the left\n    function show(i) {\n      var s = TURNS[i].script, next = faces[1 - on], cap = caps[1 - on];\n      turn = i; heroActive = SCRIPTS.indexOf(s); heroSide = 1 - on;"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      on = 1 - on;\n      cap.classList.add('is-off');\n      setTimeout(function () { cap.textContent = TURNS[turn].lang; cap.classList.remove('is-off'); }, 300);",
+  "new": "      on = 1 - on;\n      caps[1 - on].classList.add('is-off');\n      cap.textContent = TURNS[turn].lang; cap.classList.remove('is-off');"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    var W = 0, H = 0, ox = 0, oy = 0, reach = 0, crests = [], letter = 0, track = null;\n    var glyph = need('heroGlyphA');",
+  "new": "    var W = 0, H = 0, src = [[0, 0], [0, 0]], reach = [0, 0], crests = [[], []], letter = 0, track = null;\n    var glyphs = [need('heroGlyphA'), need('heroGlyphB')];"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      // The source is the centre of the featured letter, wherever the layout put it.\n      if (glyph) {\n        var g = glyph.getBoundingClientRect();\n        ox = g.left - r.left + g.width / 2; oy = g.top - r.top + g.height / 2;\n      } else { ox = 0; oy = H * 0.5; }\n      reach = Math.sqrt(Math.max(ox, W - ox) * Math.max(ox, W - ox) + Math.max(oy, H - oy) * Math.max(oy, H - oy)) * 1.02;\n      // One crest gradient per script: its own hue near the letter, cooling\n      // into the pack's teal at the rim.\n      crests = SCRIPTS.map(function (s) {\n        var g = ctx.createRadialGradient(ox, oy, 0, ox, oy, reach);\n        g.addColorStop(0, s.hue); g.addColorStop(0.45, tint(s.hue, 0.2)); g.addColorStop(1, '#5C9080');\n        return g;\n      });\n",
+  "new": "      // Two sources, the centres of the left and right letter slots, wherever\n      // the layout put them. Each gets one crest gradient per script: its own\n      // hue near the letter, cooling into the pack's teal at the rim.\n      glyphs.forEach(function (el, side) {\n        var g = el ? el.getBoundingClientRect() : null;\n        var ox = g ? g.left - r.left + g.width / 2 : W * 0.5, oy = g ? g.top - r.top + g.height / 2 : H * 0.5;\n        src[side] = [ox, oy];\n        reach[side] = Math.sqrt(Math.max(ox, W - ox) * Math.max(ox, W - ox) + Math.max(oy, H - oy) * Math.max(oy, H - oy)) * 1.02;\n        crests[side] = SCRIPTS.map(function (s) {\n          var c = ctx.createRadialGradient(ox, oy, 0, ox, oy, reach[side]);\n          c.addColorStop(0, s.hue); c.addColorStop(0.45, tint(s.hue, 0.2)); c.addColorStop(1, '#5C9080');\n          return c;\n        });\n      });\n"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    function ring(age, a, s) {\n      var k = age / LIFE;                          // 0 at the source, 1 at the rim",
+  "new": "    function ring(age, a, b) {\n      var s = b.s, ox = src[b.side][0], oy = src[b.side][1];\n      var k = age / LIFE;                          // 0 at the source, 1 at the rim"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      var r = k * reach;\n      // Each small letter lights up as this wavefront crosses it.",
+  "new": "      var r = k * reach[b.side];\n      // Each small letter lights up as this wavefront crosses it."
+ },
+ {
+  "file": "src/page.js",
+  "old": "      ctx.strokeStyle = crests[SCRIPTS.indexOf(s)];",
+  "new": "      ctx.strokeStyle = crests[b.side][SCRIPTS.indexOf(s)];"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      var a = level(t), sr = 60 + 120 * a, hue = SCRIPTS[heroActive].hue;\n      var g = ctx.createRadialGradient(ox, oy, 0, ox, oy, sr);",
+  "new": "      var a = level(t), sr = 60 + 120 * a, hue = SCRIPTS[heroActive].hue;\n      var ox = src[heroSide][0], oy = src[heroSide][1];\n      var g = ctx.createRadialGradient(ox, oy, 0, ox, oy, sr);"
+ },
+ {
+  "file": "src/page.js",
+  "old": "          if (!(key in born)) born[key] = SCRIPTS[heroActive];\n          ring(age, AMP[i], born[key]);",
+  "new": "          if (!(key in born)) born[key] = { s: SCRIPTS[heroActive], side: heroSide };\n          ring(age, AMP[i], born[key]);"
+ },
+ {
+  "file": "src/page.js",
+  "old": "          if (!(key in born)) born[key] = { s: SCRIPTS[heroActive], side: heroSide };\n          ring(age, AMP[i], born[key]);",
+  "new": "          if (!(key in born)) born[key] = SCRIPTS[heroActive];\n          ring(age, AMP[i], born[key]);"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      var a = level(t), sr = 60 + 120 * a, hue = SCRIPTS[heroActive].hue;\n      var ox = src[heroSide][0], oy = src[heroSide][1];\n      var g = ctx.createRadialGradient(ox, oy, 0, ox, oy, sr);",
+  "new": "      var a = level(t), sr = 60 + 120 * a, hue = SCRIPTS[heroActive].hue;\n      var g = ctx.createRadialGradient(ox, oy, 0, ox, oy, sr);"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      ctx.strokeStyle = crests[b.side][SCRIPTS.indexOf(s)];",
+  "new": "      ctx.strokeStyle = crests[SCRIPTS.indexOf(s)];"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      var r = k * reach[b.side];\n      // Each small letter lights up as this wavefront crosses it.",
+  "new": "      var r = k * reach;\n      // Each small letter lights up as this wavefront crosses it."
+ },
+ {
+  "file": "src/page.js",
+  "old": "    function ring(age, a, b) {\n      var s = b.s, ox = src[b.side][0], oy = src[b.side][1];\n      var k = age / LIFE;                          // 0 at the source, 1 at the rim",
+  "new": "    function ring(age, a, s) {\n      var k = age / LIFE;                          // 0 at the source, 1 at the rim"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      // Two sources, the centres of the left and right letter slots, wherever\n      // the layout put them. Each gets one crest gradient per script: its own\n      // hue near the letter, cooling into the pack's teal at the rim.\n      glyphs.forEach(function (el, side) {\n        var g = el ? el.getBoundingClientRect() : null;\n        var ox = g ? g.left - r.left + g.width / 2 : W * 0.5, oy = g ? g.top - r.top + g.height / 2 : H * 0.5;\n        src[side] = [ox, oy];\n        reach[side] = Math.sqrt(Math.max(ox, W - ox) * Math.max(ox, W - ox) + Math.max(oy, H - oy) * Math.max(oy, H - oy)) * 1.02;\n        crests[side] = SCRIPTS.map(function (s) {\n          var c = ctx.createRadialGradient(ox, oy, 0, ox, oy, reach[side]);\n          c.addColorStop(0, s.hue); c.addColorStop(0.45, tint(s.hue, 0.2)); c.addColorStop(1, '#5C9080');\n          return c;\n        });\n      });\n",
+  "new": "      // The source is the centre of the featured letter, wherever the layout put it.\n      if (glyph) {\n        var g = glyph.getBoundingClientRect();\n        ox = g.left - r.left + g.width / 2; oy = g.top - r.top + g.height / 2;\n      } else { ox = 0; oy = H * 0.5; }\n      reach = Math.sqrt(Math.max(ox, W - ox) * Math.max(ox, W - ox) + Math.max(oy, H - oy) * Math.max(oy, H - oy)) * 1.02;\n      // One crest gradient per script: its own hue near the letter, cooling\n      // into the pack's teal at the rim.\n      crests = SCRIPTS.map(function (s) {\n        var g = ctx.createRadialGradient(ox, oy, 0, ox, oy, reach);\n        g.addColorStop(0, s.hue); g.addColorStop(0.45, tint(s.hue, 0.2)); g.addColorStop(1, '#5C9080');\n        return g;\n      });\n"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    var W = 0, H = 0, src = [[0, 0], [0, 0]], reach = [0, 0], crests = [[], []], letter = 0, track = null;\n    var glyphs = [need('heroGlyphA'), need('heroGlyphB')];",
+  "new": "    var W = 0, H = 0, ox = 0, oy = 0, reach = 0, crests = [], letter = 0, track = null;\n    var glyph = need('heroGlyphA');"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      on = 1 - on;\n      caps[1 - on].classList.add('is-off');\n      cap.textContent = TURNS[turn].lang; cap.classList.remove('is-off');",
+  "new": "      on = 1 - on;\n      cap.classList.add('is-off');\n      setTimeout(function () { cap.textContent = TURNS[turn].lang; cap.classList.remove('is-off'); }, 300);"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    // Languages alternate sides: face A is the left slot, face B the right.\n    var on = 1, turn = 0;          // so the first letter lands on the left\n    function show(i) {\n      var s = TURNS[i].script, next = faces[1 - on], cap = caps[1 - on];\n      turn = i; heroActive = SCRIPTS.indexOf(s); heroSide = 1 - on;",
+  "new": "    var on = 1, turn = 0;          // so the first letter lands in face A\n    function show(i) {\n      var s = TURNS[i].script, next = faces[1 - on];\n      turn = i; heroActive = SCRIPTS.indexOf(s);"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    var faces = [need('heroGlyphA'), need('heroGlyphB')], caps = [need('heroGlyphCapA'), need('heroGlyphCapB')];",
+  "new": "    var faces = [need('heroGlyphA'), need('heroGlyphB')], cap = need('heroGlyphCap');"
+ },
+ {
+  "file": "src/page.js",
+  "old": "  var heroActive = 0;            // which script is featured right now\n  var heroSide = 0;              // and on which side: 0 left, 1 right\n",
+  "new": "  var heroActive = 0;            // which script is featured right now\n"
+ },
+ {
+  "file": "src/body-capability.html",
+  "old": "      <div class=\"hero-ripple-field\" id=\"heroRippleField\" role=\"img\" aria-label=\"Indian-script glyphs sending gentle speech ripples across the left side of the card\">\n        <span class=\"hero-ripple-ring ring-1\" aria-hidden=\"true\"></span>\n        <span class=\"hero-ripple-ring ring-2\" aria-hidden=\"true\"></span>\n        <span class=\"hero-ripple-ring ring-3\" aria-hidden=\"true\"></span>\n        <span class=\"hero-ripple-ring ring-4\" aria-hidden=\"true\"></span>\n        <span class=\"hero-ripple-ring ring-5\" aria-hidden=\"true\"></span>\n        <span class=\"hero-ripple-core\" aria-hidden=\"true\"></span>\n        <span class=\"hero-ripple-glyph\" aria-hidden=\"true\">\n          <span class=\"hero-ripple-glyph-face is-on\" id=\"heroLeftGlyphA\">अ</span>\n          <span class=\"hero-ripple-glyph-face\" id=\"heroLeftGlyphB\">அ</span>\n        </span>\n      </div>",
+  "new": "      <canvas class=\"hero-ripple\" id=\"heroRipple\" aria-hidden=\"true\"></canvas>\n      <div class=\"hero-glyph\" id=\"heroGlyph\" role=\"img\" aria-label=\"The first vowel of each of the twelve scripts Indic-Speak reads, one language after another\"><span class=\"hero-glyph-face\" id=\"heroGlyphA\"></span><span class=\"hero-glyph-face\" id=\"heroGlyphB\"></span><span class=\"hero-glyph-cap\" id=\"heroGlyphCap\"></span></div>"
+ },
+ {
+  "file": "src/body-technical.html",
+  "old": "      <div class=\"hero-ripple-field\" id=\"heroRippleField\" role=\"img\" aria-label=\"Indian-script glyphs sending gentle speech ripples across the left side of the card\">\n        <span class=\"hero-ripple-ring ring-1\" aria-hidden=\"true\"></span>\n        <span class=\"hero-ripple-ring ring-2\" aria-hidden=\"true\"></span>\n        <span class=\"hero-ripple-ring ring-3\" aria-hidden=\"true\"></span>\n        <span class=\"hero-ripple-ring ring-4\" aria-hidden=\"true\"></span>\n        <span class=\"hero-ripple-ring ring-5\" aria-hidden=\"true\"></span>\n        <span class=\"hero-ripple-core\" aria-hidden=\"true\"></span>\n        <span class=\"hero-ripple-glyph\" aria-hidden=\"true\">\n          <span class=\"hero-ripple-glyph-face is-on\" id=\"heroLeftGlyphA\">अ</span>\n          <span class=\"hero-ripple-glyph-face\" id=\"heroLeftGlyphB\">அ</span>\n        </span>\n      </div>",
+  "new": "      <canvas class=\"hero-ripple\" id=\"heroRipple\" aria-hidden=\"true\"></canvas>\n      <div class=\"hero-glyph\" id=\"heroGlyph\" role=\"img\" aria-label=\"The first vowel of each of the twelve scripts Indic-Speak reads, one language after another\"><span class=\"hero-glyph-face\" id=\"heroGlyphA\"></span><span class=\"hero-glyph-face\" id=\"heroGlyphB\"></span><span class=\"hero-glyph-cap\" id=\"heroGlyphCap\"></span></div>"
+ },
+ {
+  "file": "src/post.css",
+  "old": ".hero-ripple-field {\n  --ripple-rgb: 194, 65, 12;\n  position: absolute; inset: 0 auto 0 0; z-index: 0; width: 43%;\n  overflow: hidden; pointer-events: none;\n  -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 72%, transparent 100%);\n  mask-image: linear-gradient(90deg, #000 0%, #000 72%, transparent 100%);\n}\n.hero-ripple-ring,\n.hero-ripple-core,\n.hero-ripple-glyph {\n  position: absolute; left: 21%; top: 48%; translate: -50% -50%;\n  border-radius: 50%;\n}\n.hero-ripple-ring {\n  width: clamp(5rem, 8vw, 6.5rem); aspect-ratio: 1;\n  border: 1px solid rgba(var(--ripple-rgb), 0.5);\n  box-shadow: 0 0 22px rgba(var(--ripple-rgb), 0.06) inset;\n  opacity: 0; transform: scale(0.42);\n  will-change: transform, opacity;\n  animation: hero-ripple-out 5.4s cubic-bezier(0.18, 0.62, 0.3, 1) infinite;\n}\n.hero-ripple-ring.ring-1 { animation-delay: 0s; }\n.hero-ripple-ring.ring-2 { animation-delay: -4.32s; }\n.hero-ripple-ring.ring-3 { animation-delay: -3.24s; }\n.hero-ripple-ring.ring-4 { animation-delay: -2.16s; }\n.hero-ripple-ring.ring-5 { animation-delay: -1.08s; }\n@keyframes hero-ripple-out {\n  0% { opacity: 0; transform: scale(0.42); }\n  9% { opacity: 0.54; }\n  72% { opacity: 0.15; }\n  100% { opacity: 0; transform: scale(4.4); }\n}\n.hero-ripple-core {\n  width: clamp(3.8rem, 6.2vw, 4.8rem); aspect-ratio: 1;\n  background: radial-gradient(circle at 38% 34%, rgba(255,255,255,0.98), rgba(var(--ripple-rgb),0.11) 62%, rgba(var(--ripple-rgb),0.03));\n  border: 1px solid rgba(var(--ripple-rgb), 0.2);\n  box-shadow: 0 10px 32px rgba(var(--ripple-rgb), 0.1);\n}\n.hero-ripple-glyph {\n  width: clamp(3.8rem, 6.2vw, 4.8rem); aspect-ratio: 1;\n  display: grid; place-items: center;\n  font-family: var(--indic); font-size: clamp(1.8rem, 3.2vw, 2.45rem); font-weight: 500;\n  color: rgb(var(--ripple-rgb));\n}\n.hero-ripple-glyph-face {\n  grid-area: 1 / 1; opacity: 0; transform: translateY(9px) scale(0.92);\n  transition: opacity 0.42s ease, transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);\n}\n.hero-ripple-glyph-face.is-on { opacity: 1; transform: none; }\n.hero-ripple-field.is-paused .hero-ripple-ring { animation-play-state: paused; }",
+  "new": ".hero-ripple {\n  position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%;\n  display: block; pointer-events: none;\n}\n/* The scripts: the first vowel of each of the twelve scripts the model reads,\n   one language after another, set in that script's own face and lit in that\n   script's hue. On phones it leads the card; on wide screens it sits at the\n   left, a little in from the edge, where the sound is born. */\n.hero-glyph {\n  position: relative; z-index: 3; width: 7rem; height: 6.4rem; margin: -0.6rem auto 0.4rem;\n  font-family: var(--indic); font-weight: 400; line-height: 1;\n}\n.hero-glyph-face {\n  position: absolute; left: 0; right: 0; top: 0; bottom: 2rem;\n  display: flex; align-items: center; justify-content: center;\n  font-size: 3.5rem;\n  background: linear-gradient(160deg, #A8330E 0%, #C2410C 48%, #D8842F 100%);\n  -webkit-background-clip: text; background-clip: text; color: transparent;\n  opacity: 0; transform: translateY(10px) scale(0.96);\n  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);\n}\n.hero-glyph-face.is-on { opacity: 1; transform: none; }\n.hero-glyph-cap {\n  position: absolute; left: -1rem; right: -1rem; bottom: 0; text-align: center;\n  font: 600 0.74rem/1.35 var(--font-body); color: var(--text-muted);\n  transition: opacity 0.35s ease;\n}\n.hero-glyph-cap.is-off { opacity: 0; }\n@media (min-width: 768px) {\n  .hero-glyph { position: absolute; left: 5.6rem; top: 50%; margin: 0; transform: translateY(-56%); width: 8rem; height: 7.8rem; }\n  .hero-glyph-face { font-size: 4.2rem; bottom: 2.2rem; }\n}"
+ },
+ {
+  "file": "src/post.css",
+  "old": "  .hero-ripple-field { width: 46%; opacity: 0.66; }\n  .hero-ripple-ring, .hero-ripple-core, .hero-ripple-glyph { left: 19%; top: 45%; }\n",
+  "new": ""
+ },
+ {
+  "file": "src/post.css",
+  "old": "  .hero-ripple-ring { animation: none; opacity: 0.2; transform: scale(2.2); }\n  .hero-ripple-ring:not(.ring-3) { display: none; }\n  .hero-ripple-glyph-face { transition: none; }",
+  "new": "  .hero-glyph-face { transition: none; }"
+ },
+ {
+  "file": "src/page.js",
+  "old": "  /* ── Hero: left-side glyph ripple ────────────────────────────────────────\n   * Indian-script glyphs take turns at one fixed source on the left. CSS owns\n   * the ripples; JavaScript only cross-fades the glyph and changes its hue.\n   * The timer pauses offscreen, and reduced-motion readers keep one still frame.\n   * ──────────────────────────────────────────────────────────────────────── */\n  (function () {\n    var field = need('heroRippleField');\n    if (!field) return;\n    var faces = [need('heroLeftGlyphA'), need('heroLeftGlyphB')];\n    if (!faces[0] || !faces[1]) return;\n    var turns = [\n      ['अ', '194, 65, 12'], ['அ', '156, 47, 63'], ['অ', '166, 61, 92'],\n      ['అ', '122, 63, 138'], ['ಅ', '106, 127, 28'], ['അ', '46, 125, 91'],\n      ['અ', '212, 135, 10'], ['ਅ', '184, 101, 27'], ['ଅ', '140, 90, 43'],\n      ['ꯑ', '91, 75, 158'], ['ᱟ', '59, 111, 182'], ['ا', '31, 122, 140']\n    ];\n    var active = 0, face = 0, timer = 0, visible = true;\n    function show(i) {\n      var next = 1 - face;\n      faces[next].textContent = turns[i][0];\n      field.style.setProperty('--ripple-rgb', turns[i][1]);\n      faces[face].classList.remove('is-on');\n      faces[next].classList.add('is-on');\n      face = next;\n    }\n    function schedule() {\n      clearTimeout(timer);\n      if (REDUCED || !visible) return;\n      timer = setTimeout(function () {\n        active = (active + 1) % turns.length;\n        show(active);\n        schedule();\n      }, 2200);\n    }\n    if (REDUCED) return;\n    schedule();\n    if (window.IntersectionObserver) {\n      new IntersectionObserver(function (entries) {\n        visible = entries[0].isIntersecting;\n        field.classList.toggle('is-paused', !visible);\n        schedule();\n      }).observe(field);\n    }\n  })();\n\n  /* ── Legacy script motif (inactive without its former markup) ────────────\n",
+  "new": "  /* ── Hero: the scripts ───────────────────────────────────────────────────\n"
+ },
+ {
+  "file": "src/smoke.js",
+  "old": "for (const id of ['heroRippleField', 'heroLeftGlyphA', 'heroLeftGlyphB']) {\n  byId[id] = mk('span');\n  byId[id].id = id;\n}\n",
+  "new": ""
+ },
+ {
+  "file": "src/smoke.js",
+  "old": "// The hero keeps one visual idea: a glyph-led ripple contained to the left.\nt('hero uses one left ripple field, not a tile field',\n  /id=\"heroRippleField\"/.test(html) && !/id=\"heroBars\"|id=\"tokenField\"/.test(html), true);",
+  "new": "// The hero keeps one visual idea: the scripts, as letters, with the ripple born\n// from the featured one -- no bar field and no tile field.\nt('hero uses the script letters and the ripple', /id=\"heroGlyph\"/.test(html) && /id=\"heroRipple\"/.test(html) && !/id=\"heroBars\"|id=\"tokenField\"/.test(html), true);"
+ },
+ {
+  "file": "src/smoke.js",
+  "old": "t('hero ripple has five restrained rings', (MARKUP.match(/hero-ripple-ring ring-/g) || []).length, 5);\nt('hero ripple has two cross-fading glyph faces', (MARKUP.match(/hero-ripple-glyph-face/g) || []).length, 2);",
+  "new": "// The featured letter is a real first vowel and the caption is a language name\n// from the language table, so the hero cannot disagree with the rest of the post.\nt('hero letter is one script glyph', [...stub('heroGlyphA').textContent].length, 1);\nt('hero letter opens on Devanagari', stub('heroGlyphA').textContent, '\\u0905');"
+ },
+ {
+  "file": "src/post.css",
+  "old": "    linear-gradient(90deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.22) 24%, rgba(255,255,255,0.93) 43%, rgba(255,255,255,0.98) 100%),\n    linear-gradient(180deg, rgba(255,255,255,0.55), transparent 25%, transparent 76%, rgba(255,255,255,0.62));",
+  "new": "    radial-gradient(ellipse 58% 70% at 50% 48%, rgba(255,255,255,0.94) 30%, rgba(255,255,255,0.66) 56%, rgba(255,255,255,0) 84%),\n    linear-gradient(180deg, rgba(255,255,255,0.36), transparent 24%, transparent 76%, rgba(255,255,255,0.3));"
+ },
+ {
+  "file": "src/post.css",
+  "old": "  .hero-scrim { background: linear-gradient(90deg, rgba(255,255,255,0.08), rgba(255,255,255,0.82) 35%, rgba(255,255,255,0.98) 58%); }",
+  "new": "  .hero-scrim { background: radial-gradient(ellipse 84% 68% at 50% 47%, rgba(255,255,255,0.94) 34%, rgba(255,255,255,0.68) 65%, rgba(255,255,255,0) 100%); }"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    var LIFE = 10.5;               // seconds a ring takes to cross the card",
+  "new": "    var LIFE = 8.75;               // seconds a ring takes to cross the card"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    var W = 760, LABEL_W = 104, PAD_R = 62, BAR_H = 13, ROW_H = 24, TOP = 20, BOTTOM = 30;",
+  "new": "    var W = 760, LABEL_W = 104, PAD_R = 62, BAR_H = 10, ROW_H = 26, TOP = 22, BOTTOM = 30;"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    svg.appendChild(el('line', { x1: sx(mean), x2: sx(mean), y1: TOP - 12, y2: H - BOTTOM,\n      stroke: '#A8380A', 'stroke-width': 1, 'stroke-dasharray': '3 3' }));\n    svg.appendChild(el('text', { x: sx(mean), y: TOP - 16, 'text-anchor': 'end', 'class': 'bar-value' },\n      'all languages ' + mean.toFixed(1) + '%'));",
+  "new": "    svg.appendChild(el('line', { x1: sx(mean), x2: sx(mean), y1: TOP - 10, y2: H - BOTTOM,\n      stroke: '#A8380A', 'stroke-width': 1, 'stroke-dasharray': '3 3', opacity: 0.7 }));\n    svg.appendChild(el('text', { x: sx(mean) - 6, y: TOP - 13, 'text-anchor': 'end', 'class': 'mean-label' },\n      'all languages ' + mean.toFixed(1) + '%'));"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      svg.appendChild(el('text', { x: LABEL_W - 10, y: y + BAR_H - 1, 'text-anchor': 'end', 'class': 'row-label' }, it.label));\n      svg.appendChild(el('rect', { x: sx(FLOOR), y: y, width: sx(it.rate) - sx(FLOOR), height: BAR_H, rx: 3, fill: '#C2410C' }));\n      // An axis break, so a truncated baseline is never mistaken for a zero one.\n      svg.appendChild(el('path', {\n        d: 'M' + (sx(FLOOR) + 1) + ' ' + (y + 1) + ' l5 ' + (BAR_H / 2 - 1) + ' l-5 ' + (BAR_H / 2 - 1),\n        fill: 'none', stroke: 'var(--chart-panel-bg, #FBF6EE)', 'stroke-width': 2.4\n      }));",
+  "new": "      svg.appendChild(el('text', { x: LABEL_W - 10, y: y + BAR_H, 'text-anchor': 'end', 'class': 'row-label' }, it.label));\n      // A quiet pill for the rate, so the interval at its tip -- the finding --\n      // is what the eye lands on.\n      svg.appendChild(el('rect', { x: sx(FLOOR), y: y, width: sx(it.rate) - sx(FLOOR), height: BAR_H, rx: BAR_H / 2, fill: '#C2410C', opacity: 0.32 }));\n      // An axis break, the slanted double cut of a broken scale, so a truncated\n      // baseline is never mistaken for a zero one.\n      [0, 4].forEach(function (dx) {\n        svg.appendChild(el('line', { x1: sx(FLOOR) + 7 + dx, y1: y + BAR_H + 2, x2: sx(FLOOR) + 11 + dx, y2: y - 2,\n          stroke: 'var(--chart-panel-bg, #FBF6EE)', 'stroke-width': 2 }));\n      });"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      svg.appendChild(el('line', { x1: sx(it.lo), x2: sx(it.hi), y1: y0, y2: y0, stroke: '#7A2708', 'stroke-width': 1.4 }));\n      [it.lo, it.hi].forEach(function (v) {\n        svg.appendChild(el('line', { x1: sx(v), x2: sx(v), y1: y0 - 4, y2: y0 + 4, stroke: '#7A2708', 'stroke-width': 1.4 }));\n      });",
+  "new": "      svg.appendChild(el('line', { x1: sx(it.lo), x2: sx(it.hi), y1: y0, y2: y0, stroke: '#A8380A', 'stroke-width': 1.3 }));\n      [it.lo, it.hi].forEach(function (v) {\n        svg.appendChild(el('line', { x1: sx(v), x2: sx(v), y1: y0 - 3.5, y2: y0 + 3.5, stroke: '#A8380A', 'stroke-width': 1.3 }));\n      });\n      // The rate itself: a dot on the pill's tip, sitting on the whisker.\n      svg.appendChild(el('circle', { cx: sx(it.rate), cy: y0, r: 3.2, fill: '#C2410C', stroke: 'var(--chart-panel-bg, #FBF6EE)', 'stroke-width': 1.5 }));"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      svg.appendChild(el('text', { x: sx(it.hi) + 9, y: y + BAR_H - 1, 'text-anchor': 'start', 'class': 'bar-label' },\n        it.rate.toFixed(1) + '%'));",
+  "new": "      svg.appendChild(el('text', { x: sx(it.hi) + 9, y: y + BAR_H, 'text-anchor': 'start', 'class': 'bar-label' },\n        it.rate.toFixed(1) + '%'));"
+ },
+ {
+  "file": "src/post.css",
+  "old": ".bar-label { font-family: var(--font-mono); font-size: 11px; fill: var(--chart-text-secondary); }",
+  "new": ".bar-label { font-family: var(--font-body); font-size: 11.5px; font-weight: 600; fill: var(--chart-text-secondary); }\n.mean-label { font-family: var(--font-body); font-size: 11px; font-weight: 600; fill: #A8380A; }"
+ },
+ {
+  "file": "src/post.css",
+  "old": ".ecosystem-links a { text-decoration: none; }\n.ecosystem-chip { font-size: 0.9rem; }",
+  "new": "/* Equal-height chips with the marks centred on the text, so the two chips that\n   carry a logo sit level with the three that do not. */\n.ecosystem-links a { text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.6rem; padding-top: 0; padding-bottom: 0; }\n.ecosystem-chip { font-size: 0.9rem; line-height: 1; }"
+ },
+ {
+  "file": "src/post.css",
+  "old": ".ecosystem-links .chip-mark { flex: none; width: 18px; height: 18px; }",
+  "new": ".ecosystem-links .chip-mark { flex: none; width: 20px; height: 20px; display: block; }"
+ },
+ {
+  "file": "src/post.css",
+  "old": ".bar-value { font-family: var(--font-mono); font-size: 11px; font-weight: 600; fill: var(--chart-text-primary); }\n",
+  "new": ""
+ },
+ {
+  "file": "src/smoke.js",
+  "old": "  // per row: label, bar, axis-break, interval line, two caps, value = 7\n// plus 4 gridlines x (line + tick), plus the mean line and its label\nt('eval chart nodes', stub('evalChart').children.length,\n  D.eval_lang.length * 7 + 4 * 2 + 2);",
+  "new": "  // per row: label, bar, two axis-break cuts, interval line, two caps, rate dot, value = 9\n// plus 4 gridlines x (line + tick), plus the mean line and its label\nt('eval chart nodes', stub('evalChart').children.length,\n  D.eval_lang.length * 9 + 4 * 2 + 2);"
+ },
+ {
+  "file": "src/body-capability.html",
+  "old": "      <a class=\"research-link-chip research-link-chip-on-mosaic ecosystem-chip\" href=\"https://bhashini.gov.in\" target=\"_blank\" rel=\"noopener noreferrer\">Bhashini</a>",
+  "new": "      <a class=\"research-link-chip research-link-chip-on-mosaic ecosystem-chip\" href=\"https://bhashini.gov.in\" target=\"_blank\" rel=\"noopener noreferrer\"><img class=\"chip-mark\" src=\"images/logo_bhashini.png\" alt=\"\" width=\"18\" height=\"18\">Bhashini</a>"
+ },
+ {
+  "file": "src/body-capability.html",
+  "old": "      <a class=\"research-link-chip research-link-chip-on-mosaic ecosystem-chip\" href=\"https://huggingface.co/bodhan-ai/indic-speak\" target=\"_blank\" rel=\"noopener noreferrer\">Hugging Face</a>",
+  "new": "      <a class=\"research-link-chip research-link-chip-on-mosaic ecosystem-chip\" href=\"https://huggingface.co/bodhan-ai/indic-speak\" target=\"_blank\" rel=\"noopener noreferrer\"><svg class=\"chip-ico\" viewBox=\"0 0 95 88\" aria-hidden=\"true\" focusable=\"false\"><path fill=\"#FFD21E\" d=\"M47.21 76.5a34.75 34.75 0 1 0 0-69.5 34.75 34.75 0 0 0 0 69.5Z\"/><path fill=\"#FF9D0B\" d=\"M81.96 41.75a34.75 34.75 0 1 0-69.5 0 34.75 34.75 0 0 0 69.5 0Zm-73.5 0a38.75 38.75 0 1 1 77.5 0 38.75 38.75 0 0 1-77.5 0Z\"/><path fill=\"#3A3B45\" d=\"M58.5 32.3c1.28.44 1.78 3.06 3.07 2.38a5 5 0 1 0-6.76-2.07c.61 1.15 2.55-.72 3.7-.32ZM34.95 32.3c-1.28.44-1.79 3.06-3.07 2.38a5 5 0 1 1 6.76-2.07c-.61 1.15-2.56-.72-3.7-.32Z\"/><path fill=\"#FF323D\" d=\"M46.96 56.29c9.83 0 13-8.76 13-13.26 0-2.34-1.57-1.6-4.09-.36-2.33 1.15-5.46 2.74-8.9 2.74-7.19 0-13-6.88-13-2.38s3.16 13.26 13 13.26Z\"/><path fill=\"#3A3B45\" fill-rule=\"evenodd\" d=\"M39.43 54a8.7 8.7 0 0 1 5.3-4.49c.4-.12.81.57 1.24 1.28.4.68.82 1.37 1.24 1.37.45 0 .9-.68 1.33-1.35.45-.7.89-1.38 1.32-1.25a8.61 8.61 0 0 1 5 4.17c3.73-2.94 5.1-7.74 5.1-10.7 0-2.34-1.57-1.6-4.09-.36l-.14.07c-2.31 1.15-5.39 2.67-8.77 2.67s-6.45-1.52-8.77-2.67c-2.6-1.29-4.23-2.1-4.23.29 0 3.05 1.46 8.06 5.47 10.97Z\" clip-rule=\"evenodd\"/><path fill=\"#FF9D0B\" d=\"M70.71 37a3.25 3.25 0 1 0 0-6.5 3.25 3.25 0 0 0 0 6.5ZM24.21 37a3.25 3.25 0 1 0 0-6.5 3.25 3.25 0 0 0 0 6.5ZM17.52 48c-1.62 0-3.06.66-4.07 1.87a5.97 5.97 0 0 0-1.33 3.76 7.1 7.1 0 0 0-1.94-.3c-1.55 0-2.95.59-3.94 1.66a5.8 5.8 0 0 0-.8 7 5.3 5.3 0 0 0-1.79 2.82c-.24.9-.48 2.8.8 4.74a5.22 5.22 0 0 0-.37 5.02c1.02 2.32 3.57 4.14 8.52 6.1 3.07 1.22 5.89 2 5.91 2.01a44.33 44.33 0 0 0 10.93 1.6c5.86 0 10.05-1.8 12.46-5.34 3.88-5.69 3.33-10.9-1.7-15.92-2.77-2.78-4.62-6.87-5-7.77-.78-2.66-2.84-5.62-6.25-5.62a5.7 5.7 0 0 0-4.6 2.46c-1-1.26-1.98-2.25-2.86-2.82A7.4 7.4 0 0 0 17.52 48Zm0 4c.51 0 1.14.22 1.82.65 2.14 1.36 6.25 8.43 7.76 11.18.5.92 1.37 1.31 2.14 1.31 1.55 0 2.75-1.53.15-3.48-3.92-2.93-2.55-7.72-.68-8.01.08-.02.17-.02.24-.02 1.7 0 2.45 2.93 2.45 2.93s2.2 5.52 5.98 9.3c3.77 3.77 3.97 6.8 1.22 10.83-1.88 2.75-5.47 3.58-9.16 3.58-3.81 0-7.73-.9-9.92-1.46-.11-.03-13.45-3.8-11.76-7 .28-.54.75-.76 1.34-.76 2.38 0 6.7 3.54 8.57 3.54.41 0 .7-.17.83-.6.79-2.85-12.06-4.05-10.98-8.17.2-.73.71-1.02 1.44-1.02 3.14 0 10.2 5.53 11.68 5.53.11 0 .2-.03.24-.1.74-1.2.33-2.04-4.9-5.2-5.21-3.16-8.88-5.06-6.8-7.33.24-.26.58-.38 1-.38 3.17 0 10.66 6.82 10.66 6.82s2.02 2.1 3.25 2.1c.28 0 .52-.1.68-.38.86-1.46-8.06-8.22-8.56-11.01-.34-1.9.24-2.85 1.31-2.85Z\"/><path fill=\"#FFD21E\" d=\"M38.6 76.69c2.75-4.04 2.55-7.07-1.22-10.84-3.78-3.77-5.98-9.3-5.98-9.3s-.82-3.2-2.69-2.9c-1.87.3-3.24 5.08.68 8.01 3.91 2.93-.78 4.92-2.29 2.17-1.5-2.75-5.62-9.82-7.76-11.18-2.13-1.35-3.63-.6-3.13 2.2.5 2.79 9.43 9.55 8.56 11-.87 1.47-3.93-1.71-3.93-1.71s-9.57-8.71-11.66-6.44c-2.08 2.27 1.59 4.17 6.8 7.33 5.23 3.16 5.64 4 4.9 5.2-.75 1.2-12.28-8.53-13.36-4.4-1.08 4.11 11.77 5.3 10.98 8.15-.8 2.85-9.06-5.38-10.74-2.18-1.7 3.21 11.65 6.98 11.76 7.01 4.3 1.12 15.25 3.49 19.08-2.12Z\"/><path fill=\"#FF9D0B\" d=\"M77.4 48c1.62 0 3.07.66 4.07 1.87a5.97 5.97 0 0 1 1.33 3.76 7.1 7.1 0 0 1 1.95-.3c1.55 0 2.95.59 3.94 1.66a5.8 5.8 0 0 1 .8 7 5.3 5.3 0 0 1 1.78 2.82c.24.9.48 2.8-.8 4.74a5.22 5.22 0 0 1 .37 5.02c-1.02 2.32-3.57 4.14-8.51 6.1-3.08 1.22-5.9 2-5.92 2.01a44.33 44.33 0 0 1-10.93 1.6c-5.86 0-10.05-1.8-12.46-5.34-3.88-5.69-3.33-10.9 1.7-15.92 2.78-2.78 4.63-6.87 5.01-7.77.78-2.66 2.83-5.62 6.24-5.62a5.7 5.7 0 0 1 4.6 2.46c1-1.26 1.98-2.25 2.87-2.82A7.4 7.4 0 0 1 77.4 48Zm0 4c-.51 0-1.13.22-1.82.65-2.13 1.36-6.25 8.43-7.76 11.18a2.43 2.43 0 0 1-2.14 1.31c-1.54 0-2.75-1.53-.14-3.48 3.91-2.93 2.54-7.72.67-8.01a1.54 1.54 0 0 0-.24-.02c-1.7 0-2.45 2.93-2.45 2.93s-2.2 5.52-5.97 9.3c-3.78 3.77-3.98 6.8-1.22 10.83 1.87 2.75 5.47 3.58 9.15 3.58 3.82 0 7.73-.9 9.93-1.46.1-.03 13.45-3.8 11.76-7-.29-.54-.75-.76-1.34-.76-2.38 0-6.71 3.54-8.57 3.54-.42 0-.71-.17-.83-.6-.8-2.85 12.05-4.05 10.97-8.17-.19-.73-.7-1.02-1.44-1.02-3.14 0-10.2 5.53-11.68 5.53-.1 0-.19-.03-.23-.1-.74-1.2-.34-2.04 4.88-5.2 5.23-3.16 8.9-5.06 6.8-7.33-.23-.26-.57-.38-.98-.38-3.18 0-10.67 6.82-10.67 6.82s-2.02 2.1-3.24 2.1a.74.74 0 0 1-.68-.38c-.87-1.46 8.05-8.22 8.55-11.01.34-1.9-.24-2.85-1.31-2.85Z\"/><path fill=\"#FFD21E\" d=\"M56.33 76.69c-2.75-4.04-2.56-7.07 1.22-10.84 3.77-3.77 5.97-9.3 5.97-9.3s.82-3.2 2.7-2.9c1.86.3 3.23 5.08-.68 8.01-3.92 2.93.78 4.92 2.28 2.17 1.51-2.75 5.63-9.82 7.76-11.18 2.13-1.35 3.64-.6 3.13 2.2-.5 2.79-9.42 9.55-8.55 11 .86 1.47 3.92-1.71 3.92-1.71s9.58-8.71 11.66-6.44c2.08 2.27-1.58 4.17-6.8 7.33-5.23 3.16-5.63 4-4.9 5.2.75 1.2 12.28-8.53 13.36-4.4 1.08 4.11-11.76 5.3-10.97 8.15.8 2.85 9.05-5.38 10.74-2.18 1.69 3.21-11.65 6.98-11.76 7.01-4.31 1.12-15.26 3.49-19.08-2.12Z\"/></svg>Hugging Face</a>"
+ },
+ {
+  "file": "src/body-technical.html",
+  "old": "      <a class=\"research-link-chip research-link-chip-on-mosaic ecosystem-chip\" href=\"https://bhashini.gov.in\" target=\"_blank\" rel=\"noopener noreferrer\">Bhashini</a>",
+  "new": "      <a class=\"research-link-chip research-link-chip-on-mosaic ecosystem-chip\" href=\"https://bhashini.gov.in\" target=\"_blank\" rel=\"noopener noreferrer\"><img class=\"chip-mark\" src=\"images/logo_bhashini.png\" alt=\"\" width=\"18\" height=\"18\">Bhashini</a>"
+ },
+ {
+  "file": "src/body-technical.html",
+  "old": "      <a class=\"research-link-chip research-link-chip-on-mosaic ecosystem-chip\" href=\"https://huggingface.co/bodhan-ai/indic-speak\" target=\"_blank\" rel=\"noopener noreferrer\">Hugging Face</a>",
+  "new": "      <a class=\"research-link-chip research-link-chip-on-mosaic ecosystem-chip\" href=\"https://huggingface.co/bodhan-ai/indic-speak\" target=\"_blank\" rel=\"noopener noreferrer\"><svg class=\"chip-ico\" viewBox=\"0 0 95 88\" aria-hidden=\"true\" focusable=\"false\"><path fill=\"#FFD21E\" d=\"M47.21 76.5a34.75 34.75 0 1 0 0-69.5 34.75 34.75 0 0 0 0 69.5Z\"/><path fill=\"#FF9D0B\" d=\"M81.96 41.75a34.75 34.75 0 1 0-69.5 0 34.75 34.75 0 0 0 69.5 0Zm-73.5 0a38.75 38.75 0 1 1 77.5 0 38.75 38.75 0 0 1-77.5 0Z\"/><path fill=\"#3A3B45\" d=\"M58.5 32.3c1.28.44 1.78 3.06 3.07 2.38a5 5 0 1 0-6.76-2.07c.61 1.15 2.55-.72 3.7-.32ZM34.95 32.3c-1.28.44-1.79 3.06-3.07 2.38a5 5 0 1 1 6.76-2.07c-.61 1.15-2.56-.72-3.7-.32Z\"/><path fill=\"#FF323D\" d=\"M46.96 56.29c9.83 0 13-8.76 13-13.26 0-2.34-1.57-1.6-4.09-.36-2.33 1.15-5.46 2.74-8.9 2.74-7.19 0-13-6.88-13-2.38s3.16 13.26 13 13.26Z\"/><path fill=\"#3A3B45\" fill-rule=\"evenodd\" d=\"M39.43 54a8.7 8.7 0 0 1 5.3-4.49c.4-.12.81.57 1.24 1.28.4.68.82 1.37 1.24 1.37.45 0 .9-.68 1.33-1.35.45-.7.89-1.38 1.32-1.25a8.61 8.61 0 0 1 5 4.17c3.73-2.94 5.1-7.74 5.1-10.7 0-2.34-1.57-1.6-4.09-.36l-.14.07c-2.31 1.15-5.39 2.67-8.77 2.67s-6.45-1.52-8.77-2.67c-2.6-1.29-4.23-2.1-4.23.29 0 3.05 1.46 8.06 5.47 10.97Z\" clip-rule=\"evenodd\"/><path fill=\"#FF9D0B\" d=\"M70.71 37a3.25 3.25 0 1 0 0-6.5 3.25 3.25 0 0 0 0 6.5ZM24.21 37a3.25 3.25 0 1 0 0-6.5 3.25 3.25 0 0 0 0 6.5ZM17.52 48c-1.62 0-3.06.66-4.07 1.87a5.97 5.97 0 0 0-1.33 3.76 7.1 7.1 0 0 0-1.94-.3c-1.55 0-2.95.59-3.94 1.66a5.8 5.8 0 0 0-.8 7 5.3 5.3 0 0 0-1.79 2.82c-.24.9-.48 2.8.8 4.74a5.22 5.22 0 0 0-.37 5.02c1.02 2.32 3.57 4.14 8.52 6.1 3.07 1.22 5.89 2 5.91 2.01a44.33 44.33 0 0 0 10.93 1.6c5.86 0 10.05-1.8 12.46-5.34 3.88-5.69 3.33-10.9-1.7-15.92-2.77-2.78-4.62-6.87-5-7.77-.78-2.66-2.84-5.62-6.25-5.62a5.7 5.7 0 0 0-4.6 2.46c-1-1.26-1.98-2.25-2.86-2.82A7.4 7.4 0 0 0 17.52 48Zm0 4c.51 0 1.14.22 1.82.65 2.14 1.36 6.25 8.43 7.76 11.18.5.92 1.37 1.31 2.14 1.31 1.55 0 2.75-1.53.15-3.48-3.92-2.93-2.55-7.72-.68-8.01.08-.02.17-.02.24-.02 1.7 0 2.45 2.93 2.45 2.93s2.2 5.52 5.98 9.3c3.77 3.77 3.97 6.8 1.22 10.83-1.88 2.75-5.47 3.58-9.16 3.58-3.81 0-7.73-.9-9.92-1.46-.11-.03-13.45-3.8-11.76-7 .28-.54.75-.76 1.34-.76 2.38 0 6.7 3.54 8.57 3.54.41 0 .7-.17.83-.6.79-2.85-12.06-4.05-10.98-8.17.2-.73.71-1.02 1.44-1.02 3.14 0 10.2 5.53 11.68 5.53.11 0 .2-.03.24-.1.74-1.2.33-2.04-4.9-5.2-5.21-3.16-8.88-5.06-6.8-7.33.24-.26.58-.38 1-.38 3.17 0 10.66 6.82 10.66 6.82s2.02 2.1 3.25 2.1c.28 0 .52-.1.68-.38.86-1.46-8.06-8.22-8.56-11.01-.34-1.9.24-2.85 1.31-2.85Z\"/><path fill=\"#FFD21E\" d=\"M38.6 76.69c2.75-4.04 2.55-7.07-1.22-10.84-3.78-3.77-5.98-9.3-5.98-9.3s-.82-3.2-2.69-2.9c-1.87.3-3.24 5.08.68 8.01 3.91 2.93-.78 4.92-2.29 2.17-1.5-2.75-5.62-9.82-7.76-11.18-2.13-1.35-3.63-.6-3.13 2.2.5 2.79 9.43 9.55 8.56 11-.87 1.47-3.93-1.71-3.93-1.71s-9.57-8.71-11.66-6.44c-2.08 2.27 1.59 4.17 6.8 7.33 5.23 3.16 5.64 4 4.9 5.2-.75 1.2-12.28-8.53-13.36-4.4-1.08 4.11 11.77 5.3 10.98 8.15-.8 2.85-9.06-5.38-10.74-2.18-1.7 3.21 11.65 6.98 11.76 7.01 4.3 1.12 15.25 3.49 19.08-2.12Z\"/><path fill=\"#FF9D0B\" d=\"M77.4 48c1.62 0 3.07.66 4.07 1.87a5.97 5.97 0 0 1 1.33 3.76 7.1 7.1 0 0 1 1.95-.3c1.55 0 2.95.59 3.94 1.66a5.8 5.8 0 0 1 .8 7 5.3 5.3 0 0 1 1.78 2.82c.24.9.48 2.8-.8 4.74a5.22 5.22 0 0 1 .37 5.02c-1.02 2.32-3.57 4.14-8.51 6.1-3.08 1.22-5.9 2-5.92 2.01a44.33 44.33 0 0 1-10.93 1.6c-5.86 0-10.05-1.8-12.46-5.34-3.88-5.69-3.33-10.9 1.7-15.92 2.78-2.78 4.63-6.87 5.01-7.77.78-2.66 2.83-5.62 6.24-5.62a5.7 5.7 0 0 1 4.6 2.46c1-1.26 1.98-2.25 2.87-2.82A7.4 7.4 0 0 1 77.4 48Zm0 4c-.51 0-1.13.22-1.82.65-2.13 1.36-6.25 8.43-7.76 11.18a2.43 2.43 0 0 1-2.14 1.31c-1.54 0-2.75-1.53-.14-3.48 3.91-2.93 2.54-7.72.67-8.01a1.54 1.54 0 0 0-.24-.02c-1.7 0-2.45 2.93-2.45 2.93s-2.2 5.52-5.97 9.3c-3.78 3.77-3.98 6.8-1.22 10.83 1.87 2.75 5.47 3.58 9.15 3.58 3.82 0 7.73-.9 9.93-1.46.1-.03 13.45-3.8 11.76-7-.29-.54-.75-.76-1.34-.76-2.38 0-6.71 3.54-8.57 3.54-.42 0-.71-.17-.83-.6-.8-2.85 12.05-4.05 10.97-8.17-.19-.73-.7-1.02-1.44-1.02-3.14 0-10.2 5.53-11.68 5.53-.1 0-.19-.03-.23-.1-.74-1.2-.34-2.04 4.88-5.2 5.23-3.16 8.9-5.06 6.8-7.33-.23-.26-.57-.38-.98-.38-3.18 0-10.67 6.82-10.67 6.82s-2.02 2.1-3.24 2.1a.74.74 0 0 1-.68-.38c-.87-1.46 8.05-8.22 8.55-11.01.34-1.9-.24-2.85-1.31-2.85Z\"/><path fill=\"#FFD21E\" d=\"M56.33 76.69c-2.75-4.04-2.56-7.07 1.22-10.84 3.77-3.77 5.97-9.3 5.97-9.3s.82-3.2 2.7-2.9c1.86.3 3.23 5.08-.68 8.01-3.92 2.93.78 4.92 2.28 2.17 1.51-2.75 5.63-9.82 7.76-11.18 2.13-1.35 3.64-.6 3.13 2.2-.5 2.79-9.42 9.55-8.55 11 .86 1.47 3.92-1.71 3.92-1.71s9.58-8.71 11.66-6.44c2.08 2.27-1.58 4.17-6.8 7.33-5.23 3.16-5.63 4-4.9 5.2.75 1.2 12.28-8.53 13.36-4.4 1.08 4.11-11.76 5.3-10.97 8.15.8 2.85 9.05-5.38 10.74-2.18 1.69 3.21-11.65 6.98-11.76 7.01-4.31 1.12-15.26 3.49-19.08-2.12Z\"/></svg>Hugging Face</a>"
+ },
+ {
+  "file": "src/post.css",
+  "old": ".hero-links button:disabled { cursor: default; opacity: 0.62; }",
+  "new": ".hero-links button:disabled { cursor: default; opacity: 0.92; }"
+ },
+ {
+  "file": "src/post.css",
+  "old": ".ecosystem-links .chip-mark { flex: none; width: 20px; height: 20px; display: block; }",
+  "new": ".ecosystem-links .chip-mark { flex: none; width: 20px; height: 20px; display: block; }\n.ecosystem-links .chip-ico { width: 20px; height: 20px; }"
+ },
+ {
+  "file": "src/post.css",
+  "old": "/* ── Reading progress ── */",
+  "new": "/* ── Buttons that answer the hand: a lift on hover, a press on click ── */\n.research-link-chip, .cite-copy, .ra-btn, #top-btn, .chart-data-toggle {\n  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s ease, background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;\n}\n.research-link-chip:hover:not([disabled]), .cite-copy:hover, .ra-btn:hover:not(:disabled), #top-btn:hover {\n  transform: translateY(-1.5px); box-shadow: 0 6px 16px rgba(194, 65, 12, 0.14);\n}\n.research-link-chip:active:not([disabled]), .cite-copy:active, .ra-btn:active:not(:disabled), #top-btn:active {\n  transform: translateY(0) scale(0.98); box-shadow: 0 2px 6px rgba(194, 65, 12, 0.12); transition-duration: 0.08s;\n}\n@media (prefers-reduced-motion: reduce) {\n  .research-link-chip, .cite-copy, .ra-btn, #top-btn, .chart-data-toggle { transition: none; }\n  .research-link-chip:hover, .cite-copy:hover, .ra-btn:hover, #top-btn:hover { transform: none; }\n}\n\n/* ── Reading progress ── */"
+ },
+ {
+  "file": "src/page.js",
+  "old": "  var SCRIPTS = (function () {\n    var by = {}, out = [];",
+  "new": "  // A colour between two, as rgb(a). Used to grade a wave's colour by loudness\n  // and cool it toward the pack's teal as it travels.\n  function rgb(hex) { var n = parseInt(hex.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; }\n  function blend(a, b, f, alpha) {\n    var r = Math.round(a[0] + (b[0] - a[0]) * f), g = Math.round(a[1] + (b[1] - a[1]) * f), bl = Math.round(a[2] + (b[2] - a[2]) * f);\n    return alpha == null ? 'rgb(' + r + ',' + g + ',' + bl + ')' : 'rgba(' + r + ',' + g + ',' + bl + ',' + alpha + ')';\n  }\n  var WHITE = [255, 250, 243], TEAL = rgb('#5C9080');\n  var SCRIPTS = (function () {\n    var by = {}, out = [];"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    var W = 0, H = 0, ox = 0, oy = 0, reach = 0, crests = [], letter = 0, track = null;",
+  "new": "    var W = 0, H = 0, ox = 0, oy = 0, reach = 0, letter = 0, track = null;"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      // One crest gradient per script: its own hue near the letter, cooling\n      // into the pack's teal at the rim.\n      crests = SCRIPTS.map(function (s) {\n        var g = ctx.createRadialGradient(ox, oy, 0, ox, oy, reach);\n        g.addColorStop(0, s.hue); g.addColorStop(0.45, tint(s.hue, 0.2)); g.addColorStop(1, '#5C9080');\n        return g;\n      });\n",
+  "new": ""
+ },
+ {
+  "file": "src/page.js",
+  "old": "      // A wide, soft body: the pressure itself, dispersing as it travels.\n      ctx.globalAlpha = fade * 0.1 * w;\n      ctx.lineWidth = (14 + 22 * w) * (1 + 1.6 * k);\n      ctx.strokeStyle = tint(s.hue, a > 0.62 ? 0.45 : 0.6);\n      ctx.stroke();\n      // The crest: one thin line the eye can follow, cooling as it travels.\n      ctx.globalAlpha = fade * 0.34 * w;\n      ctx.lineWidth = 1 + 1.2 * w;\n      ctx.strokeStyle = crests[SCRIPTS.indexOf(s)];\n      ctx.stroke();",
+  "new": "      // The wave's colour is graded by loudness: a quiet syllable is a pale\n      // tint of the script's hue, a loud one the hue at full depth, and the\n      // loudest lean darker still. Then it cools toward teal as it travels.\n      var hue = rgb(s.hue), deep = blend(hue, [0, 0, 0], 0.22 * Math.max(0, a - 0.7) / 0.3);\n      var loud = a < 0.7 ? blend(WHITE, hue, 0.25 + 0.75 * (a / 0.7)) : deep;\n      var base = rgb('#' + ('000000' + ((loud.match(/\\d+/g)).reduce(function (n, v) { return n * 256 + +v; }, 0)).toString(16)).slice(-6));\n      // A wide, soft body: the pressure itself, dispersing as it travels.\n      ctx.globalAlpha = fade * 0.1 * w;\n      ctx.lineWidth = (14 + 22 * w) * (1 + 1.6 * k);\n      ctx.strokeStyle = blend(base, WHITE, 0.45);\n      ctx.stroke();\n      // The crest: one thin line the eye can follow, cooling as it travels.\n      ctx.globalAlpha = fade * (0.26 + 0.14 * a) * w;\n      ctx.lineWidth = 1 + 1.2 * w;\n      ctx.strokeStyle = blend(base, TEAL, 0.6 * k);\n      ctx.stroke();"
+ },
+ {
+  "file": "src/page.js",
+  "old": "  // A colour between two, as rgb(a). Used to grade a wave's colour by loudness\n  // and cool it toward the pack's teal as it travels.\n  function rgb(hex) { var n = parseInt(hex.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; }\n  function blend(a, b, f, alpha) {\n    var r = Math.round(a[0] + (b[0] - a[0]) * f), g = Math.round(a[1] + (b[1] - a[1]) * f), bl = Math.round(a[2] + (b[2] - a[2]) * f);\n    return alpha == null ? 'rgb(' + r + ',' + g + ',' + bl + ')' : 'rgba(' + r + ',' + g + ',' + bl + ',' + alpha + ')';\n  }\n  var WHITE = [255, 250, 243], TEAL = rgb('#5C9080');",
+  "new": "  // Colours as rgb triples, so a wave's colour can be graded by loudness and\n  // cooled toward the pack's teal as it travels, one mix at a time.\n  function rgb(hex) { var n = parseInt(hex.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; }\n  function mix(a, b, f) { return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f]; }\n  function css(c) { return 'rgb(' + Math.round(c[0]) + ',' + Math.round(c[1]) + ',' + Math.round(c[2]) + ')'; }\n  var WHITE = [255, 250, 243], BLACK = [30, 20, 16], TEAL = rgb('#5C9080');"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      var hue = rgb(s.hue), deep = blend(hue, [0, 0, 0], 0.22 * Math.max(0, a - 0.7) / 0.3);\n      var loud = a < 0.7 ? blend(WHITE, hue, 0.25 + 0.75 * (a / 0.7)) : deep;\n      var base = rgb('#' + ('000000' + ((loud.match(/\\d+/g)).reduce(function (n, v) { return n * 256 + +v; }, 0)).toString(16)).slice(-6));",
+  "new": "      var hue = rgb(s.hue);\n      var base = a < 0.7 ? mix(WHITE, hue, 0.25 + 0.75 * a / 0.7) : mix(hue, BLACK, 0.22 * (a - 0.7) / 0.3);"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      ctx.strokeStyle = blend(base, WHITE, 0.45);",
+  "new": "      ctx.strokeStyle = css(mix(base, WHITE, 0.45));"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      ctx.strokeStyle = blend(base, TEAL, 0.6 * k);",
+  "new": "      ctx.strokeStyle = css(mix(base, TEAL, 0.6 * k));"
+ },
+ {
+  "file": "src/body-capability.html",
+  "old": "      <a class=\"research-link-chip research-link-chip-on-mosaic ecosystem-chip\" href=\"https://aikosh.indiaai.gov.in\" target=\"_blank\" rel=\"noopener noreferrer\">AIKosh</a>",
+  "new": "      <a class=\"research-link-chip research-link-chip-on-mosaic ecosystem-chip ecosystem-chip-logo\" aria-label=\"AIKosh\" href=\"https://aikosh.indiaai.gov.in\" target=\"_blank\" rel=\"noopener noreferrer\"><img class=\"chip-logo\" src=\"images/logo_aikosh.png\" alt=\"AIKosh\" width=\"100\" height=\"26\">/a>"
+ },
+ {
+  "file": "src/body-technical.html",
+  "old": "      <a class=\"research-link-chip research-link-chip-on-mosaic ecosystem-chip\" href=\"https://aikosh.indiaai.gov.in\" target=\"_blank\" rel=\"noopener noreferrer\">AIKosh</a>",
+  "new": "      <a class=\"research-link-chip research-link-chip-on-mosaic ecosystem-chip ecosystem-chip-logo\" aria-label=\"AIKosh\" href=\"https://aikosh.indiaai.gov.in\" target=\"_blank\" rel=\"noopener noreferrer\"><img class=\"chip-logo\" src=\"images/logo_aikosh.png\" alt=\"AIKosh\" width=\"100\" height=\"26\">/a>"
+ },
+ {
+  "file": "src/post.css",
+  "old": ".ecosystem-links .chip-ico { width: 20px; height: 20px; }",
+  "new": ".ecosystem-links .chip-ico { width: 20px; height: 20px; }\n/* A chip that is the logo itself, sized to the text height of its neighbours. */\n.ecosystem-chip-logo .chip-logo { display: block; height: 26px; width: auto; }"
+ },
+ {
+  "file": "src/body-capability.html",
+  "old": "alt=\"AIKosh\" width=\"100\" height=\"26\">/a>",
+  "new": "alt=\"AIKosh\" width=\"100\" height=\"26\"></a>"
+ },
+ {
+  "file": "src/body-technical.html",
+  "old": "alt=\"AIKosh\" width=\"100\" height=\"26\">/a>",
+  "new": "alt=\"AIKosh\" width=\"100\" height=\"26\"></a>"
+ },
+ {
+  "file": "src/body-capability.html",
+  "old": "      <a class=\"research-link-chip research-link-chip-on-mosaic ecosystem-chip\" href=\"https://huggingface.co/bodhan-ai/indic-speak\" target=\"_blank\" rel=\"noopener noreferrer\"><svg class=\"chip-ico\" viewBox=\"0 0 95 88\" aria-hidden=\"true\" focusable=\"false\"><path fill=\"#FFD21E\" d=\"M47.21 76.5a34.75 34.75 0 1 0 0-69.5 34.75 34.75 0 0 0 0 69.5Z\"/><path fill=\"#FF9D0B\" d=\"M81.96 41.75a34.75 34.75 0 1 0-69.5 0 34.75 34.75 0 0 0 69.5 0Zm-73.5 0a38.75 38.75 0 1 1 77.5 0 38.75 38.75 0 0 1-77.5 0Z\"/><path fill=\"#3A3B45\" d=\"M58.5 32.3c1.28.44 1.78 3.06 3.07 2.38a5 5 0 1 0-6.76-2.07c.61 1.15 2.55-.72 3.7-.32ZM34.95 32.3c-1.28.44-1.79 3.06-3.07 2.38a5 5 0 1 1 6.76-2.07c-.61 1.15-2.56-.72-3.7-.32Z\"/><path fill=\"#FF323D\" d=\"M46.96 56.29c9.83 0 13-8.76 13-13.26 0-2.34-1.57-1.6-4.09-.36-2.33 1.15-5.46 2.74-8.9 2.74-7.19 0-13-6.88-13-2.38s3.16 13.26 13 13.26Z\"/><path fill=\"#3A3B45\" fill-rule=\"evenodd\" d=\"M39.43 54a8.7 8.7 0 0 1 5.3-4.49c.4-.12.81.57 1.24 1.28.4.68.82 1.37 1.24 1.37.45 0 .9-.68 1.33-1.35.45-.7.89-1.38 1.32-1.25a8.61 8.61 0 0 1 5 4.17c3.73-2.94 5.1-7.74 5.1-10.7 0-2.34-1.57-1.6-4.09-.36l-.14.07c-2.31 1.15-5.39 2.67-8.77 2.67s-6.45-1.52-8.77-2.67c-2.6-1.29-4.23-2.1-4.23.29 0 3.05 1.46 8.06 5.47 10.97Z\" clip-rule=\"evenodd\"/><path fill=\"#FF9D0B\" d=\"M70.71 37a3.25 3.25 0 1 0 0-6.5 3.25 3.25 0 0 0 0 6.5ZM24.21 37a3.25 3.25 0 1 0 0-6.5 3.25 3.25 0 0 0 0 6.5ZM17.52 48c-1.62 0-3.06.66-4.07 1.87a5.97 5.97 0 0 0-1.33 3.76 7.1 7.1 0 0 0-1.94-.3c-1.55 0-2.95.59-3.94 1.66a5.8 5.8 0 0 0-.8 7 5.3 5.3 0 0 0-1.79 2.82c-.24.9-.48 2.8.8 4.74a5.22 5.22 0 0 0-.37 5.02c1.02 2.32 3.57 4.14 8.52 6.1 3.07 1.22 5.89 2 5.91 2.01a44.33 44.33 0 0 0 10.93 1.6c5.86 0 10.05-1.8 12.46-5.34 3.88-5.69 3.33-10.9-1.7-15.92-2.77-2.78-4.62-6.87-5-7.77-.78-2.66-2.84-5.62-6.25-5.62a5.7 5.7 0 0 0-4.6 2.46c-1-1.26-1.98-2.25-2.86-2.82A7.4 7.4 0 0 0 17.52 48Zm0 4c.51 0 1.14.22 1.82.65 2.14 1.36 6.25 8.43 7.76 11.18.5.92 1.37 1.31 2.14 1.31 1.55 0 2.75-1.53.15-3.48-3.92-2.93-2.55-7.72-.68-8.01.08-.02.17-.02.24-.02 1.7 0 2.45 2.93 2.45 2.93s2.2 5.52 5.98 9.3c3.77 3.77 3.97 6.8 1.22 10.83-1.88 2.75-5.47 3.58-9.16 3.58-3.81 0-7.73-.9-9.92-1.46-.11-.03-13.45-3.8-11.76-7 .28-.54.75-.76 1.34-.76 2.38 0 6.7 3.54 8.57 3.54.41 0 .7-.17.83-.6.79-2.85-12.06-4.05-10.98-8.17.2-.73.71-1.02 1.44-1.02 3.14 0 10.2 5.53 11.68 5.53.11 0 .2-.03.24-.1.74-1.2.33-2.04-4.9-5.2-5.21-3.16-8.88-5.06-6.8-7.33.24-.26.58-.38 1-.38 3.17 0 10.66 6.82 10.66 6.82s2.02 2.1 3.25 2.1c.28 0 .52-.1.68-.38.86-1.46-8.06-8.22-8.56-11.01-.34-1.9.24-2.85 1.31-2.85Z\"/><path fill=\"#FFD21E\" d=\"M38.6 76.69c2.75-4.04 2.55-7.07-1.22-10.84-3.78-3.77-5.98-9.3-5.98-9.3s-.82-3.2-2.69-2.9c-1.87.3-3.24 5.08.68 8.01 3.91 2.93-.78 4.92-2.29 2.17-1.5-2.75-5.62-9.82-7.76-11.18-2.13-1.35-3.63-.6-3.13 2.2.5 2.79 9.43 9.55 8.56 11-.87 1.47-3.93-1.71-3.93-1.71s-9.57-8.71-11.66-6.44c-2.08 2.27 1.59 4.17 6.8 7.33 5.23 3.16 5.64 4 4.9 5.2-.75 1.2-12.28-8.53-13.36-4.4-1.08 4.11 11.77 5.3 10.98 8.15-.8 2.85-9.06-5.38-10.74-2.18-1.7 3.21 11.65 6.98 11.76 7.01 4.3 1.12 15.25 3.49 19.08-2.12Z\"/><path fill=\"#FF9D0B\" d=\"M77.4 48c1.62 0 3.07.66 4.07 1.87a5.97 5.97 0 0 1 1.33 3.76 7.1 7.1 0 0 1 1.95-.3c1.55 0 2.95.59 3.94 1.66a5.8 5.8 0 0 1 .8 7 5.3 5.3 0 0 1 1.78 2.82c.24.9.48 2.8-.8 4.74a5.22 5.22 0 0 1 .37 5.02c-1.02 2.32-3.57 4.14-8.51 6.1-3.08 1.22-5.9 2-5.92 2.01a44.33 44.33 0 0 1-10.93 1.6c-5.86 0-10.05-1.8-12.46-5.34-3.88-5.69-3.33-10.9 1.7-15.92 2.78-2.78 4.63-6.87 5.01-7.77.78-2.66 2.83-5.62 6.24-5.62a5.7 5.7 0 0 1 4.6 2.46c1-1.26 1.98-2.25 2.87-2.82A7.4 7.4 0 0 1 77.4 48Zm0 4c-.51 0-1.13.22-1.82.65-2.13 1.36-6.25 8.43-7.76 11.18a2.43 2.43 0 0 1-2.14 1.31c-1.54 0-2.75-1.53-.14-3.48 3.91-2.93 2.54-7.72.67-8.01a1.54 1.54 0 0 0-.24-.02c-1.7 0-2.45 2.93-2.45 2.93s-2.2 5.52-5.97 9.3c-3.78 3.77-3.98 6.8-1.22 10.83 1.87 2.75 5.47 3.58 9.15 3.58 3.82 0 7.73-.9 9.93-1.46.1-.03 13.45-3.8 11.76-7-.29-.54-.75-.76-1.34-.76-2.38 0-6.71 3.54-8.57 3.54-.42 0-.71-.17-.83-.6-.8-2.85 12.05-4.05 10.97-8.17-.19-.73-.7-1.02-1.44-1.02-3.14 0-10.2 5.53-11.68 5.53-.1 0-.19-.03-.23-.1-.74-1.2-.34-2.04 4.88-5.2 5.23-3.16 8.9-5.06 6.8-7.33-.23-.26-.57-.38-.98-.38-3.18 0-10.67 6.82-10.67 6.82s-2.02 2.1-3.24 2.1a.74.74 0 0 1-.68-.38c-.87-1.46 8.05-8.22 8.55-11.01.34-1.9-.24-2.85-1.31-2.85Z\"/><path fill=\"#FFD21E\" d=\"M56.33 76.69c-2.75-4.04-2.56-7.07 1.22-10.84 3.77-3.77 5.97-9.3 5.97-9.3s.82-3.2 2.7-2.9c1.86.3 3.23 5.08-.68 8.01-3.92 2.93.78 4.92 2.28 2.17 1.51-2.75 5.63-9.82 7.76-11.18 2.13-1.35 3.64-.6 3.13 2.2-.5 2.79-9.42 9.55-8.55 11 .86 1.47 3.92-1.71 3.92-1.71s9.58-8.71 11.66-6.44c2.08 2.27-1.58 4.17-6.8 7.33-5.23 3.16-5.63 4-4.9 5.2.75 1.2 12.28-8.53 13.36-4.4 1.08 4.11-11.76 5.3-10.97 8.15.8 2.85 9.05-5.38 10.74-2.18 1.69 3.21-11.65 6.98-11.76 7.01-4.31 1.12-15.26 3.49-19.08-2.12Z\"/></svg>Hugging Face</a>",
+  "new": "      <a class=\"research-link-chip research-link-chip-on-mosaic ecosystem-chip\" href=\"https://huggingface.co/bodhan-ai/indic-speak\" target=\"_blank\" rel=\"noopener noreferrer\"><svg class=\"chip-ico\" viewBox=\"0 0 95 88\" aria-hidden=\"true\" focusable=\"false\"><path fill=\"#FFD21E\" d=\"M47.21 76.5a34.75 34.75 0 1 0 0-69.5 34.75 34.75 0 0 0 0 69.5Z\"/><path fill=\"#FF9D0B\" d=\"M81.96 41.75a34.75 34.75 0 1 0-69.5 0 34.75 34.75 0 0 0 69.5 0Zm-73.5 0a38.75 38.75 0 1 1 77.5 0 38.75 38.75 0 0 1-77.5 0Z\"/><path fill=\"#3A3B45\" d=\"M58.5 32.3c1.28.44 1.78 3.06 3.07 2.38a5 5 0 1 0-6.76-2.07c.61 1.15 2.55-.72 3.7-.32ZM34.95 32.3c-1.28.44-1.79 3.06-3.07 2.38a5 5 0 1 1 6.76-2.07c-.61 1.15-2.56-.72-3.7-.32Z\"/><path fill=\"#FF323D\" d=\"M46.96 56.29c9.83 0 13-8.76 13-13.26 0-2.34-1.57-1.6-4.09-.36-2.33 1.15-5.46 2.74-8.9 2.74-7.19 0-13-6.88-13-2.38s3.16 13.26 13 13.26Z\"/><path fill=\"#3A3B45\" fill-rule=\"evenodd\" d=\"M39.43 54a8.7 8.7 0 0 1 5.3-4.49c.4-.12.81.57 1.24 1.28.4.68.82 1.37 1.24 1.37.45 0 .9-.68 1.33-1.35.45-.7.89-1.38 1.32-1.25a8.61 8.61 0 0 1 5 4.17c3.73-2.94 5.1-7.74 5.1-10.7 0-2.34-1.57-1.6-4.09-.36l-.14.07c-2.31 1.15-5.39 2.67-8.77 2.67s-6.45-1.52-8.77-2.67c-2.6-1.29-4.23-2.1-4.23.29 0 3.05 1.46 8.06 5.47 10.97Z\" clip-rule=\"evenodd\"/><path fill=\"#FF9D0B\" d=\"M70.71 37a3.25 3.25 0 1 0 0-6.5 3.25 3.25 0 0 0 0 6.5ZM24.21 37a3.25 3.25 0 1 0 0-6.5 3.25 3.25 0 0 0 0 6.5ZM17.52 48c-1.62 0-3.06.66-4.07 1.87a5.97 5.97 0 0 0-1.33 3.76 7.1 7.1 0 0 0-1.94-.3c-1.55 0-2.95.59-3.94 1.66a5.8 5.8 0 0 0-.8 7 5.3 5.3 0 0 0-1.79 2.82c-.24.9-.48 2.8.8 4.74a5.22 5.22 0 0 0-.37 5.02c1.02 2.32 3.57 4.14 8.52 6.1 3.07 1.22 5.89 2 5.91 2.01a44.33 44.33 0 0 0 10.93 1.6c5.86 0 10.05-1.8 12.46-5.34 3.88-5.69 3.33-10.9-1.7-15.92-2.77-2.78-4.62-6.87-5-7.77-.78-2.66-2.84-5.62-6.25-5.62a5.7 5.7 0 0 0-4.6 2.46c-1-1.26-1.98-2.25-2.86-2.82A7.4 7.4 0 0 0 17.52 48Zm0 4c.51 0 1.14.22 1.82.65 2.14 1.36 6.25 8.43 7.76 11.18.5.92 1.37 1.31 2.14 1.31 1.55 0 2.75-1.53.15-3.48-3.92-2.93-2.55-7.72-.68-8.01.08-.02.17-.02.24-.02 1.7 0 2.45 2.93 2.45 2.93s2.2 5.52 5.98 9.3c3.77 3.77 3.97 6.8 1.22 10.83-1.88 2.75-5.47 3.58-9.16 3.58-3.81 0-7.73-.9-9.92-1.46-.11-.03-13.45-3.8-11.76-7 .28-.54.75-.76 1.34-.76 2.38 0 6.7 3.54 8.57 3.54.41 0 .7-.17.83-.6.79-2.85-12.06-4.05-10.98-8.17.2-.73.71-1.02 1.44-1.02 3.14 0 10.2 5.53 11.68 5.53.11 0 .2-.03.24-.1.74-1.2.33-2.04-4.9-5.2-5.21-3.16-8.88-5.06-6.8-7.33.24-.26.58-.38 1-.38 3.17 0 10.66 6.82 10.66 6.82s2.02 2.1 3.25 2.1c.28 0 .52-.1.68-.38.86-1.46-8.06-8.22-8.56-11.01-.34-1.9.24-2.85 1.31-2.85Z\"/><path fill=\"#FFD21E\" d=\"M38.6 76.69c2.75-4.04 2.55-7.07-1.22-10.84-3.78-3.77-5.98-9.3-5.98-9.3s-.82-3.2-2.69-2.9c-1.87.3-3.24 5.08.68 8.01 3.91 2.93-.78 4.92-2.29 2.17-1.5-2.75-5.62-9.82-7.76-11.18-2.13-1.35-3.63-.6-3.13 2.2.5 2.79 9.43 9.55 8.56 11-.87 1.47-3.93-1.71-3.93-1.71s-9.57-8.71-11.66-6.44c-2.08 2.27 1.59 4.17 6.8 7.33 5.23 3.16 5.64 4 4.9 5.2-.75 1.2-12.28-8.53-13.36-4.4-1.08 4.11 11.77 5.3 10.98 8.15-.8 2.85-9.06-5.38-10.74-2.18-1.7 3.21 11.65 6.98 11.76 7.01 4.3 1.12 15.25 3.49 19.08-2.12Z\"/><path fill=\"#FF9D0B\" d=\"M77.4 48c1.62 0 3.07.66 4.07 1.87a5.97 5.97 0 0 1 1.33 3.76 7.1 7.1 0 0 1 1.95-.3c1.55 0 2.95.59 3.94 1.66a5.8 5.8 0 0 1 .8 7 5.3 5.3 0 0 1 1.78 2.82c.24.9.48 2.8-.8 4.74a5.22 5.22 0 0 1 .37 5.02c-1.02 2.32-3.57 4.14-8.51 6.1-3.08 1.22-5.9 2-5.92 2.01a44.33 44.33 0 0 1-10.93 1.6c-5.86 0-10.05-1.8-12.46-5.34-3.88-5.69-3.33-10.9 1.7-15.92 2.78-2.78 4.63-6.87 5.01-7.77.78-2.66 2.83-5.62 6.24-5.62a5.7 5.7 0 0 1 4.6 2.46c1-1.26 1.98-2.25 2.87-2.82A7.4 7.4 0 0 1 77.4 48Zm0 4c-.51 0-1.13.22-1.82.65-2.13 1.36-6.25 8.43-7.76 11.18a2.43 2.43 0 0 1-2.14 1.31c-1.54 0-2.75-1.53-.14-3.48 3.91-2.93 2.54-7.72.67-8.01a1.54 1.54 0 0 0-.24-.02c-1.7 0-2.45 2.93-2.45 2.93s-2.2 5.52-5.97 9.3c-3.78 3.77-3.98 6.8-1.22 10.83 1.87 2.75 5.47 3.58 9.15 3.58 3.82 0 7.73-.9 9.93-1.46.1-.03 13.45-3.8 11.76-7-.29-.54-.75-.76-1.34-.76-2.38 0-6.71 3.54-8.57 3.54-.42 0-.71-.17-.83-.6-.8-2.85 12.05-4.05 10.97-8.17-.19-.73-.7-1.02-1.44-1.02-3.14 0-10.2 5.53-11.68 5.53-.1 0-.19-.03-.23-.1-.74-1.2-.34-2.04 4.88-5.2 5.23-3.16 8.9-5.06 6.8-7.33-.23-.26-.57-.38-.98-.38-3.18 0-10.67 6.82-10.67 6.82s-2.02 2.1-3.24 2.1a.74.74 0 0 1-.68-.38c-.87-1.46 8.05-8.22 8.55-11.01.34-1.9-.24-2.85-1.31-2.85Z\"/><path fill=\"#FFD21E\" d=\"M56.33 76.69c-2.75-4.04-2.56-7.07 1.22-10.84 3.77-3.77 5.97-9.3 5.97-9.3s.82-3.2 2.7-2.9c1.86.3 3.23 5.08-.68 8.01-3.92 2.93.78 4.92 2.28 2.17 1.51-2.75 5.63-9.82 7.76-11.18 2.13-1.35 3.64-.6 3.13 2.2-.5 2.79-9.42 9.55-8.55 11 .86 1.47 3.92-1.71 3.92-1.71s9.58-8.71 11.66-6.44c2.08 2.27-1.58 4.17-6.8 7.33-5.23 3.16-5.63 4-4.9 5.2.75 1.2 12.28-8.53 13.36-4.4 1.08 4.11-11.76 5.3-10.97 8.15.8 2.85 9.05-5.38 10.74-2.18 1.69 3.21-11.65 6.98-11.76 7.01-4.31 1.12-15.26 3.49-19.08-2.12Z\"/></svg>Hugging Face</a>\n      <a class=\"research-link-chip research-link-chip-on-mosaic ecosystem-chip\" href=\"https://github.com/Bodhan-AI\" target=\"_blank\" rel=\"noopener noreferrer\"><svg class=\"chip-ico\" viewBox=\"0 0 16 16\" aria-hidden=\"true\" focusable=\"false\"><path fill=\"currentColor\" d=\"M6.766 11.328c-2.063-.25-3.516-1.734-3.516-3.656 0-.781.281-1.625.75-2.188-.203-.515-.172-1.609.063-2.062.625-.078 1.468.25 1.968.703.594-.187 1.219-.281 1.985-.281.765 0 1.39.094 1.953.265.484-.437 1.344-.765 1.969-.687.218.422.25 1.515.046 2.047.5.593.766 1.39.766 2.203 0 1.922-1.453 3.375-3.547 3.64.531.344.89 1.094.89 1.954v1.625c0 .468.391.734.86.547C13.781 14.359 16 11.53 16 8.03 16 3.61 12.406 0 7.984 0 3.563 0 0 3.61 0 8.031a7.88 7.88 0 0 0 5.172 7.422c.422.156.828-.125.828-.547v-1.25c-.219.094-.5.156-.75.156-1.031 0-1.64-.562-2.078-1.609-.172-.422-.36-.672-.719-.719-.187-.015-.25-.093-.25-.187 0-.188.313-.328.625-.328.453 0 .844.281 1.25.86.313.452.64.655 1.031.655s.641-.14 1-.5c.266-.265.47-.5.657-.656\"/></svg>GitHub</a>"
+ },
+ {
+  "file": "src/body-technical.html",
+  "old": "      <a class=\"research-link-chip research-link-chip-on-mosaic ecosystem-chip\" href=\"https://huggingface.co/bodhan-ai/indic-speak\" target=\"_blank\" rel=\"noopener noreferrer\"><svg class=\"chip-ico\" viewBox=\"0 0 95 88\" aria-hidden=\"true\" focusable=\"false\"><path fill=\"#FFD21E\" d=\"M47.21 76.5a34.75 34.75 0 1 0 0-69.5 34.75 34.75 0 0 0 0 69.5Z\"/><path fill=\"#FF9D0B\" d=\"M81.96 41.75a34.75 34.75 0 1 0-69.5 0 34.75 34.75 0 0 0 69.5 0Zm-73.5 0a38.75 38.75 0 1 1 77.5 0 38.75 38.75 0 0 1-77.5 0Z\"/><path fill=\"#3A3B45\" d=\"M58.5 32.3c1.28.44 1.78 3.06 3.07 2.38a5 5 0 1 0-6.76-2.07c.61 1.15 2.55-.72 3.7-.32ZM34.95 32.3c-1.28.44-1.79 3.06-3.07 2.38a5 5 0 1 1 6.76-2.07c-.61 1.15-2.56-.72-3.7-.32Z\"/><path fill=\"#FF323D\" d=\"M46.96 56.29c9.83 0 13-8.76 13-13.26 0-2.34-1.57-1.6-4.09-.36-2.33 1.15-5.46 2.74-8.9 2.74-7.19 0-13-6.88-13-2.38s3.16 13.26 13 13.26Z\"/><path fill=\"#3A3B45\" fill-rule=\"evenodd\" d=\"M39.43 54a8.7 8.7 0 0 1 5.3-4.49c.4-.12.81.57 1.24 1.28.4.68.82 1.37 1.24 1.37.45 0 .9-.68 1.33-1.35.45-.7.89-1.38 1.32-1.25a8.61 8.61 0 0 1 5 4.17c3.73-2.94 5.1-7.74 5.1-10.7 0-2.34-1.57-1.6-4.09-.36l-.14.07c-2.31 1.15-5.39 2.67-8.77 2.67s-6.45-1.52-8.77-2.67c-2.6-1.29-4.23-2.1-4.23.29 0 3.05 1.46 8.06 5.47 10.97Z\" clip-rule=\"evenodd\"/><path fill=\"#FF9D0B\" d=\"M70.71 37a3.25 3.25 0 1 0 0-6.5 3.25 3.25 0 0 0 0 6.5ZM24.21 37a3.25 3.25 0 1 0 0-6.5 3.25 3.25 0 0 0 0 6.5ZM17.52 48c-1.62 0-3.06.66-4.07 1.87a5.97 5.97 0 0 0-1.33 3.76 7.1 7.1 0 0 0-1.94-.3c-1.55 0-2.95.59-3.94 1.66a5.8 5.8 0 0 0-.8 7 5.3 5.3 0 0 0-1.79 2.82c-.24.9-.48 2.8.8 4.74a5.22 5.22 0 0 0-.37 5.02c1.02 2.32 3.57 4.14 8.52 6.1 3.07 1.22 5.89 2 5.91 2.01a44.33 44.33 0 0 0 10.93 1.6c5.86 0 10.05-1.8 12.46-5.34 3.88-5.69 3.33-10.9-1.7-15.92-2.77-2.78-4.62-6.87-5-7.77-.78-2.66-2.84-5.62-6.25-5.62a5.7 5.7 0 0 0-4.6 2.46c-1-1.26-1.98-2.25-2.86-2.82A7.4 7.4 0 0 0 17.52 48Zm0 4c.51 0 1.14.22 1.82.65 2.14 1.36 6.25 8.43 7.76 11.18.5.92 1.37 1.31 2.14 1.31 1.55 0 2.75-1.53.15-3.48-3.92-2.93-2.55-7.72-.68-8.01.08-.02.17-.02.24-.02 1.7 0 2.45 2.93 2.45 2.93s2.2 5.52 5.98 9.3c3.77 3.77 3.97 6.8 1.22 10.83-1.88 2.75-5.47 3.58-9.16 3.58-3.81 0-7.73-.9-9.92-1.46-.11-.03-13.45-3.8-11.76-7 .28-.54.75-.76 1.34-.76 2.38 0 6.7 3.54 8.57 3.54.41 0 .7-.17.83-.6.79-2.85-12.06-4.05-10.98-8.17.2-.73.71-1.02 1.44-1.02 3.14 0 10.2 5.53 11.68 5.53.11 0 .2-.03.24-.1.74-1.2.33-2.04-4.9-5.2-5.21-3.16-8.88-5.06-6.8-7.33.24-.26.58-.38 1-.38 3.17 0 10.66 6.82 10.66 6.82s2.02 2.1 3.25 2.1c.28 0 .52-.1.68-.38.86-1.46-8.06-8.22-8.56-11.01-.34-1.9.24-2.85 1.31-2.85Z\"/><path fill=\"#FFD21E\" d=\"M38.6 76.69c2.75-4.04 2.55-7.07-1.22-10.84-3.78-3.77-5.98-9.3-5.98-9.3s-.82-3.2-2.69-2.9c-1.87.3-3.24 5.08.68 8.01 3.91 2.93-.78 4.92-2.29 2.17-1.5-2.75-5.62-9.82-7.76-11.18-2.13-1.35-3.63-.6-3.13 2.2.5 2.79 9.43 9.55 8.56 11-.87 1.47-3.93-1.71-3.93-1.71s-9.57-8.71-11.66-6.44c-2.08 2.27 1.59 4.17 6.8 7.33 5.23 3.16 5.64 4 4.9 5.2-.75 1.2-12.28-8.53-13.36-4.4-1.08 4.11 11.77 5.3 10.98 8.15-.8 2.85-9.06-5.38-10.74-2.18-1.7 3.21 11.65 6.98 11.76 7.01 4.3 1.12 15.25 3.49 19.08-2.12Z\"/><path fill=\"#FF9D0B\" d=\"M77.4 48c1.62 0 3.07.66 4.07 1.87a5.97 5.97 0 0 1 1.33 3.76 7.1 7.1 0 0 1 1.95-.3c1.55 0 2.95.59 3.94 1.66a5.8 5.8 0 0 1 .8 7 5.3 5.3 0 0 1 1.78 2.82c.24.9.48 2.8-.8 4.74a5.22 5.22 0 0 1 .37 5.02c-1.02 2.32-3.57 4.14-8.51 6.1-3.08 1.22-5.9 2-5.92 2.01a44.33 44.33 0 0 1-10.93 1.6c-5.86 0-10.05-1.8-12.46-5.34-3.88-5.69-3.33-10.9 1.7-15.92 2.78-2.78 4.63-6.87 5.01-7.77.78-2.66 2.83-5.62 6.24-5.62a5.7 5.7 0 0 1 4.6 2.46c1-1.26 1.98-2.25 2.87-2.82A7.4 7.4 0 0 1 77.4 48Zm0 4c-.51 0-1.13.22-1.82.65-2.13 1.36-6.25 8.43-7.76 11.18a2.43 2.43 0 0 1-2.14 1.31c-1.54 0-2.75-1.53-.14-3.48 3.91-2.93 2.54-7.72.67-8.01a1.54 1.54 0 0 0-.24-.02c-1.7 0-2.45 2.93-2.45 2.93s-2.2 5.52-5.97 9.3c-3.78 3.77-3.98 6.8-1.22 10.83 1.87 2.75 5.47 3.58 9.15 3.58 3.82 0 7.73-.9 9.93-1.46.1-.03 13.45-3.8 11.76-7-.29-.54-.75-.76-1.34-.76-2.38 0-6.71 3.54-8.57 3.54-.42 0-.71-.17-.83-.6-.8-2.85 12.05-4.05 10.97-8.17-.19-.73-.7-1.02-1.44-1.02-3.14 0-10.2 5.53-11.68 5.53-.1 0-.19-.03-.23-.1-.74-1.2-.34-2.04 4.88-5.2 5.23-3.16 8.9-5.06 6.8-7.33-.23-.26-.57-.38-.98-.38-3.18 0-10.67 6.82-10.67 6.82s-2.02 2.1-3.24 2.1a.74.74 0 0 1-.68-.38c-.87-1.46 8.05-8.22 8.55-11.01.34-1.9-.24-2.85-1.31-2.85Z\"/><path fill=\"#FFD21E\" d=\"M56.33 76.69c-2.75-4.04-2.56-7.07 1.22-10.84 3.77-3.77 5.97-9.3 5.97-9.3s.82-3.2 2.7-2.9c1.86.3 3.23 5.08-.68 8.01-3.92 2.93.78 4.92 2.28 2.17 1.51-2.75 5.63-9.82 7.76-11.18 2.13-1.35 3.64-.6 3.13 2.2-.5 2.79-9.42 9.55-8.55 11 .86 1.47 3.92-1.71 3.92-1.71s9.58-8.71 11.66-6.44c2.08 2.27-1.58 4.17-6.8 7.33-5.23 3.16-5.63 4-4.9 5.2.75 1.2 12.28-8.53 13.36-4.4 1.08 4.11-11.76 5.3-10.97 8.15.8 2.85 9.05-5.38 10.74-2.18 1.69 3.21-11.65 6.98-11.76 7.01-4.31 1.12-15.26 3.49-19.08-2.12Z\"/></svg>Hugging Face</a>",
+  "new": "      <a class=\"research-link-chip research-link-chip-on-mosaic ecosystem-chip\" href=\"https://huggingface.co/bodhan-ai/indic-speak\" target=\"_blank\" rel=\"noopener noreferrer\"><svg class=\"chip-ico\" viewBox=\"0 0 95 88\" aria-hidden=\"true\" focusable=\"false\"><path fill=\"#FFD21E\" d=\"M47.21 76.5a34.75 34.75 0 1 0 0-69.5 34.75 34.75 0 0 0 0 69.5Z\"/><path fill=\"#FF9D0B\" d=\"M81.96 41.75a34.75 34.75 0 1 0-69.5 0 34.75 34.75 0 0 0 69.5 0Zm-73.5 0a38.75 38.75 0 1 1 77.5 0 38.75 38.75 0 0 1-77.5 0Z\"/><path fill=\"#3A3B45\" d=\"M58.5 32.3c1.28.44 1.78 3.06 3.07 2.38a5 5 0 1 0-6.76-2.07c.61 1.15 2.55-.72 3.7-.32ZM34.95 32.3c-1.28.44-1.79 3.06-3.07 2.38a5 5 0 1 1 6.76-2.07c-.61 1.15-2.56-.72-3.7-.32Z\"/><path fill=\"#FF323D\" d=\"M46.96 56.29c9.83 0 13-8.76 13-13.26 0-2.34-1.57-1.6-4.09-.36-2.33 1.15-5.46 2.74-8.9 2.74-7.19 0-13-6.88-13-2.38s3.16 13.26 13 13.26Z\"/><path fill=\"#3A3B45\" fill-rule=\"evenodd\" d=\"M39.43 54a8.7 8.7 0 0 1 5.3-4.49c.4-.12.81.57 1.24 1.28.4.68.82 1.37 1.24 1.37.45 0 .9-.68 1.33-1.35.45-.7.89-1.38 1.32-1.25a8.61 8.61 0 0 1 5 4.17c3.73-2.94 5.1-7.74 5.1-10.7 0-2.34-1.57-1.6-4.09-.36l-.14.07c-2.31 1.15-5.39 2.67-8.77 2.67s-6.45-1.52-8.77-2.67c-2.6-1.29-4.23-2.1-4.23.29 0 3.05 1.46 8.06 5.47 10.97Z\" clip-rule=\"evenodd\"/><path fill=\"#FF9D0B\" d=\"M70.71 37a3.25 3.25 0 1 0 0-6.5 3.25 3.25 0 0 0 0 6.5ZM24.21 37a3.25 3.25 0 1 0 0-6.5 3.25 3.25 0 0 0 0 6.5ZM17.52 48c-1.62 0-3.06.66-4.07 1.87a5.97 5.97 0 0 0-1.33 3.76 7.1 7.1 0 0 0-1.94-.3c-1.55 0-2.95.59-3.94 1.66a5.8 5.8 0 0 0-.8 7 5.3 5.3 0 0 0-1.79 2.82c-.24.9-.48 2.8.8 4.74a5.22 5.22 0 0 0-.37 5.02c1.02 2.32 3.57 4.14 8.52 6.1 3.07 1.22 5.89 2 5.91 2.01a44.33 44.33 0 0 0 10.93 1.6c5.86 0 10.05-1.8 12.46-5.34 3.88-5.69 3.33-10.9-1.7-15.92-2.77-2.78-4.62-6.87-5-7.77-.78-2.66-2.84-5.62-6.25-5.62a5.7 5.7 0 0 0-4.6 2.46c-1-1.26-1.98-2.25-2.86-2.82A7.4 7.4 0 0 0 17.52 48Zm0 4c.51 0 1.14.22 1.82.65 2.14 1.36 6.25 8.43 7.76 11.18.5.92 1.37 1.31 2.14 1.31 1.55 0 2.75-1.53.15-3.48-3.92-2.93-2.55-7.72-.68-8.01.08-.02.17-.02.24-.02 1.7 0 2.45 2.93 2.45 2.93s2.2 5.52 5.98 9.3c3.77 3.77 3.97 6.8 1.22 10.83-1.88 2.75-5.47 3.58-9.16 3.58-3.81 0-7.73-.9-9.92-1.46-.11-.03-13.45-3.8-11.76-7 .28-.54.75-.76 1.34-.76 2.38 0 6.7 3.54 8.57 3.54.41 0 .7-.17.83-.6.79-2.85-12.06-4.05-10.98-8.17.2-.73.71-1.02 1.44-1.02 3.14 0 10.2 5.53 11.68 5.53.11 0 .2-.03.24-.1.74-1.2.33-2.04-4.9-5.2-5.21-3.16-8.88-5.06-6.8-7.33.24-.26.58-.38 1-.38 3.17 0 10.66 6.82 10.66 6.82s2.02 2.1 3.25 2.1c.28 0 .52-.1.68-.38.86-1.46-8.06-8.22-8.56-11.01-.34-1.9.24-2.85 1.31-2.85Z\"/><path fill=\"#FFD21E\" d=\"M38.6 76.69c2.75-4.04 2.55-7.07-1.22-10.84-3.78-3.77-5.98-9.3-5.98-9.3s-.82-3.2-2.69-2.9c-1.87.3-3.24 5.08.68 8.01 3.91 2.93-.78 4.92-2.29 2.17-1.5-2.75-5.62-9.82-7.76-11.18-2.13-1.35-3.63-.6-3.13 2.2.5 2.79 9.43 9.55 8.56 11-.87 1.47-3.93-1.71-3.93-1.71s-9.57-8.71-11.66-6.44c-2.08 2.27 1.59 4.17 6.8 7.33 5.23 3.16 5.64 4 4.9 5.2-.75 1.2-12.28-8.53-13.36-4.4-1.08 4.11 11.77 5.3 10.98 8.15-.8 2.85-9.06-5.38-10.74-2.18-1.7 3.21 11.65 6.98 11.76 7.01 4.3 1.12 15.25 3.49 19.08-2.12Z\"/><path fill=\"#FF9D0B\" d=\"M77.4 48c1.62 0 3.07.66 4.07 1.87a5.97 5.97 0 0 1 1.33 3.76 7.1 7.1 0 0 1 1.95-.3c1.55 0 2.95.59 3.94 1.66a5.8 5.8 0 0 1 .8 7 5.3 5.3 0 0 1 1.78 2.82c.24.9.48 2.8-.8 4.74a5.22 5.22 0 0 1 .37 5.02c-1.02 2.32-3.57 4.14-8.51 6.1-3.08 1.22-5.9 2-5.92 2.01a44.33 44.33 0 0 1-10.93 1.6c-5.86 0-10.05-1.8-12.46-5.34-3.88-5.69-3.33-10.9 1.7-15.92 2.78-2.78 4.63-6.87 5.01-7.77.78-2.66 2.83-5.62 6.24-5.62a5.7 5.7 0 0 1 4.6 2.46c1-1.26 1.98-2.25 2.87-2.82A7.4 7.4 0 0 1 77.4 48Zm0 4c-.51 0-1.13.22-1.82.65-2.13 1.36-6.25 8.43-7.76 11.18a2.43 2.43 0 0 1-2.14 1.31c-1.54 0-2.75-1.53-.14-3.48 3.91-2.93 2.54-7.72.67-8.01a1.54 1.54 0 0 0-.24-.02c-1.7 0-2.45 2.93-2.45 2.93s-2.2 5.52-5.97 9.3c-3.78 3.77-3.98 6.8-1.22 10.83 1.87 2.75 5.47 3.58 9.15 3.58 3.82 0 7.73-.9 9.93-1.46.1-.03 13.45-3.8 11.76-7-.29-.54-.75-.76-1.34-.76-2.38 0-6.71 3.54-8.57 3.54-.42 0-.71-.17-.83-.6-.8-2.85 12.05-4.05 10.97-8.17-.19-.73-.7-1.02-1.44-1.02-3.14 0-10.2 5.53-11.68 5.53-.1 0-.19-.03-.23-.1-.74-1.2-.34-2.04 4.88-5.2 5.23-3.16 8.9-5.06 6.8-7.33-.23-.26-.57-.38-.98-.38-3.18 0-10.67 6.82-10.67 6.82s-2.02 2.1-3.24 2.1a.74.74 0 0 1-.68-.38c-.87-1.46 8.05-8.22 8.55-11.01.34-1.9-.24-2.85-1.31-2.85Z\"/><path fill=\"#FFD21E\" d=\"M56.33 76.69c-2.75-4.04-2.56-7.07 1.22-10.84 3.77-3.77 5.97-9.3 5.97-9.3s.82-3.2 2.7-2.9c1.86.3 3.23 5.08-.68 8.01-3.92 2.93.78 4.92 2.28 2.17 1.51-2.75 5.63-9.82 7.76-11.18 2.13-1.35 3.64-.6 3.13 2.2-.5 2.79-9.42 9.55-8.55 11 .86 1.47 3.92-1.71 3.92-1.71s9.58-8.71 11.66-6.44c2.08 2.27-1.58 4.17-6.8 7.33-5.23 3.16-5.63 4-4.9 5.2.75 1.2 12.28-8.53 13.36-4.4 1.08 4.11-11.76 5.3-10.97 8.15.8 2.85 9.05-5.38 10.74-2.18 1.69 3.21-11.65 6.98-11.76 7.01-4.31 1.12-15.26 3.49-19.08-2.12Z\"/></svg>Hugging Face</a>\n      <a class=\"research-link-chip research-link-chip-on-mosaic ecosystem-chip\" href=\"https://github.com/Bodhan-AI\" target=\"_blank\" rel=\"noopener noreferrer\"><svg class=\"chip-ico\" viewBox=\"0 0 16 16\" aria-hidden=\"true\" focusable=\"false\"><path fill=\"currentColor\" d=\"M6.766 11.328c-2.063-.25-3.516-1.734-3.516-3.656 0-.781.281-1.625.75-2.188-.203-.515-.172-1.609.063-2.062.625-.078 1.468.25 1.968.703.594-.187 1.219-.281 1.985-.281.765 0 1.39.094 1.953.265.484-.437 1.344-.765 1.969-.687.218.422.25 1.515.046 2.047.5.593.766 1.39.766 2.203 0 1.922-1.453 3.375-3.547 3.64.531.344.89 1.094.89 1.954v1.625c0 .468.391.734.86.547C13.781 14.359 16 11.53 16 8.03 16 3.61 12.406 0 7.984 0 3.563 0 0 3.61 0 8.031a7.88 7.88 0 0 0 5.172 7.422c.422.156.828-.125.828-.547v-1.25c-.219.094-.5.156-.75.156-1.031 0-1.64-.562-2.078-1.609-.172-.422-.36-.672-.719-.719-.187-.015-.25-.093-.25-.187 0-.188.313-.328.625-.328.453 0 .844.281 1.25.86.313.452.64.655 1.031.655s.641-.14 1-.5c.266-.265.47-.5.657-.656\"/></svg>GitHub</a>"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    var pos = [], flash = [], born = {};",
+  "new": "    var pos = [], flash = [], born = {};\n    // Each drifting letter hops on its own rhythm and height, seeded from its\n    // index so the bounce is lively but never the same twice across the ring.\n    var BOB = SCRIPTS.map(function (_, j) {\n      var h = ((j * 9301 + 49297) % 233280) / 233280, g = ((j * 7919 + 131) % 97) / 97;\n      return { amp: 4 + 6 * h, rate: 0.45 + 0.85 * g, phase: h * Math.PI * 2 };\n    });"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      for (var j = 0; j < n; j++) { pos[j] = at(j * step + DRIFT * t); flash[j] = 0; }",
+  "new": "      for (var j = 0; j < n; j++) {\n        pos[j] = at(j * step + DRIFT * t); flash[j] = 0;\n        // The hop: a rectified sine lands and rebounds rather than floating.\n        var hop = BOB[j];\n        pos[j][1] -= hop.amp * Math.abs(Math.sin(Math.PI * hop.rate * t + hop.phase));\n      }"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    var DRIFT = 7;                 // px a second the letters travel along the edge\n",
+  "new": ""
+ },
+ {
+  "file": "src/page.js",
+  "old": "    var W = 0, H = 0, ox = 0, oy = 0, reach = 0, letter = 0, track = null;",
+  "new": "    var W = 0, H = 0, ox = 0, oy = 0, reach = 0, letter = 0, box = null;"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      // The letters' track: the card's outline, inset, with soft corners.\n      var wide = W >= 700, inset = wide ? 24 : 15;\n      letter = wide ? 27 : 19;\n      var rc = Math.min(58, (Math.min(W, H) - 2 * inset) / 3);\n      var tw = W - 2 * inset - 2 * rc, th = H - 2 * inset - 2 * rc;\n      track = { x0: inset, y0: inset, x1: W - inset, y1: H - inset, rc: rc, w: tw, h: th,\n                q: Math.PI * rc / 2, P: 2 * tw + 2 * th + 2 * Math.PI * rc };\n    }\n\n    // A point s pixels along the track, clockwise from the top-left corner.\n    function at(s) {\n      var t = track, rc = t.rc, a;\n      s = ((s % t.P) + t.P) % t.P;\n      if (s < t.w) return [t.x0 + rc + s, t.y0]; s -= t.w;\n      if (s < t.q) { a = -Math.PI / 2 + s / rc; return [t.x1 - rc + rc * Math.cos(a), t.y0 + rc + rc * Math.sin(a)]; } s -= t.q;\n      if (s < t.h) return [t.x1, t.y0 + rc + s]; s -= t.h;\n      if (s < t.q) { a = s / rc; return [t.x1 - rc + rc * Math.cos(a), t.y1 - rc + rc * Math.sin(a)]; } s -= t.q;\n      if (s < t.w) return [t.x1 - rc - s, t.y1]; s -= t.w;\n      if (s < t.q) { a = Math.PI / 2 + s / rc; return [t.x0 + rc + rc * Math.cos(a), t.y1 - rc + rc * Math.sin(a)]; } s -= t.q;\n      if (s < t.h) return [t.x0, t.y1 - rc - s]; s -= t.h;\n      a = Math.PI + s / rc; return [t.x0 + rc + rc * Math.cos(a), t.y0 + rc + rc * Math.sin(a)];\n    }\n\n    // The loudness right now, between bars, and zero during the rest.\n    function level(t) {\n      var u = t % SPAN;\n      if (u >= HERO.seconds) return 0;\n      var x = u * RATE, i = Math.floor(x), f = x - i;\n      return AMP[i % N] * (1 - f) + AMP[(i + 1) % N] * f;\n    }\n\n",
+  "new": "      // The room the letters bounce in: the card, inset so a glyph never clips.\n      var wide = W >= 700, inset = wide ? 26 : 16;\n      letter = wide ? 27 : 19;\n      box = { x0: inset, y0: inset, x1: W - inset, y1: H - inset };\n      if (!pos.length) scatter();\n      pos.forEach(function (q) { q[0] = Math.min(box.x1, Math.max(box.x0, q[0])); q[1] = Math.min(box.y1, Math.max(box.y0, q[1])); });\n    }\n\n"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    // Each drifting letter hops on its own rhythm and height, seeded from its\n    // index so the bounce is lively but never the same twice across the ring.\n    var BOB = SCRIPTS.map(function (_, j) {\n      var h = ((j * 9301 + 49297) % 233280) / 233280, g = ((j * 7919 + 131) % 97) / 97;\n      return { amp: 4 + 6 * h, rate: 0.45 + 0.85 * g, phase: h * Math.PI * 2 };\n    });\n",
+  "new": "    // Each letter has its own heading and speed and wanders freely, bouncing off\n    // the card's edges with a little squash on impact. A touch of random steer\n    // every frame keeps the twelve from ever settling into a pattern.\n    var vel = [], squash = [], tPrev = 0;\n    function scatter() {\n      SCRIPTS.forEach(function (_, j) {\n        var ang = Math.random() * Math.PI * 2, sp = 22 + Math.random() * 30;\n        pos[j] = [box.x0 + Math.random() * (box.x1 - box.x0), box.y0 + Math.random() * (box.y1 - box.y0)];\n        vel[j] = [Math.cos(ang) * sp, Math.sin(ang) * sp];\n        squash[j] = 0;\n      });\n    }\n    function move(dt) {\n      for (var j = 0; j < pos.length; j++) {\n        var p = pos[j], v = vel[j];\n        // Steer a little at random, then drift.\n        var turn = (Math.random() - 0.5) * 0.9 * dt, c = Math.cos(turn), sn = Math.sin(turn);\n        var vx = v[0] * c - v[1] * sn, vy = v[0] * sn + v[1] * c;\n        v[0] = vx; v[1] = vy;\n        p[0] += v[0] * dt; p[1] += v[1] * dt;\n        // Bounce: reflect, keep the speed lively, and squash for a moment.\n        if (p[0] < box.x0) { p[0] = box.x0; v[0] = Math.abs(v[0]) * (0.9 + Math.random() * 0.4); squash[j] = 1; }\n        if (p[0] > box.x1) { p[0] = box.x1; v[0] = -Math.abs(v[0]) * (0.9 + Math.random() * 0.4); squash[j] = 1; }\n        if (p[1] < box.y0) { p[1] = box.y0; v[1] = Math.abs(v[1]) * (0.9 + Math.random() * 0.4); squash[j] = 1; }\n        if (p[1] > box.y1) { p[1] = box.y1; v[1] = -Math.abs(v[1]) * (0.9 + Math.random() * 0.4); squash[j] = 1; }\n        // Hold the speed within a calm band so chaos never becomes frenzy.\n        var sp = Math.sqrt(v[0] * v[0] + v[1] * v[1]), want = Math.min(56, Math.max(20, sp));\n        if (sp > 0) { v[0] *= want / sp; v[1] *= want / sp; }\n        squash[j] = Math.max(0, squash[j] - 3.2 * dt);\n      }\n    }\n"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      // Where each small letter is right now.\n      var n = SCRIPTS.length, step = track.P / n;\n      for (var j = 0; j < n; j++) {\n        pos[j] = at(j * step + DRIFT * t); flash[j] = 0;\n        // The hop: a rectified sine lands and rebounds rather than floating.\n        var hop = BOB[j];\n        pos[j][1] -= hop.amp * Math.abs(Math.sin(Math.PI * hop.rate * t + hop.phase));\n      }",
+  "new": "      // Advance the letters by the time since the last frame.\n      var n = SCRIPTS.length;\n      move(Math.min(0.1, Math.max(0, t - tPrev))); tPrev = t;\n      for (var j = 0; j < n; j++) flash[j] = 0;"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      // The twelve letters on their track: the featured one lit, the others\n      // quiet until a wavefront reaches them.",
+  "new": "      // The twelve letters, loose in the card: the featured one lit, the others\n      // quiet until a wavefront reaches them, and each squashing as it bounces."
+ },
+ {
+  "file": "src/page.js",
+  "old": "        var size = letter * (1 + 0.42 * hot + 0.3 * Math.min(1, flash[j]));",
+  "new": "        var size = letter * (1 + 0.42 * hot + 0.3 * Math.min(1, flash[j]) + 0.28 * squash[j]);"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    var pos = [], flash = [], born = {};\n",
+  "new": "    // The loudness right now, between bars, and zero during the rest.\n    function level(t) {\n      var u = t % SPAN;\n      if (u >= HERO.seconds) return 0;\n      var x = u * RATE, i = Math.floor(x), f = x - i;\n      return AMP[i % N] * (1 - f) + AMP[(i + 1) % N] * f;\n    }\n\n    var pos = [], flash = [], born = {};\n"
+ },
+ {
+  "file": "src/page.js",
+  "old": "  var heroActive = 0;            // which script is featured right now\n",
+  "new": "  // The loose letters in the hero: each script's first vowel plus a few more of\n  // its letters, so the card is full rather than sparse. Real letters, not\n  // decoration: the long vowels aa and i, and the consonants ka and ma, or the\n  // nearest equivalents where a script is built differently.\n  var MORE = { 'Devanagari': 'आइकम', 'Bengali–Assamese': 'আইকম', 'Gujarati': 'આઇકમ', 'Gurmukhi': 'ਆਇਕਮ',\n               'Odia': 'ଆଇକମ', 'Tamil': 'ஆஇகம', 'Telugu': 'ఆఇకమ', 'Kannada': 'ಆಇಕಮ', 'Malayalam': 'ആഇകമ',\n               'Perso-Arabic': 'بکم', 'Meitei Mayek': 'ꯀꯃꯅ', 'Ol Chiki': 'ᱚᱠᱢ' };\n  var LETTERS = [];\n  SCRIPTS.forEach(function (s, i) {\n    LETTERS.push({ s: i, glyph: s.glyph });\n    Array.from(MORE[s.name] || '').forEach(function (g) { LETTERS.push({ s: i, glyph: g }); });\n  });\n  var heroActive = 0;            // which script is featured right now\n"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      letter = wide ? 27 : 19;",
+  "new": "      letter = wide ? 24 : 17;"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      SCRIPTS.forEach(function (_, j) {\n        var ang = Math.random() * Math.PI * 2, sp = 22 + Math.random() * 30;",
+  "new": "      LETTERS.forEach(function (_, j) {\n        var ang = Math.random() * Math.PI * 2, sp = 22 + Math.random() * 30;"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      var n = SCRIPTS.length;\n      move(",
+  "new": "      var n = LETTERS.length;\n      move("
+ },
+ {
+  "file": "src/page.js",
+  "old": "        var hot = j === heroActive ? 1 : 0, lit = Math.min(1, Math.max(hot, flash[j]));",
+  "new": "        var L = LETTERS[j], hue = SCRIPTS[L.s].hue;\n        var hot = L.s === heroActive ? 1 : 0, lit = Math.min(1, Math.max(hot, flash[j]));"
+ },
+ {
+  "file": "src/page.js",
+  "old": "          ctx.fillStyle = tint(SCRIPTS[j].hue, 0.62);",
+  "new": "          ctx.fillStyle = tint(hue, 0.62);"
+ },
+ {
+  "file": "src/page.js",
+  "old": "        ctx.fillStyle = SCRIPTS[j].hue;\n        ctx.fillText(SCRIPTS[j].glyph, pos[j][0], pos[j][1]);",
+  "new": "        ctx.fillStyle = hue;\n        ctx.fillText(L.glyph, pos[j][0], pos[j][1]);"
+ },
+ {
+  "file": "src/page.js",
+  "old": "  // The loose letters in the hero: each script's first vowel plus a few more of\n  // its letters, so the card is full rather than sparse. Real letters, not\n  // decoration: the long vowels aa and i, and the consonants ka and ma, or the\n  // nearest equivalents where a script is built differently.\n  var MORE = { 'Devanagari': 'आइकम', 'Bengali–Assamese': 'আইকম', 'Gujarati': 'આઇકમ', 'Gurmukhi': 'ਆਇਕਮ',\n               'Odia': 'ଆଇକମ', 'Tamil': 'ஆஇகம', 'Telugu': 'ఆఇకమ', 'Kannada': 'ಆಇಕಮ', 'Malayalam': 'ആഇകമ',\n               'Perso-Arabic': 'بکم', 'Meitei Mayek': 'ꯀꯃꯅ', 'Ol Chiki': 'ᱚᱠᱢ' };",
+  "new": "  // The loose letters in the hero: each script's first vowel plus one more of\n  // its letters, the consonant ka (or the nearest equivalent), so the card is\n  // lively without being crowded.\n  var MORE = { 'Devanagari': 'क', 'Bengali–Assamese': 'ক', 'Gujarati': 'ક', 'Gurmukhi': 'ਕ',\n               'Odia': 'କ', 'Tamil': 'க', 'Telugu': 'క', 'Kannada': 'ಕ', 'Malayalam': 'ക',\n               'Perso-Arabic': 'ک', 'Meitei Mayek': 'ꯀ', 'Ol Chiki': 'ᱠ' };"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      box = { x0: inset, y0: inset, x1: W - inset, y1: H - inset };\n      if (!pos.length) scatter();\n      pos.forEach(function (q) { q[0] = Math.min(box.x1, Math.max(box.x0, q[0])); q[1] = Math.min(box.y1, Math.max(box.y0, q[1])); });",
+  "new": "      box = { x0: inset, y0: inset, x1: W - inset, y1: H - inset };\n      // Weighted to the right: on wide screens three letters in four keep to the\n      // right part of the card, clear of the featured letter; the rest roam it all.\n      LETTERS.forEach(function (_, j) { lo[j] = (wide && j % 4) ? box.x0 + (box.x1 - box.x0) * 0.42 : box.x0; });\n      if (!pos.length) scatter();\n      pos.forEach(function (q, j) { q[0] = Math.min(box.x1, Math.max(lo[j], q[0])); q[1] = Math.min(box.y1, Math.max(box.y0, q[1])); });"
+ },
+ {
+  "file": "src/page.js",
+  "old": "    var vel = [], squash = [], tPrev = 0;",
+  "new": "    var vel = [], squash = [], lo = [], tPrev = 0;"
+ },
+ {
+  "file": "src/page.js",
+  "old": "        pos[j] = [box.x0 + Math.random() * (box.x1 - box.x0), box.y0 + Math.random() * (box.y1 - box.y0)];",
+  "new": "        pos[j] = [lo[j] + Math.random() * (box.x1 - lo[j]), box.y0 + Math.random() * (box.y1 - box.y0)];"
+ },
+ {
+  "file": "src/page.js",
+  "old": "        if (p[0] < box.x0) { p[0] = box.x0; v[0] = Math.abs(v[0]) * (0.9 + Math.random() * 0.4); squash[j] = 1; }",
+  "new": "        if (p[0] < lo[j]) { p[0] = lo[j]; v[0] = Math.abs(v[0]) * (0.9 + Math.random() * 0.4); squash[j] = 1; }"
+ },
+ {
+  "file": "src/page.js",
+  "old": "      letter = wide ? 24 : 17;",
+  "new": "      letter = wide ? 26 : 18;"
+ },
+ {
+  "file": "src/post.css",
+  "old": "  position: absolute; left: 0; right: 0; top: 0; bottom: 2rem;\n  display: flex; align-items: center; justify-content: center;\n  font-size: 3.5rem;",
+  "new": "  position: absolute; left: 0; right: 0; top: 1.6rem; bottom: 0;\n  display: flex; align-items: center; justify-content: center;\n  font-size: 3.5rem;"
+ },
+ {
+  "file": "src/post.css",
+  "old": ".hero-glyph-cap {\n  position: absolute; left: -1rem; right: -1rem; bottom: 0; text-align: center;\n  font: 600 0.74rem/1.35 var(--font-body); color: var(--text-muted);\n  transition: opacity 0.35s ease;\n}",
+  "new": "/* The language name sits above its letter, like the label on a specimen, and\n   stays inside the letter's own column so it never runs into the links. */\n.hero-glyph-cap {\n  position: absolute; left: 0; right: 0; top: 0; text-align: center; white-space: nowrap;\n  font: 600 0.72rem/1.35 var(--font-body); letter-spacing: 0.02em; color: var(--text-muted);\n  transition: opacity 0.35s ease;\n}"
+ },
+ {
+  "file": "src/post.css",
+  "old": "  .hero-glyph-face { font-size: 4.2rem; bottom: 2.2rem; }",
+  "new": "  .hero-glyph-face { font-size: 4.2rem; top: 1.7rem; }"
+ },
+ {
+  "file": "src/post.css",
+  "old": "  .hero-glyph { position: absolute; left: 5.6rem; top: 50%; margin: 0; transform: translateY(-56%); width: 8rem; height: 7.8rem; }",
+  "new": "  /* The upper-left lane: between the card's top edge and the links row, which\n     has grown wide enough to cross a letter sitting at mid-height. */\n  .hero-glyph { position: absolute; left: 5.6rem; top: 27%; margin: 0; transform: translateY(-50%); width: 8rem; height: 7.8rem; }"
+ },
+ {
+  "file": "src/post.css",
+  "old": "  position: absolute; left: 0; right: 0; top: 1.6rem; bottom: 0;\n  display: flex; align-items: center; justify-content: center;\n  font-size: 3.5rem;",
+  "new": "  position: absolute; left: 0; right: 0; top: 0; bottom: 1.7rem;\n  display: flex; align-items: center; justify-content: center;\n  font-size: 3.5rem;"
+ },
+ {
+  "file": "src/post.css",
+  "old": "/* The language name sits above its letter, like the label on a specimen, and\n   stays inside the letter's own column so it never runs into the links. */\n.hero-glyph-cap {\n  position: absolute; left: 0; right: 0; top: 0; text-align: center; white-space: nowrap;",
+  "new": "/* The language name sits under its letter, like the label on a specimen, and\n   stays inside the letter's own column so it never runs into the links. */\n.hero-glyph-cap {\n  position: absolute; left: 0; right: 0; bottom: 0; text-align: center; white-space: nowrap;"
+ },
+ {
+  "file": "src/post.css",
+  "old": "  .hero-glyph { position: absolute; left: 5.6rem; top: 27%; margin: 0; transform: translateY(-50%); width: 8rem; height: 7.8rem; }",
+  "new": "  .hero-glyph { position: absolute; left: 5.6rem; top: 31%; margin: 0; transform: translateY(-50%); width: 8rem; height: 7.8rem; }"
+ },
+ {
+  "file": "src/post.css",
+  "old": "  .hero-glyph-face { font-size: 4.2rem; top: 1.7rem; }",
+  "new": "  .hero-glyph-face { font-size: 4.2rem; bottom: 1.8rem; }"
+ },
+ {
+  "file": "src/post.css",
+  "old": "  .hero-glyph { position: absolute; left: 5.6rem; top: 31%; margin: 0; transform: translateY(-50%); width: 8rem; height: 7.8rem; }",
+  "new": "  .hero-glyph { position: absolute; left: 5.6rem; top: 3.4rem; margin: 0; width: 8rem; height: 7.8rem; }"
+ },
+ {
+  "file": "src/aligngen.py",
+  "old": "This is NOT forced alignment. There is no aligner and no ground-truth word\ntimings anywhere in this repo. What it does have is the audio, so instead of\nspreading words evenly over the duration -- which visibly desynchronises at\nevery pause -- each word is placed by **cumulative acoustic energy**:",
+  "new": "For the short clips this is NOT forced alignment: there is no aligner run\nover them, so instead of spreading words evenly over the duration -- which\nvisibly desynchronises at every pause -- each word is placed by **cumulative\nacoustic energy**:"
+ },
+ {
+  "file": "src/aligngen.py",
+  "old": "Only clips whose text actually corresponds to their audio are included. The 45\nvoice samples are trimmed excerpts carrying the full sentence, so they are\nexcluded -- captioning them would be wrong by many seconds.\n\"\"\"",
+  "new": "Only clips whose text actually corresponds to their audio are included. The 45\nvoice samples are trimmed excerpts carrying the full sentence, so they are\nexcluded -- captioning them would be wrong by many seconds.\n\nThe audiobook chapter IS force-aligned: a word-level alignment of the shipped\nmp3 lives in audio_generations/ponniyin/alignments/, and when that file is\npresent its start and end per word replace the estimate. The estimate drifted\nup to six seconds from it by the middle of the chapter.\n\"\"\""
+ },
+ {
+  "file": "src/aligngen.py",
+  "old": "    \"voice\": \"Arun\", \"lang\": \"ta\", \"native\": True, \"long\": True,\n}]",
+  "new": "    \"voice\": \"Arun\", \"lang\": \"ta\", \"native\": True, \"long\": True,\n    \"align_file\": REPO / \"audio_generations/ponniyin/alignments/ps_ch1_ta.json\",\n}]"
+ },
+ {
+  "file": "src/aligngen.py",
+  "old": "        # invert the cumulative-energy curve: at what time has share s been spent?\n        frame_t = np.arange(len(cum)) * HOP / sr\n        starts = np.interp(edges * total, cum, frame_t)\n        assert np.all(np.diff(starts) >= -1e-6), c[\"file\"]\n        assert starts[0] >= 0 and starts[-1] <= dur + 0.05, (c[\"file\"], starts[-1], dur)\n",
+  "new": "        # invert the cumulative-energy curve: at what time has share s been spent?\n        frame_t = np.arange(len(cum)) * HOP / sr\n        starts = np.interp(edges * total, cum, frame_t)\n        assert np.all(np.diff(starts) >= -1e-6), c[\"file\"]\n        assert starts[0] >= 0 and starts[-1] <= dur + 0.05, (c[\"file\"], starts[-1], dur)\n\n        # A real alignment, where one exists, overrides the estimate. Its words\n        # must be exactly the text's words, in order, or the spans would light\n        # the wrong syllables -- so that is asserted, not assumed.\n        ends, aligned = None, False\n        af = c.get(\"align_file\")\n        if af and Path(af).exists():\n            al = json.loads(Path(af).read_text(encoding=\"utf-8\"))\n            aw = [w[\"word\"] for w in al[\"words\"]]\n            assert aw == [w.strip() for w in words], (c[\"file\"], \"alignment words differ from the text\")\n            assert all(al[\"words\"][i][\"start\"] <= al[\"words\"][i + 1][\"start\"] for i in range(len(aw) - 1))\n            assert al[\"words\"][-1][\"end\"] <= dur + 0.05, (al[\"words\"][-1][\"end\"], dur)\n            starts = np.array([w[\"start\"] for w in al[\"words\"]] + [al[\"words\"][-1][\"end\"]])\n            ends = [round(float(w[\"end\"]), 3) for w in al[\"words\"]]\n            aligned = True\n"
+ },
+ {
+  "file": "src/aligngen.py",
+  "old": "            \"long\": bool(c.get(\"long\")),\n            \"breaks\": breaks,\n        }",
+  "new": "            \"long\": bool(c.get(\"long\")),\n            \"breaks\": breaks,\n            # forced alignment: true timings, with an end per word so the\n            # highlight can rest during a pause instead of clinging to a word\n            \"aligned\": aligned,\n            **({\"e\": ends} if ends else {}),\n        }"
+ },
+ {
+  "file": "src/aligngen.py",
+  "old": "    print(f\"{len(out)} clips captioned, {kb:.1f} kB\")",
+  "new": "    print(f\"{len(out)} clips captioned, {kb:.1f} kB; \"\n          f\"{sum(v['aligned'] for v in out.values())} force-aligned\")"
+ },
+ {
+  "file": "src/readalong.js",
+  "old": " * The timings are ESTIMATED, not aligned. src/aligngen.py places each word by\n * cumulative acoustic energy rather than by elapsed time, so a pause holds the\n * highlight and a dense phrase catches it up -- 5-24% of these clips is silence,\n * which is what a linear highlight gets wrong. Within a phrase it still drifts,\n * because characters are an imperfect proxy for duration. The panel says so.\n",
+  "new": " * For the short clips the timings are ESTIMATED, not aligned. src/aligngen.py\n * places each word by cumulative acoustic energy rather than by elapsed time, so\n * a pause holds the highlight and a dense phrase catches it up -- 5-24% of these\n * clips is silence, which is what a linear highlight gets wrong. Within a phrase\n * it still drifts, because characters are an imperfect proxy for duration.\n * The audiobook is different: it carries a forced alignment (data.aligned), with\n * a start AND an end per word, so its highlight is exact and rests in pauses.\n"
+ },
+ {
+  "file": "src/readalong.js",
+  "old": "    var spans = [].slice.call(body.querySelectorAll('.rl-w'));\n    var last = -1;\n    audio.addEventListener('timeupdate', function () {\n      var i = Math.min(words.length - 1, idxAt(audio.currentTime, data.t));\n      if (i === last) return;\n      last = i;\n      for (var k = 0; k < spans.length; k++) {\n        spans[k].className = 'rl-w' + (k < i ? ' is-done' : k === i ? ' is-on' : '');\n      }",
+  "new": "    var spans = [].slice.call(body.querySelectorAll('.rl-w'));\n    var last = -1;\n    audio.addEventListener('timeupdate', function () {\n      var now = audio.currentTime, i = Math.min(words.length - 1, idxAt(now, data.t));\n      // With a real alignment a word is only lit while it is being said; in the\n      // pause after it, it joins the read words instead of clinging to the light.\n      var on = !(data.e && now > data.e[i] + 0.25);\n      var key = i * 2 + (on ? 1 : 0);\n      if (key === last) return;\n      last = key;\n      for (var k = 0; k < spans.length; k++) {\n        spans[k].className = 'rl-w' + (k < i || (k === i && !on) ? ' is-done' : k === i ? ' is-on' : '');\n      }"
+ },
+ {
+  "file": "src/readalong.js",
+  "old": "      status.textContent = 'Following ' + data.voice + ' \\u00b7 5:29 chapter';",
+  "new": "      status.textContent = 'Following ' + data.voice + (data.aligned ? ' \\u00b7 aligned word by word' : ' \\u00b7 5:29 chapter');"
+ },
+ {
+  "file": "src/aligngen.py",
+  "old": "The audiobook chapter IS force-aligned: a word-level alignment of the shipped\nmp3 lives in audio_generations/ponniyin/alignments/, and when that file is\npresent its start and end per word replace the estimate. The estimate drifted\nup to six seconds from it by the middle of the chapter.\n\"\"\"",
+  "new": "The audiobook chapter and the twelve style samples ARE force-aligned: word-level\nalignments of the shipped mp3s live in audio_generations/ponniyin/alignments/\nand audio_generations/blog_styles/alignments/, and when a clip's file is present\nits start and end per word replace the estimate. The estimate drifted up to six\nseconds from the alignment by the middle of the chapter. A token the aligner\ncould not time -- a bare digit, an equals sign, a dash -- borrows its\nneighbours' times so the highlight never skips.\n\"\"\""
+ },
+ {
+  "file": "src/aligngen.py",
+  "old": "    \"align_file\": REPO / \"audio_generations/ponniyin/alignments/ps_ch1_ta.json\",\n}]",
+  "new": "    \"align_file\": REPO / \"audio_generations/ponniyin/alignments/ps_ch1_ta.json\",\n}]\nSTYLE_ALIGN = REPO / \"audio_generations/blog_styles/alignments\"\n\n\ndef style_rows():\n    \"\"\"The style samples, from src/styles.json: text and paragraphs as the page\n    shows them, so the spans being lit are exactly the words on the card.\"\"\"\n    S = json.loads((SRC / \"styles.json\").read_text(encoding=\"utf-8\"))\n    rows = []\n    for r in S[\"context\"] + S[\"emotion\"]:\n        s = r.get(\"sample\")\n        if not s:\n            continue\n        paras = s.get(\"paras\") or ([s[\"text\"]] if s.get(\"text\") else [])\n        if not paras:\n            continue\n        rows.append({\n            \"file\": s[\"file\"], \"text\": \" \".join(paras), \"paras\": paras,\n            \"voice\": s.get(\"voice\") or s.get(\"speaker\") or \"\", \"lang\": s.get(\"lang\"),\n            \"native\": True, \"long\": len(\" \".join(paras).split()) > 120, \"trimmed\": False,\n            \"align_file\": STYLE_ALIGN / (Path(s[\"file\"]).stem + \".json\"),\n        })\n    return rows"
+ },
+ {
+  "file": "src/aligngen.py",
+  "old": "        rows.append(dict(e, text=\" \".join(paras), trimmed=False))\n",
+  "new": "        rows.append(dict(e, text=\" \".join(paras), trimmed=False))\n    rows += style_rows()\n"
+ },
+ {
+  "file": "src/aligngen.py",
+  "old": "            aw = [w[\"word\"] for w in al[\"words\"]]\n            assert aw == [w.strip() for w in words], (c[\"file\"], \"alignment words differ from the text\")\n            assert all(al[\"words\"][i][\"start\"] <= al[\"words\"][i + 1][\"start\"] for i in range(len(aw) - 1))\n            assert al[\"words\"][-1][\"end\"] <= dur + 0.05, (al[\"words\"][-1][\"end\"], dur)\n            starts = np.array([w[\"start\"] for w in al[\"words\"]] + [al[\"words\"][-1][\"end\"]])\n            ends = [round(float(w[\"end\"]), 3) for w in al[\"words\"]]\n            aligned = True\n",
+  "new": "            aw = [w[\"word\"] for w in al[\"words\"]]\n            assert aw == [w.strip() for w in words], (c[\"file\"], \"alignment words differ from the text\")\n            st = [w[\"start\"] for w in al[\"words\"]]\n            en = [w[\"end\"] for w in al[\"words\"]]\n            # An untimed token takes the end of the word before it (or the start\n            # of the one after, at the front), so it is lit in passing.\n            for i in range(len(st)):\n                if st[i] is None:\n                    prev_end = next((en[k] for k in range(i - 1, -1, -1) if en[k] is not None), None)\n                    next_start = next((st[k] for k in range(i + 1, len(st)) if st[k] is not None), dur)\n                    st[i] = prev_end if prev_end is not None else next_start\n                    en[i] = next_start\n            assert all(st[i] <= st[i + 1] for i in range(len(st) - 1)), c[\"file\"]\n            assert en[-1] <= dur + 0.05, (en[-1], dur)\n            starts = np.array(st + [en[-1]])\n            ends = [round(float(v), 3) for v in en]\n            aligned = True\n"
+ },
+ {
+  "file": "src/aligngen.py",
+  "old": "        breaks, acc = [0], 0\n        for i, w in enumerate(words[:-1]):\n            if re.search(r\"[.!?\\u0964]\\s*$\", w):\n                breaks.append(i + 1)\n",
+  "new": "        breaks, acc = [0], 0\n        if c.get(\"paras\") and len(c[\"paras\"]) > 1:\n            # The page sets this clip as paragraphs, so the transcript breaks\n            # where the paragraphs do.\n            for para in c[\"paras\"][:-1]:\n                acc += len(re.findall(r\"\\S+\", para))\n                breaks.append(acc)\n        else:\n            for i, w in enumerate(words[:-1]):\n                if re.search(r\"[.!?\\u0964]\\s*$\", w):\n                    breaks.append(i + 1)\n"
+ },
+ {
+  "file": "src/readalong.js",
+  "old": "  function sweep() {\n    [].forEach.call(document.querySelectorAll('.ab-panel'), wire);\n    var lf = document.getElementById('longform');\n    if (lf) wireLong(lf);\n  }",
+  "new": "  /* ── the style samples ───────────────────────────────────────────────────\n   * The twelve delivery-style clips are force-aligned too. The panel already\n   * sets each clip's text as paragraphs, so those paragraphs are rebuilt from\n   * the aligned words -- same spans, same highlight, same rest in a pause as the\n   * audiobook -- and the box the page already scrolls follows the lit word.\n   * ──────────────────────────────────────────────────────────────────────── */\n  function wireStyle(panel) {\n    var lines = panel.querySelector('.style-lines');\n    var slot = panel.querySelector('.style-player');\n    var audio = slot && slot.querySelector('audio');\n    var src = slot && slot.getAttribute('data-src');\n    var data = src && A[src];\n    if (!lines || !audio || !data || !data.aligned || lines.dataset.readalong) return;\n    lines.dataset.readalong = '1';\n\n    var proto = lines.querySelector('.style-line');\n    var cls = proto ? proto.className : 'style-line', lang = proto ? proto.getAttribute('lang') || '' : '';\n    var words = data.words, brk = data.breaks || [0], html = '';\n    for (var s = 0; s < brk.length; s++) {\n      var from = brk[s], to = (s + 1 < brk.length) ? brk[s + 1] : words.length;\n      html += '<p class=\"' + esc(cls) + ' rl-s\" lang=\"' + esc(lang) + '\">';\n      for (var i = from; i < to; i++) html += '<span class=\"rl-w\" data-i=\"' + i + '\">' + esc(words[i]) + '</span>';\n      html += '</p>';\n    }\n    lines.innerHTML = html;\n    var status = document.createElement('p');\n    status.className = 'rl-status';\n    status.setAttribute('aria-live', 'polite');\n    var idle = 'Press play to follow the words.';\n    status.textContent = idle;\n    lines.parentNode.insertBefore(status, lines);\n\n    var spans = [].slice.call(lines.querySelectorAll('.rl-w')), last = -1;\n    audio.addEventListener('timeupdate', function () {\n      var now = audio.currentTime, i = Math.min(words.length - 1, idxAt(now, data.t));\n      var on = !(data.e && now > data.e[i] + 0.25);\n      var key = i * 2 + (on ? 1 : 0);\n      if (key === last) return;\n      last = key;\n      for (var k = 0; k < spans.length; k++) {\n        spans[k].className = 'rl-w' + (k < i || (k === i && !on) ? ' is-done' : k === i ? ' is-on' : '');\n      }\n      var el = spans[i], box = lines.getBoundingClientRect(), r = el.getBoundingClientRect();\n      if (r.top < box.top + 16 || r.bottom > box.bottom - 16) {\n        lines.scrollTop = (r.top - box.top + lines.scrollTop) - box.height * 0.38;\n      }\n    });\n    audio.addEventListener('play', function () {\n      panel.setAttribute('data-following', '1');\n      status.textContent = 'Following ' + (data.voice || 'the clip') + ' \\u00b7 aligned word by word';\n    });\n    audio.addEventListener('pause', function () {\n      status.textContent = idle; panel.removeAttribute('data-following');\n    });\n    audio.addEventListener('ended', function () {\n      spans.forEach(function (s) { s.className = 'rl-w'; });\n      last = -1;\n    });\n  }\n\n  function sweep() {\n    [].forEach.call(document.querySelectorAll('.ab-panel'), wire);\n    var lf = document.getElementById('longform');\n    if (lf) wireLong(lf);\n    var sp = document.getElementById('stylePanel');\n    if (sp) wireStyle(sp);\n  }"
+ },
+ {
+  "file": "src/readalong.js",
+  "old": "    [document.getElementById('abPanels'), document.getElementById('longform')]\n      .filter(Boolean)",
+  "new": "    [document.getElementById('abPanels'), document.getElementById('longform'), document.getElementById('stylePanel')]\n      .filter(Boolean)"
+ },
+ {
+  "file": "src/readalong.css",
+  "old": "/* The estimate is declared where it is used, not only in a note further down. */",
+  "new": "/* The estimate is declared where it is used, not only in a note further down. */\n\n/* The style samples: the status line sits on the example card, above the text,\n   and the lit word keeps the card's own colouring for the rest. */\n.sx-example .rl-status { margin: 0.6rem 0 0.2rem; }\n.sx-example[data-following] .rl-status, .sx-body[data-following] .rl-status { color: var(--accent); }"
+ },
+ {
+  "file": "src/aligngen.py",
+  "old": "        rows.append(dict(e, text=\" \".join(paras), trimmed=False))\n    rows += style_rows()",
+  "new": "        rows.append(dict(e, text=\" \".join(paras), paras=paras, trimmed=False))\n    rows += style_rows()"
+ },
+ {
+  "file": "src/aligngen.py",
+  "old": "        breaks, acc = [0], 0\n        if c.get(\"paras\") and len(c[\"paras\"]) > 1:\n            # The page sets this clip as paragraphs, so the transcript breaks\n            # where the paragraphs do.\n            for para in c[\"paras\"][:-1]:\n                acc += len(re.findall(r\"\\S+\", para))\n                breaks.append(acc)\n        else:\n            for i, w in enumerate(words[:-1]):\n                if re.search(r\"[.!?\\u0964]\\s*$\", w):\n                    breaks.append(i + 1)\n",
+  "new": "        breaks, acc = [0], 0\n        if c.get(\"paras\"):\n            # The transcript breaks exactly where the text's own paragraphs do,\n            # and nowhere finer: a one-paragraph clip stays one paragraph rather\n            # than becoming a line per sentence.\n            for para in c[\"paras\"][:-1]:\n                acc += len(re.findall(r\"\\S+\", para))\n                breaks.append(acc)\n        else:\n            for i, w in enumerate(words[:-1]):\n                if re.search(r\"[.!?\\u0964]\\s*$\", w):\n                    breaks.append(i + 1)\n"
+ },
+ {
+  "file": "src/aligngen.py",
+  "old": "The audiobook chapter and the twelve style samples ARE force-aligned: word-level\nalignments of the shipped mp3s live in audio_generations/ponniyin/alignments/\nand audio_generations/blog_styles/alignments/, and when a clip's file is present\nits start and end per word replace the estimate. The estimate drifted up to six\nseconds from the alignment by the middle of the chapter. A token the aligner\ncould not time -- a bare digit, an equals sign, a dash -- borrows its\nneighbours' times so the highlight never skips.\n\"\"\"",
+  "new": "Every clip with a transcript on the page IS force-aligned when its alignment\nfile exists: torchaudio's MMS_FA (Meta's multilingual wav2vec2 CTC aligner over\nuroman romanisation) was run over all 99 blog clips into\naudio_generations/blog_alignments/<stem>.json, with the audiobook's and the\nstyle samples' earlier runs in audio_generations/ponniyin/ and blog_styles/.\nWhen a file is present its start and end per word replace the estimate, which\ndrifted up to six seconds by the middle of the chapter. A token the aligner\ncould not time -- a bare digit, an equals sign, a dash -- borrows its\nneighbours' times so the highlight never skips.\n\nThe 45 voice samples are trimmed excerpts of a longer sentence. They were\naligned on the untrimmed source and cut back to the words that finish inside\nthe excerpt, so their transcript is the words actually heard, not the sentence.\n\"\"\""
+ },
+ {
+  "file": "src/aligngen.py",
+  "old": "STYLE_ALIGN = REPO / \"audio_generations/blog_styles/alignments\"\n",
+  "new": "STYLE_ALIGN = REPO / \"audio_generations/blog_styles/alignments\"\nBLOG_ALIGN = REPO / \"audio_generations/blog_alignments\"\n\n\ndef wall_rows():\n    \"\"\"The per-language clips on the language tabs. Their text lives in the\n    page-data block, which build.py carries forward from the built page.\"\"\"\n    html = (BLOG / \"indic-speak.html\").read_text(encoding=\"utf-8\")\n    page = json.loads(re.search(r'<script id=\"page-data\" type=\"application/json\">(.*?)</script>', html, re.S).group(1))\n    return [{\n        \"file\": c[\"file\"], \"text\": c.get(\"text_raw\") or c[\"text\"], \"voice\": c[\"voice\"], \"lang\": c[\"lang\"],\n        \"native\": True, \"long\": False, \"trimmed\": False,\n    } for c in page[\"clips\"] if \"ponniyin\" not in c[\"file\"]]\n"
+ },
+ {
+  "file": "src/aligngen.py",
+  "old": "        rows.append(dict(e, text=\" \".join(paras), paras=paras, trimmed=False))\n    rows += style_rows()\n",
+  "new": "        rows.append(dict(e, text=\" \".join(paras), paras=paras, trimmed=False))\n    rows += style_rows() + wall_rows()\n"
+ },
+ {
+  "file": "src/aligngen.py",
+  "old": "    out, skipped = {}, []\n    for c in rows:\n        text = (c.get(\"text\") or \"\").strip()\n        if c.get(\"trimmed\"):\n            skipped.append((c[\"voice\"], \"trimmed: audio is an excerpt, text is the whole sentence\"))\n            continue\n",
+  "new": "    out, skipped = {}, []\n    for c in rows:\n        text = (c.get(\"text\") or \"\").strip()\n        af = c.get(\"align_file\") or BLOG_ALIGN / (Path(c[\"file\"]).stem + \".json\")\n        if c.get(\"trimmed\"):\n            # An excerpt: captioned only from its alignment on the untrimmed\n            # source, cut to the words heard, never from the whole sentence.\n            if not Path(af).exists():\n                skipped.append((c[\"voice\"], \"trimmed: audio is an excerpt, text is the whole sentence\"))\n                continue\n            al = json.loads(Path(af).read_text(encoding=\"utf-8\"))\n            assert al.get(\"trimmed\") and al[\"words\"], c[\"file\"]\n            spoken = \" \".join(w[\"word\"] for w in al[\"words\"])\n            assert text.split()[:len(al[\"words\"])] == spoken.split(), (c[\"file\"], \"excerpt is not a prefix of the sentence\")\n            text = spoken\n            c = dict(c, align_file=af, excerpt=True)\n        c = dict(c, align_file=af)\n"
+ },
+ {
+  "file": "src/aligngen.py",
+  "old": "            \"aligned\": aligned,\n            **({\"e\": ends} if ends else {}),\n        }",
+  "new": "            \"aligned\": aligned,\n            **({\"e\": ends} if ends else {}),\n            **({\"excerpt\": True} if c.get(\"excerpt\") else {}),\n        }"
+ },
+ {
+  "file": "src/aligngen.py",
+  "old": "            al = json.loads(Path(af).read_text(encoding=\"utf-8\"))\n            assert al.get(\"trimmed\") and al[\"words\"], c[\"file\"]\n            spoken = \" \".join(w[\"word\"] for w in al[\"words\"])\n            assert text.split()[:len(al[\"words\"])] == spoken.split(), (c[\"file\"], \"excerpt is not a prefix of the sentence\")\n            text = spoken\n            c = dict(c, align_file=af, excerpt=True)\n        c = dict(c, align_file=af)\n",
+  "new": "            al = json.loads(Path(af).read_text(encoding=\"utf-8\"))\n            assert al.get(\"trimmed\") and al[\"words\"], c[\"file\"]\n            # The kept list omits tokens the aligner could not time (a dash), so\n            # walk the sentence and keep those in place, untimed, up to the last\n            # word that was heard. Anything else out of order is a real mismatch.\n            merged, k, keep = [], 0, al[\"words\"]\n            for tok in text.split():\n                if k < len(keep) and tok == keep[k][\"word\"]:\n                    merged.append(keep[k]); k += 1\n                elif not re.search(r\"[^\\W_]\", tok):\n                    merged.append({\"word\": tok, \"start\": None, \"end\": None, \"score\": None})\n                else:\n                    raise AssertionError((c[\"file\"], \"excerpt is not a prefix of the sentence\", tok))\n                if k == len(keep):\n                    break\n            assert k == len(keep), c[\"file\"]\n            text = \" \".join(w[\"word\"] for w in merged)\n            c = dict(c, align_file=af, excerpt=True, align_words=merged)\n        c = dict(c, align_file=af)\n"
+ },
+ {
+  "file": "src/aligngen.py",
+  "old": "            al = json.loads(Path(af).read_text(encoding=\"utf-8\"))\n            aw = [w[\"word\"] for w in al[\"words\"]]\n            assert aw == [w.strip() for w in words], (c[\"file\"], \"alignment words differ from the text\")\n            st = [w[\"start\"] for w in al[\"words\"]]\n            en = [w[\"end\"] for w in al[\"words\"]]",
+  "new": "            al = json.loads(Path(af).read_text(encoding=\"utf-8\"))\n            if c.get(\"align_words\"):\n                al = {\"words\": c[\"align_words\"]}\n            aw = [w[\"word\"] for w in al[\"words\"]]\n            assert aw == [w.strip() for w in words], (c[\"file\"], \"alignment words differ from the text\")\n            st = [w[\"start\"] for w in al[\"words\"]]\n            en = [w[\"end\"] for w in al[\"words\"]]"
+ },
+ {
+  "file": "src/readalong.js",
+  "old": "  function sweep() {\n    [].forEach.call(document.querySelectorAll('.ab-panel'), wire);",
+  "new": "  /* ── one routine for everything else ────────────────────────────────────\n   * The per-language clip cards and the voice panel both show a clip's words in\n   * a single paragraph. `fill` sets that paragraph as word spans from the\n   * alignment; `follow` lights them from an <audio>. The voice panel builds its\n   * own Audio on click, so it calls these through window.ReadAlong rather than\n   * being found by a sweep. An excerpt (a voice sample cut from a longer\n   * sentence) ends in an ellipsis, so the reader knows the sentence goes on.\n   * ──────────────────────────────────────────────────────────────────────── */\n  var RTL = { ur: 1, ks: 1, sd: 1 };\n  function fill(el, src) {\n    var data = A[src];\n    if (!el || !data || !data.aligned) return null;\n    el.innerHTML = data.words.map(function (w, i) {\n      return '<span class=\"rl-w\" data-i=\"' + i + '\">' + esc(w) + '</span>';\n    }).join('') + (data.excerpt ? '<span class=\"rl-more\">\\u2026</span>' : '');\n    if (RTL[data.lang]) el.classList.add('rtl');\n    el.dataset.readalong = '1';\n    return data;\n  }\n  function follow(audio, el, src) {\n    var data = A[src];\n    if (!audio || !el || !data || !data.aligned || audio.dataset.readalong) return;\n    audio.dataset.readalong = '1';\n    var spans = [].slice.call(el.querySelectorAll('.rl-w')), words = data.words, last = -1;\n    audio.addEventListener('timeupdate', function () {\n      var now = audio.currentTime, i = Math.min(words.length - 1, idxAt(now, data.t));\n      var on = !(data.e && now > data.e[i] + 0.25);\n      var key = i * 2 + (on ? 1 : 0);\n      if (key === last) return;\n      last = key;\n      for (var k = 0; k < spans.length; k++) {\n        spans[k].className = 'rl-w' + (k < i || (k === i && !on) ? ' is-done' : k === i ? ' is-on' : '');\n      }\n    });\n    audio.addEventListener('ended', function () {\n      spans.forEach(function (s) { s.className = 'rl-w'; });\n      last = -1;\n    });\n  }\n  window.ReadAlong = { fill: fill, follow: follow };\n\n  // The per-language clip cards: text under the player, one paragraph each.\n  function wireCard(card) {\n    var audio = card.querySelector('audio'), txt = card.querySelector('p.txt');\n    if (!audio || !txt || txt.dataset.readalong) return;\n    if (fill(txt, card.dataset.src)) follow(audio, txt, card.dataset.src);\n  }\n\n  function sweep() {\n    [].forEach.call(document.querySelectorAll('.ab-panel'), wire);\n    [].forEach.call(document.querySelectorAll('#clipPanels .clip[data-src]'), wireCard);"
+ },
+ {
+  "file": "src/readalong.js",
+  "old": "    [document.getElementById('abPanels'), document.getElementById('longform'), document.getElementById('stylePanel')]\n      .filter(Boolean)",
+  "new": "    [document.getElementById('abPanels'), document.getElementById('longform'), document.getElementById('stylePanel'), document.getElementById('clipPanels')]\n      .filter(Boolean)"
+ },
+ {
+  "file": "src/readalong.css",
+  "old": "/* The style samples: the status line sits on the example card, above the text,",
+  "new": "/* The voice panel's transcript line and the excerpt mark. */\n.vr-text { margin: 0.6rem 0 0; font-family: var(--indic); font-size: 0.86rem; line-height: 1.7; color: var(--text-secondary); }\n.vr-text.rtl { direction: rtl; text-align: right; }\n.rl-more { color: var(--chart-text-secondary); margin-left: 0.15em; }\n\n/* The style samples: the status line sits on the example card, above the text,"
+ },
+ {
+  "file": "src/range.js",
+  "old": "      '<p class=\"vr-now-desc\">' + esc(v.desc).replace('*Best for:*', '<em>Suggested for:</em>') + '</p>' +\n      (v.file",
+  "new": "      '<p class=\"vr-now-desc\">' + esc(v.desc).replace('*Best for:*', '<em>Suggested for:</em>') + '</p>' +\n      (v.file ? '<p class=\"vr-text\" lang=\"' + esc(v.lang) + '\"></p>' : '') +\n      (v.file"
+ },
+ {
+  "file": "src/range.js",
+  "old": "    var btn = now.querySelector('.vr-play');\n    if (!btn) return;",
+  "new": "    // The words heard in the sample, lit as it plays, from the alignment when\n    // the read-along has one for this clip. Empty otherwise: nothing invented.\n    var text = now.querySelector('.vr-text');\n    if (text && !(window.ReadAlong && window.ReadAlong.fill(text, v.file))) text.remove();\n\n    var btn = now.querySelector('.vr-play');\n    if (!btn) return;"
+ },
+ {
+  "file": "src/range.js",
+  "old": "      audio = new Audio(v.file);\n      var rect = now.querySelector('.vr-veil');",
+  "new": "      audio = new Audio(v.file);\n      if (text && window.ReadAlong) window.ReadAlong.follow(audio, text, v.file);\n      var rect = now.querySelector('.vr-veil');"
+ },
+ {
+  "file": "src/range.js",
+  "old": "    // The words heard in the sample, lit as it plays, from the alignment when\n    // the read-along has one for this clip. Empty otherwise: nothing invented.\n    var text = now.querySelector('.vr-text');\n    if (text && !(window.ReadAlong && window.ReadAlong.fill(text, v.file))) text.remove();\n",
+  "new": "    // The words heard in the sample, lit as it plays, from the alignment when\n    // the read-along has one for this clip. Left empty (and so hidden) otherwise:\n    // nothing invented. src/readalong.js loads after this file, so the first\n    // panel is filled on play instead.\n    var text = now.querySelector('.vr-text');\n    if (text && window.ReadAlong) window.ReadAlong.fill(text, v.file);\n"
+ },
+ {
+  "file": "src/range.js",
+  "old": "      if (text && window.ReadAlong) window.ReadAlong.follow(audio, text, v.file);\n",
+  "new": "      if (text && window.ReadAlong) {\n        if (!text.dataset.readalong) window.ReadAlong.fill(text, v.file);\n        window.ReadAlong.follow(audio, text, v.file);\n      }\n"
+ },
+ {
+  "file": "src/readalong.css",
+  "old": ".vr-text.rtl { direction: rtl; text-align: right; }",
+  "new": ".vr-text.rtl { direction: rtl; text-align: right; }\n.vr-text:empty { display: none; }"
+ },
+ {
+  "file": "src/range.js",
+  "old": "      (v.file ? '<p class=\"vr-text\" lang=\"' + esc(v.lang) + '\"></p>' : '') +",
+  "new": "      (v.file ? '<p class=\"vr-text\" lang=\"' + esc(v.lang) + '\" data-src=\"' + esc(v.file) + '\"></p>' : '') +"
+ },
+ {
+  "file": "src/readalong.js",
+  "old": "  function sweep() {\n    [].forEach.call(document.querySelectorAll('.ab-panel'), wire);\n    [].forEach.call(document.querySelectorAll('#clipPanels .clip[data-src]'), wireCard);",
+  "new": "  function sweep() {\n    [].forEach.call(document.querySelectorAll('.ab-panel'), wire);\n    [].forEach.call(document.querySelectorAll('#clipPanels .clip[data-src]'), wireCard);\n    // The voice panel rendered before this script ran: fill its line now.\n    [].forEach.call(document.querySelectorAll('.vr-text[data-src]:not([data-readalong])'), function (el) { fill(el, el.dataset.src); });"
+ },
+ {
+  "file": "src/texgen.js",
+  "old": "fs.writeFileSync(path.join(SRC, 'tex.json'), JSON.stringify(out), 'utf8');",
+  "new": "// The style samples too: the lecture clip carries an inline expression, and the\n// read-along typesets it as one unit while the words inside it are spoken. Keyed\n// by the expression itself, source dollars included, so a token run can look it up.\nconst styles = JSON.parse(fs.readFileSync(path.join(SRC, 'styles.json'), 'utf8'));\nfor (const group of Object.values(styles)) {\n  for (const row of group) {\n    const text = row.sample && row.sample.text;\n    if (!text) continue;\n    for (const m of text.matchAll(/\\$([^$]+)\\$/g)) { out[m[0]] = mathml(m[1].trim()); spans++; }\n  }\n}\nfs.writeFileSync(path.join(SRC, 'tex.json'), JSON.stringify(out), 'utf8');"
+ },
+ {
+  "file": "src/readalong.js",
+  "old": "    var proto = lines.querySelector('.style-line');\n    var cls = proto ? proto.className : 'style-line', lang = proto ? proto.getAttribute('lang') || '' : '';\n    var words = data.words, brk = data.breaks || [0], html = '';\n    for (var s = 0; s < brk.length; s++) {\n      var from = brk[s], to = (s + 1 < brk.length) ? brk[s + 1] : words.length;\n      html += '<p class=\"' + esc(cls) + ' rl-s\" lang=\"' + esc(lang) + '\">';\n      for (var i = from; i < to; i++) html += '<span class=\"rl-w\" data-i=\"' + i + '\">' + esc(words[i]) + '</span>';\n      html += '</p>';\n    }",
+  "new": "    var proto = lines.querySelector('.style-line');\n    var cls = proto ? proto.className : 'style-line', lang = proto ? proto.getAttribute('lang') || '' : '';\n    var words = data.words, brk = data.breaks || [0], html = '';\n    // Inline LaTeX, typeset at build time (src/texgen.js): a run of tokens from\n    // an opening $ to the closing one becomes one span that lights while any of\n    // its words is spoken. Text after the closing $ (a full stop) stays text.\n    var texEl = document.getElementById('tex-data');\n    var TEX = texEl && texEl.textContent ? JSON.parse(texEl.textContent) : {};\n    for (var s = 0; s < brk.length; s++) {\n      var from = brk[s], to = (s + 1 < brk.length) ? brk[s + 1] : words.length;\n      html += '<p class=\"' + esc(cls) + ' rl-s\" lang=\"' + esc(lang) + '\">';\n      for (var i = from; i < to; i++) {\n        var w = words[i];\n        if (w.charAt(0) === '$') {\n          var j = i, run = '';\n          while (j < to) { run += (j > i ? ' ' : '') + words[j].trim(); if (j > i && words[j].indexOf('$') >= 0 || j === i && words[j].trim().length > 1 && words[j].trim().indexOf('$', 1) >= 0) break; j++; }\n          var close = run.indexOf('$', 1), math = close > 0 ? TEX[run.slice(0, close + 1)] : null;\n          if (math) {\n            html += '<span class=\"rl-w rl-tex\" data-i=\"' + i + '\" data-j=\"' + j + '\">' + math + '</span>' +\n                    esc(run.slice(close + 1)) + (words[j].slice(-1) === ' ' ? ' ' : '');\n            i = j;\n            continue;\n          }\n        }\n        html += '<span class=\"rl-w\" data-i=\"' + i + '\">' + esc(w) + '</span>';\n      }\n      html += '</p>';\n    }"
+ },
+ {
+  "file": "src/readalong.js",
+  "old": "    var spans = [].slice.call(lines.querySelectorAll('.rl-w')), last = -1;\n    audio.addEventListener('timeupdate', function () {\n      var now = audio.currentTime, i = Math.min(words.length - 1, idxAt(now, data.t));\n      var on = !(data.e && now > data.e[i] + 0.25);\n      var key = i * 2 + (on ? 1 : 0);\n      if (key === last) return;\n      last = key;\n      for (var k = 0; k < spans.length; k++) {\n        spans[k].className = 'rl-w' + (k < i || (k === i && !on) ? ' is-done' : k === i ? ' is-on' : '');\n      }\n      var el = spans[i], box = lines.getBoundingClientRect(), r = el.getBoundingClientRect();",
+  "new": "    // A span covers words a..b (one word, or a typeset run); its state comes\n    // from where the current word sits against that range.\n    var spans = [].slice.call(lines.querySelectorAll('.rl-w')).map(function (el) {\n      return { el: el, a: +el.dataset.i, b: +(el.dataset.j || el.dataset.i) };\n    }), last = -1;\n    audio.addEventListener('timeupdate', function () {\n      var now = audio.currentTime, i = Math.min(words.length - 1, idxAt(now, data.t));\n      var on = !(data.e && now > data.e[i] + 0.25);\n      var key = i * 2 + (on ? 1 : 0);\n      if (key === last) return;\n      last = key;\n      var cur = null;\n      spans.forEach(function (sp) {\n        var done = sp.b < i || (sp.b === i && !on), lit = !done && sp.a <= i && i <= sp.b;\n        sp.el.className = 'rl-w' + (sp.el.classList.contains('rl-tex') ? ' rl-tex' : '') + (done ? ' is-done' : lit ? ' is-on' : '');\n        if (sp.a <= i && i <= sp.b) cur = sp.el;\n      });\n      var el = cur || spans[spans.length - 1].el, box = lines.getBoundingClientRect(), r = el.getBoundingClientRect();"
+ },
+ {
+  "file": "src/readalong.js",
+  "old": "    audio.addEventListener('ended', function () {\n      spans.forEach(function (s) { s.className = 'rl-w'; });\n      last = -1;\n    });\n  }\n\n  /* ── one routine for everything else",
+  "new": "    audio.addEventListener('ended', function () {\n      spans.forEach(function (sp) { sp.el.className = 'rl-w' + (sp.el.classList.contains('rl-tex') ? ' rl-tex' : ''); });\n      last = -1;\n    });\n  }\n\n  /* ── one routine for everything else"
+ },
+ {
+  "file": "src/readalong.css",
+  "old": "/* The voice panel's transcript line and the excerpt mark. */",
+  "new": "/* A typeset expression inside a transcript: the browser's own math layout,\n   sized to the line, lit as one unit. */\n.rl-tex math { font-size: 1.05em; }\n.rl-tex.is-on, .rl-tex.is-done { padding: 0 0.1em; }\n\n/* The voice panel's transcript line and the excerpt mark. */"
+ }
+]

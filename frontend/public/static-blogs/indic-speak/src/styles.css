@@ -1,0 +1,394 @@
+/* ── The fourteen delivery styles ──────────────────────────────────────────
+ * Was fourteen identical cards, six of which had the description "emotion". The
+ * list has a real structure and this shows it: eight styles name a CONTEXT the
+ * speech is going into and need a gloss, and six name an EMOTION and do not --
+ * a one-word value explains itself, so it gets a chip rather than a card with a
+ * redundant caption.
+ *
+ * The contexts are set as a two-column reference, exact string on the left in the
+ * mono face. Alignment is the point: matching is literal, so the capitals in
+ * `AIR style news` and `Customer Care` and the apostrophe in `children's stories`
+ * are part of the value, and a single mono column is where that is visible.
+ * ──────────────────────────────────────────────────────────────────────── */
+
+/* The mount already carries .style-grid from the markup, where post.css makes it a
+   card grid. It is now just the container for two groups, so it goes back to being a
+   block -- nesting a grid inside it put every group heading in column one and every
+   list in column two. */
+.style-grid {
+  display: block;
+  margin-top: 0.2rem;
+}
+
+/* Two columns of four. Eight full-width rows left two thirds of each row empty --
+   the notes are three or four words -- and made a short list look like a table with
+   nothing in it. Paired down each column, the values still line up where the casing
+   has to be compared. */
+
+
+
+/* ── the heard example ─────────────────────────────────────────────────────
+   A delivery style is a sound. Nine of the thirteen carry a clip in Suhani's
+   voice; the four without one say so, because a silent row that looks like the
+   others is worse than an admitted gap. */
+.style-line {
+  display: block;
+  margin-top: 0.3rem;
+  font-family: var(--indic);
+  font-size: 0.82rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+.style-none {
+  display: block;
+  margin-top: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--chart-text-secondary);
+}
+.style-none a { color: var(--accent); }
+
+/* The emotion rows now carry a clip too, so they are cards like the contexts
+   rather than a chip row; the chip style stays for nothing else and goes. */
+
+/* The lecture sample is English, and its source text is LaTeX: the Indic face has
+   nothing to render there, and the mono face is what the rest of the page uses for
+   text-as-typed. */
+.style-line[lang="en"] {
+  /* Latin-dominant, but this bulletin still says बोधन in Devanagari, and the mono
+     face has no glyph for it. The Indic stack rides behind as the fallback so a
+     code-mixed line never renders as tofu. */
+  font-family: var(--font-mono), var(--indic);
+  font-size: 0.74rem;
+  line-height: 1.65;
+  word-break: break-word;
+}
+
+/* ── one style at a time ────────────────────────────────────────────────
+   Thirteen values laid out at once was a wall to skim, not a thing to hear. A rail
+   on the left indexes them under the two kinds they actually divide into; the panel
+   on the right holds one example, and the pager sits under it.
+
+   The card wears a slow conic sweep on its border, drawn twice: once as the border
+   itself, once blurred behind as a halo. The angle is a registered property, which
+   is the only way an angle can be animated; where @property is unsupported the
+   gradient simply holds at 0deg and the card keeps a static warm edge.
+   ──────────────────────────────────────────────────────────────────────── */
+/* The explorer IS the card. .chart-panel would otherwise wrap it in a second one
+   -- white, padded, rounded and bordered -- so the ring sat inside a canvas it did
+   not need. Loaded after post.css, which is what settles the tie on specificity. */
+.research-prose .chart-card:has(.sx-explorer) > .chart-panel {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+
+@property --sx-a { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+
+.sx-explorer {
+  display: grid;
+  grid-template-columns: 15.5rem minmax(0, 1fr);
+  position: relative;
+  isolation: isolate;
+  border-radius: 18px;
+  min-height: 33rem;
+}
+/* No canvas: the card sits on the page's own ground. That rules out the usual
+   padding-box/border-box trick for a gradient border, which needs an opaque fill
+   to hide the gradient behind the card -- and a flat fill would seam against the
+   page's radial washes. The ring is its own masked layer instead, so the interior
+   stays genuinely transparent. */
+.sx-explorer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  z-index: -1;
+  pointer-events: none;
+  background: conic-gradient(from var(--sx-a),
+    rgba(233, 120, 60, 0.35) 0deg, #F59A4F 50deg, #D9480F 95deg,
+    #F59A4F 140deg, rgba(233, 120, 60, 0.35) 190deg,
+    rgba(233, 120, 60, 0.35) 360deg);
+  animation: sxGlow 6s linear infinite;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+/* A definite height, not a minimum, is what lets the rail scroll: a grid row sized
+   to its content would just grow to fit twelve tall tabs and never overflow. The
+   panel's one long transcript scrolls inside itself for the same reason. */
+@media (min-width: 721px) { .sx-explorer { height: 33rem; } }
+/* The halo is masked to the ring outside the card so the blur never washes over
+   the card face. */
+.sx-explorer::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  padding: 3px;
+  border-radius: inherit;
+  z-index: -1;
+  pointer-events: none;
+  background: conic-gradient(from var(--sx-a),
+    transparent 0deg, #F5A96A 50deg, #E2601F 95deg, #F5A96A 140deg,
+    transparent 190deg, transparent 360deg);
+  filter: blur(2.5px);
+  opacity: 0.42;
+  animation: sxGlow 6s linear infinite;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+@keyframes sxGlow { to { --sx-a: 360deg; } }
+
+.sx-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 0.7rem;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-radius: 17px 0 0 17px;
+  background: linear-gradient(180deg, #FFF7EA 0%, #FBEFDD 100%);
+  border-right: 1px solid rgba(194, 65, 12, 0.14);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(194, 65, 12, 0.35) transparent;
+}
+.sx-rail::-webkit-scrollbar { width: 8px; }
+.sx-rail::-webkit-scrollbar-thumb {
+  background: rgba(194, 65, 12, 0.3);
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background-clip: content-box;
+}
+.sx-group {
+  margin: 0.5rem 0 0.15rem 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--chart-text-secondary);
+}
+.sx-rail > .sx-group:first-child { margin-top: 0.1rem; }
+
+.sx-tab {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 3.35rem;
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+  border: 1px solid transparent;
+  border-radius: 13px;
+  background: none;
+  cursor: pointer;
+  /* The body face, not mono. Mono on this page means "text as typed" -- it is what
+     the panel's <code> values are set in -- and the rail now carries a sentence-cased
+     label rather than the literal string, so it must not borrow that signal. */
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0;
+  color: var(--text-secondary);
+  transition: background 0.18s ease, border-color 0.18s ease,
+    transform 0.12s ease, color 0.18s ease;
+}
+.sx-tab:hover {
+  background: rgba(255, 255, 255, 0.75);
+  border-color: rgba(194, 65, 12, 0.2);
+  color: var(--accent);
+  transform: translateX(2px);
+}
+.sx-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sx-tab.is-active {
+  background: linear-gradient(135deg, #E9561C, #C2410C);
+  border-color: transparent;
+  color: #FFF6EE;
+  box-shadow: 0 8px 18px -10px rgba(194, 65, 12, 0.7);
+}
+.sx-ico { flex: none; width: 1.85rem; height: 1.85rem; display: block; opacity: 0.85; }
+.sx-tab.is-active .sx-ico, .sx-tab:hover .sx-ico { opacity: 1; }
+.sx-tab-t { min-width: 0; }
+.sx-tab-x {
+  margin-left: auto;
+  font-style: normal;
+  font-size: 0.6rem;
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.sx-tab.is-active .sx-tab-x { background: rgba(255, 246, 238, 0.22); color: #FFF6EE; }
+
+.sx-panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 1.05rem 1.2rem 1.1rem;
+  background: var(--white);
+  border-radius: 0 17px 17px 0;
+}
+.sx-body {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  animation: sxRise 0.34s ease both;
+}
+.sx-head { flex: 0 0 auto; margin-bottom: 0.9rem; }
+/* The example is a card of its own. It takes the height of what is in it -- a
+   forty-second bulletin is a taller card than a one-line emotion -- and the two
+   auto margins split the leftover space, which is what centres it. */
+.sx-example {
+  flex: 0 0 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  margin: auto 0;
+  padding: 1rem 1.1rem;
+  /* White. With the outer .chart-panel canvas gone this is the only surface in
+     the card, so it is the player that reads as the object, on the page's ground. */
+  border: 1px solid rgba(194, 65, 12, 0.22);
+  border-radius: 14px;
+  background: var(--white);
+}
+.sx-example > :first-child { margin-top: 0; }
+/* A bulletin runs to six hundred characters, an audiobook to two thousand, and an
+   emotion line to thirty. The long ones scroll inside the card rather than setting
+   the height of all twelve. The scroll is on the GROUP, so a multi-paragraph
+   transcript scrolls as one body of text and not paragraph by paragraph. */
+.sx-example .style-lines { overflow-y: auto; max-height: 11.5rem; }
+.sx-example .style-line { overflow: visible; max-height: none; }
+.style-lines .style-line + .style-line { margin-top: 0.7rem; }
+/* No transform in the last keyframe: a filled `transform: none` computes to an
+   identity matrix, which makes this a containing block for fixed descendants and
+   stranded the docked player off-screen. Omitted, the filled value is the
+   underlying one and the element stays untransformed. */
+@keyframes sxRise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; } }
+
+.sx-pager {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.8rem;
+}
+.sx-pager .n {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--chart-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+.style-step {
+  width: 2rem;
+  height: 2rem;
+  min-height: 24px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--accent);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: border-color 0.16s ease, color 0.16s ease, background 0.16s ease;
+}
+.style-step:hover { border-color: var(--accent); background: var(--accent-soft); }
+.style-step:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.style-step svg { width: 0.9rem; height: 0.9rem; display: block; }
+
+.style-kind {
+  margin: 0 0 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--chart-text-secondary);
+}
+.style-values { display: flex; flex-wrap: wrap; gap: 0.45rem; margin: 0 0 0.4rem; }
+.style-values code {
+  font-family: var(--font-mono);
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+.style-values code + code::before {
+  content: '/';
+  margin-right: 0.45rem;
+  color: var(--chart-text-secondary);
+  font-weight: 400;
+}
+.style-note {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+/* This register is already being spoken further up the page, so the control is a
+   button that takes you there rather than a link dressed as prose. Built in the
+   page's own chip idiom so it reads as an action. */
+.style-goto {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 28px;
+  padding: 0.3rem 0.85rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+.style-goto:hover { background: var(--accent); color: var(--white); }
+.style-goto:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+@media (max-width: 720px) {
+  .sx-explorer { grid-template-columns: 1fr; }
+  .sx-panel { border-radius: 0 0 17px 17px; }
+  .sx-rail {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    overflow-y: visible;
+    border-right: 0;
+    border-bottom: 1px solid rgba(194, 65, 12, 0.14);
+    border-radius: 17px 17px 0 0;
+  }
+  .sx-tab { min-height: 2.6rem; }
+  .sx-ico { width: 1.4rem; height: 1.4rem; }
+  .sx-group { width: 100%; margin: 0.3rem 0 0 0.2rem; }
+  .sx-tab { flex: 0 0 auto; }
+  .sx-tab-x { margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sx-explorer, .sx-explorer::after, .sx-body { animation: none; }
+  .sx-tab:hover { transform: none; }
+}
+
+/* The player is the page's own, so it only needs room and a caption above it. */
+.style-scene {
+  margin: 0 0 0.5rem;
+  /* Scene titles carry the clip's own language -- the Telugu narration's title is
+     Telugu -- and the body face has no glyphs for those scripts. The Indic stack
+     rides behind it so a title never renders as tofu. */
+  font-family: var(--font-body), var(--indic);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.style-player { margin-bottom: 0.2rem; }
+.style-line { margin-top: 0.7rem; }
+.style-none { margin: 0; text-align: center; }

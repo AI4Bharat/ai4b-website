@@ -1,0 +1,61 @@
+/* ── Exhibits use the width they need ──────────────────────────────────────
+ * The article column is 896px, which is right for prose and wrong for a chart of
+ * ten languages, a 45-row ladder or a wall of 22 scripts: at 896 the ladder's
+ * waveforms are squeezed to 592px and the Devanagari row of eight tiles wraps onto
+ * a second line, while a 1600px window leaves 350px of dead margin on each side.
+ *
+ * So a card that holds a chart or a table breaks out of the column, centred on it,
+ * with negative margins. Prose does not move. `:has()` asks the question directly
+ * rather than tagging each card by hand, and it is the same predicate the reading
+ * layout uses, so the two agree about what an exhibit is.
+ *
+ * NOT transform: translateX(-50%), which is the usual centring trick here. The
+ * cards carry .reveal-card, whose entrance animates `transform`, and an animation
+ * beats an inline transform -- the card would snap back to the column's left edge
+ * for the length of its own reveal.
+ *
+ * --wide is derived from the contents rail, which is `position: fixed` at
+ * left: 1.25rem and appears at 1280px. Its expanded right edge measures 195px, so a
+ * centred exhibit clears it when the viewport is at least width + 2*(195+32) = 454.
+ * Hence `100vw - 454px`, floored at the column so the exhibit is never NARROWER
+ * than the prose, and capped at 1180px. Below 1280px the rail is not there and the
+ * exhibit simply matches the column, which is what keeps the width monotonic across
+ * the breakpoint: without the floor it went 1180 -> 896 as the window got wider.
+ * ──────────────────────────────────────────────────────────────────────── */
+.research-page { --wide: min(896px, calc(100vw - 2rem)); }
+
+@media (min-width: 1280px) {
+  .research-page { --wide: max(896px, min(1180px, calc(100vw - 454px))); }
+}
+
+.research-prose .chart-card:has(svg),
+.research-prose .chart-card:has(table),
+.research-prose .chart-card:has(.sx-explorer),
+.research-prose .editorial-card:has(svg),
+.research-prose .editorial-card:has(table) {
+  width: var(--wide);
+  max-width: none;
+  margin-inline: calc((100% - var(--wide)) / 2);
+}
+
+/* ── Exhibits ignore the subsection indent ─────────────────────────────────
+ * `.research-subsection` marks an indented aside with a 2px rule and a 1rem pad.
+ * A column-width card inside one KEEPS that indent: it belongs to the aside and
+ * lines up with the paragraphs around it.
+ *
+ * A wide exhibit cannot -- it breaks out past the column by definition, and centring
+ * it on a box 18px narrower left it 9px right of every other wide exhibit on the
+ * page. So only the wide case corrects, and it corrects for the indent explicitly.
+ *
+ * This ties on specificity with the rule above, so source order is what makes it
+ * win. Keep it last in this file.
+ * ──────────────────────────────────────────────────────────────────────── */
+.research-subsection > .chart-card:has(svg),
+.research-subsection > .chart-card:has(table),
+.research-subsection > .chart-card:has(.sx-explorer),
+.research-subsection > .editorial-card:has(svg),
+.research-subsection > .editorial-card:has(table) {
+  width: var(--wide);
+  margin-inline: calc((100% + 1rem + 2px - var(--wide)) / 2 - 1rem - 2px)
+                 calc((100% + 1rem + 2px - var(--wide)) / 2);
+}

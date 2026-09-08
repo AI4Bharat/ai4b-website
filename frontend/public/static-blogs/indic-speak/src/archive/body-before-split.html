@@ -1,0 +1,427 @@
+<div class="research-page">
+<div class="progress-bar" id="progress"></div>
+
+<div class="toc-hover-zone" id="tocZone" aria-hidden="true"></div>
+<nav class="toc-rail" id="tocRail" aria-label="Table of contents"><ul></ul></nav>
+
+<header class="hero">
+  <div class="research-article-column hero-inner">
+    <p class="research-type-eyebrow hero-eyebrow">Announcement<span class="sep">·</span><span>3 September 2026</span><span class="sep">·</span><span>9 min read</span></p>
+
+    <div class="hero-card">
+      <div class="wave" id="waveField" aria-hidden="true"><div class="wave-played"></div><div class="wave-head"></div></div>
+      <div class="hero-scrim" aria-hidden="true"></div>
+
+      <h1 class="research-type-title" id="heroTitle">Indic-Speak: 45 voices for 22 Indian languages, from one model</h1>
+
+      <nav class="hero-links" aria-label="Publication links">
+        <a class="research-link-chip" href="https://huggingface.co/bodhan-ai/indic-speak" target="_blank" rel="noopener noreferrer">Hugging Face</a>
+        <a class="research-link-chip" href="#voices">Voice list</a>
+        <a class="research-link-chip" href="#evaluation">Benchmark</a>
+      </nav>
+
+      <div class="spec-strip">
+        <div class="spec-chip"><span class="v">45</span><span class="k">voices</span></div>
+        <div class="spec-chip"><span class="v">22 / 12</span><span class="k">languages / scripts</span></div>
+        <div class="spec-chip"><span class="v">3.36B</span><span class="k">parameters</span></div>
+        <div class="spec-chip"><span class="v" id="spec-judge">4.90 / 5</span><span class="k">judge, 30k rows</span></div>
+        <div class="spec-chip"><span class="v">24 kHz</span><span class="k">streamed audio</span></div>
+      </div>
+    </div>
+    <p class="hero-caption" id="heroCaption"></p>
+  </div>
+</header>
+
+<div class="research-article-column">
+  <p class="research-type-dek">A text-to-speech model that reads Indian text the way it is actually written, native script and English side by side in one sentence, in any of 45 first-party voices. Every voice speaks every language, and keeps the accent of where it comes from.</p>
+
+  <nav class="toc-pills" id="tocPills" aria-label="Table of contents">
+    <p class="research-type-eyebrow toc-pills-title">On this page</p>
+    <ul></ul>
+  </nav>
+
+  <article class="research-prose">
+
+    <section id="motivation" class="section-opening">
+      <p class="research-type-lead">Indian text is code-mixed by default. A Hindi science lesson says <span class="indic">mammal</span> and <span class="indic">Blue Whale</span> in Latin script inside a Devanagari sentence; a Tamil explainer keeps <em>alveolar capillaries</em> in English. Most speech systems want a language flag per span and a phoneme frontend per language, and code-mixed text breaks both. We wanted a model that needs neither: give it the sentence as written, pick a voice, and it reads the whole thing.</p>
+      <p class="research-type-body">Indic-Speak is a 3.36B-parameter stack built around a language model whose vocabulary was extended with audio codes, so the same network that already models Hindi and English in one token stream also models how they sound. The voices are learned from people, and they carry where they are from: a Kashmiri voice reading Tamil sounds like a Kashmiri speaker reading Tamil. For some products that is exactly what you want, and for the rest it is the thing to know before you choose.</p>
+    </section>
+
+    <section id="voices" data-toc="Voices and languages">
+      <header class="research-section-header">
+        <div class="research-section-rule" aria-hidden="true"></div>
+        <h2 class="research-type-h2"><span class="section-num">01</span> Forty-five voices, and which one to pick</h2>
+      </header>
+      <p class="research-type-lead">One female and one male voice are recommended per language. Every voice below reads every language, and you can hear any of them: click a point to play it, then hear the same sentence from a native and a non-native voice further down. Ten of the 22 languages are in the public benchmark, and those carry measured scores.</p>
+
+      <figure class="chart-card">
+        <figcaption class="chart-card-header">
+          <h3 class="chart-card-title">The voice library</h3>
+          <p class="chart-card-subtitle">All 45 voices by register and pace, both measured from that voice's own generations at the default sampling settings. Click any voice to hear it.</p>
+        </figcaption>
+        <div class="chart-panel">
+          <div class="vspace" id="voiceSpace">
+            <ul class="chart-legend" aria-label="Series legend">
+              <li class="chart-legend-item"><span class="chart-marker chart-marker-circle" style="color:#C2410C"></span><span>female</span></li>
+              <li class="chart-legend-item"><span class="chart-marker chart-marker-square" style="color:#0F766E"></span><span>male</span></li>
+              <li class="chart-legend-item"><span class="chart-marker chart-marker-circle vs-legend-ring"></span><span>click to play</span></li>
+            </ul>
+            <div class="chart-plot"><svg id="vsChart" class="chart" role="img" aria-label="Scatter plot of all 45 voices by median pitch and speaking pace"></svg></div>
+            <div class="vs-tip" id="vsTip"></div>
+          </div>
+        </div>
+        <div class="vs-player" id="vsPlayer" hidden></div>
+        <p class="chart-card-note">Register is median pitch and pace is characters per second. Pace matters for scripting: plan about 12 characters per second of audio for most voices. On a narrow screen the names are dropped for legibility; tap a voice to hear it and see its name.</p>
+      </figure>
+
+      <figure class="chart-card" id="crossCard">
+        <figcaption class="chart-card-header">
+          <h3 class="chart-card-title">Hear the accent travel</h3>
+          <p class="chart-card-subtitle">The same sentence, twice: once in a voice native to the language, once in a voice from somewhere else. Same words, same model, same settings. Both readings carry the judge's top content score, so the words came through in each. The difference you hear is the voice.</p>
+        </figcaption>
+        <div class="chart-panel">
+          <div class="lang-tabs" id="abTabs" role="tablist" aria-label="Language"></div>
+          <div id="abPanels"></div>
+        </div>
+        <p class="chart-card-note">Ten languages, twenty readings, chosen by rule from the benchmark: for each language, the sentence whose transcripts matched most closely among those a native and a non-native voice both placed in the judge's top fidelity band. The judge scores content, not accent or naturalness — which is exactly why this one is worth your ears rather than a number.</p>
+      </figure>
+
+      <div class="pull-note"><b>Every voice speaks every language.</b> Conditioning is fully cross-lingual, and there is no separate model per language to switch between. Across the benchmark, native casting scored <span id="cb-native">4.94</span> and cross-lingual casting <span id="cb-cross">4.90</span> out of 5: the accent stays, the words survive. The five most portable voices by measured cross-lingual score are <span id="cb-top"></span>.</div>
+
+      <figure class="chart-card">
+        <figcaption class="chart-card-header">
+          <h3 class="chart-card-title">Recommended voice per language</h3>
+          <p class="chart-card-subtitle">All 22 languages. The judge column is the mean content-fidelity score for these voices reading their own language in the benchmark; languages outside the benchmark set are marked with a dash.</p>
+        </figcaption>
+        <div class="chart-panel">
+          <div class="table-scroll">
+            <table class="data-table" id="recTable">
+              <thead><tr><th scope="col">Language</th><th scope="col">Female</th><th scope="col">Male</th><th scope="col" class="num">Judge, native text</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <p class="chart-card-note">Pace matters for scripting: plan about 12 characters per second of audio for most voices.</p>
+      </figure>
+    </section>
+
+    <section id="capabilities" data-toc="What it does">
+      <header class="research-section-header">
+        <div class="research-section-rule" aria-hidden="true"></div>
+        <h2 class="research-type-h2"><span class="section-num">02</span> What it does, with audio</h2>
+      </header>
+      <p class="research-type-lead">Every clip below was generated by the deployed model at the default settings, and each carries the judge's top content score. Text is shown exactly as it was sent.</p>
+
+      <div class="research-feature-grid left">
+        <article class="research-feature-card">
+          <p class="research-feature-index">code-mixing</p>
+          <h3 class="research-feature-title">No language flag, no frontend</h3>
+          <p class="research-feature-body">Native script and embedded English in one sentence, read straight through. The language is inferred from the text; there is nothing to tag and no phoneme dictionary to maintain.</p>
+        </article>
+        <article class="research-feature-card">
+          <p class="research-feature-index">delivery</p>
+          <h3 class="research-feature-title">Fourteen styles</h3>
+          <p class="research-feature-body">One tag moves the delivery, from an All India Radio bulletin to a children's story. With no tag the model uses its conversational register, which is the right choice for most plain reading.</p>
+        </article>
+        <article class="research-feature-card">
+          <p class="research-feature-index">length</p>
+          <h3 class="research-feature-title">Chapter-scale narration</h3>
+          <p class="research-feature-body">About 30 seconds of speech per request. Longer passages are split by the caller at sentence and clause punctuation and joined, which is how the five-minute chapter below was made.</p>
+        </article>
+        <article class="research-feature-card">
+          <p class="research-feature-index">prosody</p>
+          <h3 class="research-feature-title">Punctuation is the control surface</h3>
+          <p class="research-feature-body">A comma is a breath, a danda ends a sentence, an exclamation lifts the segment. Numbers and currency are expanded by the text normaliser before synthesis.</p>
+        </article>
+      </div>
+
+      <div class="research-subsection">
+        <h3 class="research-type-h3">Code-mixed speech, in ten languages</h3>
+        <p class="research-type-body">One female and one male native voice per language, reading a benchmark sentence with English terms embedded. Switch language with the tabs.</p>
+        <div class="lang-tabs" id="clipTabs" role="tablist" aria-label="Clip language"></div>
+        <div id="clipPanels"></div>
+      </div>
+
+      <div class="research-subsection">
+        <h3 class="research-type-h3">The fourteen style tags</h3>
+        <p class="research-type-body">These are the fourteen the API accepts, spelled exactly as it expects them. Anything else is rejected outright with a 422 rather than quietly approximated, so case and apostrophes matter.</p>
+        <div class="style-grid" id="styleGrid"></div>
+      </div>
+
+      <div class="research-subsection">
+        <h3 class="research-type-h3">Long-form narration</h3>
+        <p class="research-type-body">Chapter one of <em>Ponniyin Selvan</em>, read by Arun in the <code>single person narration audiobook</code> style. Seven paragraphs generated in sequence and joined: five minutes and twenty-nine seconds, scored 5 out of 5 by the judge, with a character error rate under one percent against the source text.</p>
+        <div id="longform"></div>
+      </div>
+
+      <div class="research-subsection">
+        <h3 class="research-type-h3">Writing for the ear</h3>
+        <p class="research-type-body">A model that reads text as written has to be handed text a person would actually say out loud. Nobody says "one two three comma four five six point seven eight rupees", and nobody says "backslash int". The normaliser in front of the model turns written notation into spoken words first, and it is the part of the stack that does the least glamorous and most necessary work.</p>
+        <figure class="chart-card" id="normCard">
+          <figcaption class="chart-card-header">
+            <h3 class="chart-card-title">Written, then spoken</h3>
+            <p class="chart-card-subtitle">Every line below is the normaliser's real output. A textbook integral, a PAN number, a room number and a bus route each need a different reading, and getting them wrong is the difference between a lesson and a noise.</p>
+          </figcaption>
+          <div class="chart-panel">
+            <div class="lang-tabs" id="normTabs" role="tablist" aria-label="Example group"></div>
+            <div id="normPanels"></div>
+          </div>
+          <p class="chart-card-note">Captured by <code>src/normgen.py</code> from the normaliser itself, so these move when it does.</p>
+        </figure>
+
+        <p class="research-type-body">Which language the numbers are spoken in is a choice, and it belongs to the caller. The same Hindi sentence, at the default and with the number language pinned:</p>
+        <div class="io-panel" id="normHindi"></div>
+      </div>
+    </section>
+
+    <section id="tech" data-toc="Under the hood">
+      <header class="research-section-header">
+        <div class="research-section-rule" aria-hidden="true"></div>
+        <h2 class="research-type-h2"><span class="section-num">03</span> How it is built</h2>
+      </header>
+      <p class="research-type-lead">A text decoder whose vocabulary was extended with audio codes, served as a streaming endpoint. There is no phoneme frontend, no duration predictor and no separate prosody model anywhere in the stack. What follows is the whole path from your sentence to a waveform.</p>
+
+      <div class="research-feature-grid left">
+        <article class="research-feature-card">
+          <p class="research-feature-index">model</p>
+          <h3 class="research-feature-title">Llama-3.2-3B backbone</h3>
+          <div class="fact-list">
+            <div><b>Parameters</b> — 3.301 B in the backbone; 3.359 B across everything that runs at inference, counted per component below</div>
+            <div><b>Vocabulary</b> — 156,960 tokens: 128,256 text plus 28,672 audio codes and a small set of speaker, style and non-verbal tokens, with input and output embeddings tied</div>
+            <div><b>Audio frame</b> — 7 codec tokens per 85.33 ms frame, 82.03 tokens per second of speech</div>
+            <div><b>Context</b> — 131,072 positions, so length is a budget rather than a limit</div>
+          </div>
+        </article>
+        <article class="research-feature-card">
+          <p class="research-feature-index">audio</p>
+          <h3 class="research-feature-title">SNAC codebooks, Vocos decoder</h3>
+          <div class="fact-list">
+            <div><b>Codebooks</b> — SNAC's quantizer at 24 kHz, three codebooks at a 1:2:4 time ratio flattened into one token stream. Only the codebooks are used, to turn generated codes back into latents: 0.14 M parameters</div>
+            <div><b>Decoder</b> — those latents go straight to a fine-tuned Vocos decoder, 58.4 M parameters. SNAC's own encoder and decoder are never in the path</div>
+            <div><b>Output</b> — 16-bit PCM at 24 kHz, streamed as it is generated</div>
+          </div>
+        </article>
+        <article class="research-feature-card span-2">
+          <p class="research-feature-index">serving</p>
+          <h3 class="research-feature-title">One request, streamed</h3>
+          <div class="fact-list">
+            <div><b>Request</b> — text, voice, optional style, optional sampling settings; the language is inferred from the text</div>
+            <div><b>Length</b> — about 30 s of speech per request, a 2,520-token ceiling; a request takes the text you give it, and splitting longer passages is the caller's job</div>
+            <div><b>Defaults</b> — temperature 0.6, top-p 0.9, top-k 50, repetition penalty 1.2. The conservative end of the sweep, chosen for the lowest defect rate; the livelier settings carry several times the failure rate and vary more between seeds</div>
+          </div>
+        </article>
+      </div>
+
+      <div class="research-subsection">
+        <h3 class="research-type-h3">What the model is</h3>
+        <p class="research-type-body">Indic-Speak is a Llama-3.2-3B decoder that had 28,672 audio codes added to its vocabulary and was then taught to continue a written sentence with sound instead of more words. That is the entire idea. There is no acoustic model, no phoneme dictionary, no aligner, and no duration predictor: the network that already knew how Hindi and English fit together in one sentence was given a way to say them.</p>
+        <p class="research-type-body">Because the audio codes are ordinary vocabulary entries, everything the decoder already did keeps working on them. Attention reaches back over the whole utterance, so a clause can be shaped by a comma thirty words earlier. The 131,072-position context makes a long passage a budget question rather than an architectural one. And the same sampling controls that steer text, temperature and top-p and a repetition penalty, steer the voice.</p>
+        <p class="research-type-body">You are given three levers and no others: the <em>speaker</em>, an optional <em>style</em>, and the <em>punctuation of your text</em>. Emotion, pace and emphasis are downstream of those three. It is a small surface, and it is small on purpose.</p>
+
+        <figure class="chart-card">
+          <figcaption class="chart-card-header">
+            <h3 class="chart-card-title">Audio lives inside the text vocabulary</h3>
+            <p class="chart-card-subtitle">All 156,960 entries the model can emit, in order. The audio codes are one contiguous run in the middle, which is what lets the decoder tell speech from text with a range check rather than a separate head.</p>
+          </figcaption>
+          <div class="chart-panel">
+            <div class="chart-plot"><svg id="vocabBand" class="chart" role="img" aria-label="The 156,960-token vocabulary, showing the contiguous band of 28,672 audio codes"></svg></div>
+          </div>
+          <p class="chart-card-note">Control tokens sit below the audio band and conditioning tokens above it, so the added entries are deliberately not contiguous with each other.</p>
+        </figure>
+
+        <figure class="chart-card">
+          <figcaption class="chart-card-header">
+            <h3 class="chart-card-title">From your sentence to a waveform</h3>
+            <p class="chart-card-subtitle">Six steps, one model and one decoder. Everything between the prompt and the audio is the same next-token loop a text model runs.</p>
+          </figcaption>
+          <div class="chart-panel">
+            <div class="chart-plot"><svg id="flowDiagram" class="chart" role="img" aria-label="End to end flow from prompt through the decoder and codebooks to a streamed waveform"></svg></div>
+          </div>
+          <p class="chart-card-note">The decoder emits <code>&lt;|start_of_speech|&gt;</code> itself; it is the first thing it generates rather than something the prompt supplies.</p>
+        </figure>
+      </div>
+
+      <figure class="editorial-card arch-card">
+        <figcaption class="editorial-card-header">
+          <p class="editorial-card-eyebrow">model architecture</p>
+          <h3 class="editorial-card-title">One stream: text in, audio codes out</h3>
+          <p class="editorial-card-description">The language model has no audio head. Audio is just more vocabulary: 28,672 codec codes were added to a 128,256-token text vocabulary, and the model predicts them the same way it predicts a word. Three pieces run at inference, 3.36 billion parameters in total, and the language model is 98% of that. What makes the arrangement work is the shape of one frame.</p>
+        </figcaption>
+
+        <div class="editorial-panel arch-stack">
+          <p class="research-type-h4">The stack</p>
+          <dl class="param-list" id="paramList"></dl>
+          <p class="editorial-card-footer">Counted from the shipped weights, not estimated, and counting only what runs when you make a request. The backbone's input and output embeddings are tied, so its 156,960 &times; 3,072 embedding matrix is counted once. SNAC's encoder and decoder sit in that checkpoint too, another 19.7 M, but generation never touches them.</p>
+        </div>
+
+        <div class="editorial-panel">
+          <p class="arch-h">one frame = 7 tokens = 85.33 ms of audio</p>
+          <ul class="chart-legend arch-legend-list" aria-label="Codebook legend">
+            <li class="chart-legend-item"><span class="chart-marker chart-marker-square" style="color:#B33F00"></span><span>coarse codebook, 1 token</span></li>
+            <li class="chart-legend-item"><span class="chart-marker chart-marker-square" style="color:#CF7538"></span><span>middle, 2 tokens</span></li>
+            <li class="chart-legend-item"><span class="chart-marker chart-marker-square" style="color:#EFC8AC"></span><span>fine, 4 tokens</span></li>
+          </ul>
+          <svg id="frameDiagram" class="chart" role="img" aria-label="Diagram of one 7-token audio frame and how its three codebooks interleave"></svg>
+          <p class="arch-note">A code's offset in the vocabulary comes from <b>its position in the frame, not from which codebook it came from</b>. Positions 1 and 4 are both the middle codebook; 2, 3, 5 and 6 are all the fine one. That is what makes the flat stream self-describing: it de-interleaves without a separate structure signal, and a frame that starts at the wrong offset is detectably wrong rather than quietly misaligned.</p>
+        </div>
+
+        <div class="editorial-panel arch-budget">
+          <p class="research-type-h4">Budget a script</p>
+          <p class="editorial-control-hint">How long a script takes depends on who reads it: pace runs from 9.3 to 14.5 characters per second across the library, so the same words are 30 seconds in one voice and 46 in another. Pick a voice and a length to get the real numbers.</p>
+          <div class="editorial-controls editorial-controls-two">
+            <div class="editorial-control">
+              <div class="editorial-control-label"><span>Voice</span><strong id="budVoiceMeta">12.6 chars/s</strong></div>
+              <select id="budVoice" class="bud-select" aria-label="Voice"></select>
+            </div>
+            <div class="editorial-control">
+              <div class="editorial-control-label"><span>Script length</span><strong id="budChars">1,000 characters</strong></div>
+              <input type="range" id="budRange" min="100" max="20000" step="100" value="1000" aria-label="Script length in characters">
+            </div>
+          </div>
+          <dl class="editorial-summary">
+            <div><dt>speech</dt><dd id="budSec">79 s</dd></div>
+            <div><dt>tokens to generate</dt><dd id="budTokens">6,517</dd></div>
+            <div><dt>requests at the 30 s window</dt><dd id="budReqs">3</dd></div>
+          </dl>
+          <p class="arch-formula" id="budFormula"></p>
+        </div>
+
+        <p class="editorial-card-footer">Rates come from the codec: 2,048 samples per coarse frame at 24 kHz gives 11.72 frames per second, and seven tokens per frame gives 82.03 tokens per second of speech. The final partial frame is padded rather than dropped, which is why the frame count rounds up.</p>
+      </figure>
+
+      <div class="research-subsection">
+        <h3 class="research-type-h3">Why a language-model backbone</h3>
+        <p class="research-type-body">The alternative was a purpose-built acoustic model with a phoneme frontend. A text decoder buys three things this product depends on. Code-mixing comes for free, because the backbone already models Hindi and English in one token stream and needs no language decision per span. Punctuation becomes prosody, because the model already knows a comma is a boundary. And long context makes a multi-minute utterance a sequence-length question rather than an architectural one.</p>
+        <p class="research-type-body">Generation from a language model is sampled rather than deterministic, which is what makes it expressive and also what makes it worth measuring properly. A rare bad sample sounds like speech, so a signal-quality score would miss it. That is why the evaluation below reads transcripts and judges content, and why we publish the whole distribution rather than only the mean.</p>
+      </div>
+    </section>
+
+    <section id="evaluation" data-toc="Evaluation">
+      <header class="research-section-header">
+        <div class="research-section-rule" aria-hidden="true"></div>
+        <h2 class="research-type-h2"><span class="section-num">04</span> How it measures up</h2>
+      </header>
+      <p class="research-type-lead">Fifteen thousand code-mixed sentences across ten languages, each read twice by different voices: thirty thousand readings spread over all 45 voices, mostly cross-lingual casting. Every reading was transcribed by an Indic speech recogniser, then scored by an independent judge model on a 0 to 5 content-fidelity scale that treats script, spelling and number-format differences as correct.</p>
+
+      <figure class="chart-card">
+        <figcaption class="chart-card-header">
+          <h3 class="chart-card-title">Top-band rate by text language</h3>
+          <p class="chart-card-subtitle">Share of readings in the judge's top fidelity band, as the distance from the all-language mean. Ten languages, about 3,000 readings each, spread across all 45 voices.</p>
+        </figcaption>
+        <div class="chart-panel">
+          <ul class="chart-legend" aria-label="Series legend">
+            <li class="chart-legend-item"><span class="chart-marker chart-marker-circle" style="color:#C2410C"></span><span>Above the mean</span></li>
+            <li class="chart-legend-item"><span class="chart-marker chart-marker-square" style="color:#0F766E"></span><span>Below the mean</span></li>
+          </ul>
+          <div class="chart-plot"><svg viewBox="0 0 760 254" class="chart" id="evalChart" role="img" aria-label="Diverging bar chart of each language's perfect-score rate relative to the all-language mean of 93.0 percent"></svg></div>
+        </div>
+        <p class="chart-card-note">Bars to the right are better. The whole spread is 1.6 percentage points, and the axis is in percentage points away from the mean.</p>
+        <details class="chart-data">
+          <summary class="chart-data-toggle">View data table</summary>
+          <div class="chart-data-panel">
+            <table class="data-table" id="evalTable">
+              <caption class="sr-only">Judge score, top-band rate, low-score rate and reading count per text language</caption>
+              <thead><tr><th scope="col">Text language</th><th scope="col" class="num">Judge (0–5)</th><th scope="col" class="num">Scored 5</th><th scope="col" class="num">Scored ≤2</th><th scope="col" class="num">Readings</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </details>
+      </figure>
+
+      <figure class="editorial-card">
+        <figcaption class="editorial-card-header">
+          <p class="editorial-card-eyebrow">the three numbers that matter</p>
+          <h3 class="editorial-card-title">Casting, failures, and behaviour under load</h3>
+          <p class="editorial-card-description">The benchmark doubled as a load test against the production deployment, so accuracy and throughput were measured on the same requests.</p>
+        </figcaption>
+        <dl class="editorial-summary">
+          <div>
+            <dt>native vs cross-lingual</dt>
+            <dd><span id="mn-native">4.94</span> vs <span id="mn-cross">4.90</span></dd>
+          </div>
+          <div>
+            <dt>readings scored ≤2</dt>
+            <dd id="mn-fail">0.70%</dd>
+          </div>
+          <div>
+            <dt>sustained request starts</dt>
+            <dd>1,200 / min</dd>
+          </div>
+        </dl>
+        <p class="editorial-card-footer">Cross-lingual casting costs about three points of the top-band rate (95.7% against 92.9%). The rows the judge scored at or below 2 divide roughly evenly between a repeated phrase, a clause dropped or cut short, and other content slips. The load test started 70,931 requests in an hour at a first-byte latency of 62 ms median and 122 ms at the 95th percentile, with no server or network errors; 1.7% of starts were asked to back off and every one of them succeeded on a retry. Accuracy did not move with load: the busiest minutes scored 4.902 against 4.887 in the quietest.</p>
+      </figure>
+
+      <div class="pull-note"><b>Why not word error rate?</b> The recogniser writes English words in native script, so <em>mammal</em> in a Bengali sentence comes back as <span class="indic">ম্যামাল</span> and counts as an error against the Latin-script source even when it was spoken cleanly. Across the readings in the judge's top band, string word error rate still averages 48.8 and character error rate 52.9: on code-mixed text those numbers measure the script mismatch, not the speech. We keep both in the data and let the judge give the verdict.</div>
+
+      <p class="pending-note"><span class="pending-badge"><span class="pulse"></span>coming soon</span><span>Preference ranking tests are ongoing and will land soon. Content fidelity is one axis; human preference against other Indian-language systems, on naturalness and voice quality, is in progress and this post will be updated with the results.</span></p>
+
+      <p class="cap-subnote">Judge: Gemma-4-31B-IT with a content-fidelity rubric. Recogniser: IndicCanary. Reference text is the normalised input, so number expansion is scored as spoken rather than as written.</p>
+    </section>
+
+    <section id="limitations" data-toc="Limitations">
+      <header class="research-section-header">
+        <div class="research-section-rule" aria-hidden="true"></div>
+        <h2 class="research-type-h2"><span class="section-num">05</span> Where it falls short today</h2>
+      </header>
+      <div class="research-bullet-block">
+        <ul class="research-bullet-list">
+          <li class="research-bullet-item"><span class="research-bullet-marker" aria-hidden="true">01</span><span class="research-bullet-text"><b>0.7% of readings need a second take.</b> The model repeats a phrase, drops a clause, or lets a number drift. These look like sampling accidents rather than a limit of the model: in an earlier study, re-generating 56 such rows recovered 55 of them, 50 of those on the first retry. A pipeline that transcribes its own output and retries the outliers is the pattern we would build.</span></li>
+          <li class="research-bullet-item"><span class="research-bullet-marker" aria-hidden="true">02</span><span class="research-bullet-text"><b>Three voices are noticeably weaker.</b> Sansuma (4.53), Gwrbw (4.74) and Madhukar (4.76) trail the other 42, which sit between 4.82 and 4.96. Sansuma reading Marathi is the one voice-and-language pair below 4.1.</span></li>
+          <li class="research-bullet-item"><span class="research-bullet-marker" aria-hidden="true">03</span><span class="research-bullet-text"><b>Style tags must match exactly.</b> <code>children's stories</code> works; <code>Children's Stories</code> comes back as a 422. Emotion tags are lowercase, the customer-care tag is title case.</span></li>
+          <li class="research-bullet-item"><span class="research-bullet-marker" aria-hidden="true">04</span><span class="research-bullet-text"><b>One request is about 30 seconds.</b> Longer passages are produced by splitting at punctuation and joining the pieces, which is what the audiobook chapter above does. Single-pass multi-minute generation is in progress.</span></li>
+          <li class="research-bullet-item"><span class="research-bullet-marker" aria-hidden="true">05</span><span class="research-bullet-text"><b>Numbers default to English.</b> Latin digits inside an Indic sentence are read as English words unless you pass the sentence language to the normaliser or write native-script digits.</span></li>
+          <li class="research-bullet-item"><span class="research-bullet-marker" aria-hidden="true">06</span><span class="research-bullet-text"><b>Accent travels with the voice.</b> This is by design, but it means the recommended native voice is the safe default for any product where the listener expects a local speaker.</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="outlook" data-toc="What's next">
+      <header class="research-section-header">
+        <div class="research-section-rule" aria-hidden="true"></div>
+        <h2 class="research-type-h2"><span class="section-num">06</span> What's next</h2>
+      </header>
+      <p class="research-type-body">What we are building next, in the order we expect it.</p>
+      <div class="roadmap">
+        <div class="rm-item"><span class="rm-when">in progress</span><span>Preference ranking against other Indian-language speech systems, published here when complete.</span></div>
+        <div class="rm-item"><span class="rm-when">in progress</span><span>Single-pass generation of multi-minute passages, without splitting and joining.</span></div>
+        <div class="rm-item"><span class="rm-when">next</span><span>More voices per language, and finer control over pace and emphasis.</span></div>
+        <div class="rm-item"><span class="rm-when">next</span><span>Word-level timestamps in the response, for subtitling and read-along.</span></div>
+      </div>
+    </section>
+  </article>
+
+  <section class="cite-block">
+    <div class="cite-head">
+      <h2 class="research-type-h3">Cite this work</h2>
+      <button type="button" class="cite-copy" id="copyCite">Copy BibTeX</button>
+    </div>
+    <pre class="cite-bibtex" id="bibtex">@misc{indic-speak-2026,
+  title  = {Indic-Speak: Text-to-Speech for 22 Indian Languages in 45 Voices},
+  author = {Bodhan.ai},
+  year   = {2026},
+  url    = {https://huggingface.co/bodhan-ai/indic-speak}
+}</pre>
+  </section>
+</div>
+
+<aside class="ecosystem-banner">
+  <div class="research-article-wide ecosystem-inner">
+    <h2 class="research-type-h2 ecosystem-heading">Available across India's AI ecosystem</h2>
+    <nav class="ecosystem-links" aria-label="Ecosystem links">
+      <a class="research-link-chip research-link-chip-on-mosaic ecosystem-chip" href="https://bhashini.gov.in" target="_blank" rel="noopener noreferrer">Bhashini</a>
+      <a class="research-link-chip research-link-chip-on-mosaic ecosystem-chip" href="https://aikosh.indiaai.gov.in" target="_blank" rel="noopener noreferrer">AIKosh</a>
+      <a class="research-link-chip research-link-chip-on-mosaic ecosystem-chip" href="https://bodhan.ai" target="_blank" rel="noopener noreferrer">Bodhan</a>
+      <a class="research-link-chip research-link-chip-on-mosaic ecosystem-chip" href="https://huggingface.co/bodhan-ai/indic-speak" target="_blank" rel="noopener noreferrer">Hugging Face</a>
+    </nav>
+  </div>
+</aside>
+
+<footer class="post-footer">
+  <div class="research-article-column">
+    <p>Indic-Speak · Bodhan AI · September 2026</p>
+    <p>© 2026 Bodhan AI. All rights reserved.</p>
+  </div>
+</footer>
+
+<button type="button" id="top-btn" aria-label="Back to top">↑</button>
+</div>
