@@ -37,7 +37,7 @@ const POST = {
   title: "Indic-Transcribe: Built for the way India actually speaks",
   date: "September 8, 2026",
   readMin: 15,
-  author: "The Bodhan Speech Team",
+  author: "Bodhan AI & AI4Bharat",
   links: [
     {
       label: "Core on Hugging Face",

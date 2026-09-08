@@ -37,7 +37,7 @@ const POST = {
   title: "IndicOCR: State-of-the-art Document Parsing for India",
   date: "September 8, 2026",
   readMin: 8,
-  author: "Bodhan AI and AI4Bharat",
+  author: "Bodhan AI & AI4Bharat",
   links: [
     {
       label: "Hugging Face",

@@ -37,7 +37,7 @@ const POST = {
   title: "Indic-Speak: Text-to-Speech for the Way India Actually Writes",
   date: "September 8, 2026",
   readMin: 6,
-  author: "Bodhan AI and AI4Bharat",
+  author: "Bodhan AI & AI4Bharat",
   links: [
     {
       label: "Demo",
