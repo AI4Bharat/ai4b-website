@@ -1,0 +1,7 @@
+{
+ "components": {
+  "backbone (Llama-3.2-3B)": 3300928512,
+  "vocoder (SNAC quantizer + Vocos)": 58502194
+ },
+ "total": 3359430706
+}

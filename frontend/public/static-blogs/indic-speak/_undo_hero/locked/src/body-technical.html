@@ -1,0 +1,380 @@
+<div class="research-page">
+<div class="progress-bar" id="progress"></div>
+
+<div class="toc-hover-zone" id="tocZone" aria-hidden="true"></div>
+<nav class="toc-rail" id="tocRail" aria-label="Table of contents"><ul></ul></nav>
+
+<header class="hero">
+  <div class="research-article-column hero-inner">
+    <p class="research-type-eyebrow hero-eyebrow">Technical report<span class="sep">·</span><span class="date">SEP 5, 2026</span><span class="sep">·</span><span>8 min read</span></p>
+
+    <div class="hero-card">
+      <canvas class="hero-ripple" id="heroRipple" aria-hidden="true"></canvas>
+      <div class="hero-glyph" id="heroGlyph" role="img" aria-label="The first vowel of each of the twelve scripts Indic-Speak reads, one language after another"><span class="hero-glyph-face" id="heroGlyphA"></span><span class="hero-glyph-face" id="heroGlyphB"></span><span class="hero-glyph-cap" id="heroGlyphCap"></span></div>
+      <div class="hero-scrim" aria-hidden="true"></div>
+      <div class="hero-partners">
+        <span class="hero-partner-group"><span class="hero-partner"><img class="chip-mark" src="images/bodhan_mark.svg" alt="" width="22" height="22">Bodhan AI</span></span>
+        <span class="hero-partner-group"><span class="hero-x" aria-hidden="true">&times;</span><span class="hero-partner"><img class="chip-mark" src="images/logo_ai4bharat.png" alt="" width="22" height="22">AI4Bharat</span></span>
+      </div>
+      <h1 class="research-type-title" id="heroTitle" data-accent-text="Speak">Inside Indic-<span class="hero-title-accent">Speak</span></h1>
+      <p class="hero-promise">A 3.36B language model where punctuation shapes timing, pauses, and emphasis.</p>
+
+      <nav class="hero-links" aria-label="Publication links">
+        <button type="button" class="research-link-chip" id="heroDemoOpen" aria-expanded="false" aria-controls="heroDemo"><svg class="chip-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h7A2.5 2.5 0 0 1 16 6.5v11A2.5 2.5 0 0 1 13.5 20h-7A2.5 2.5 0 0 1 4 17.5v-11Z"/><path fill="currentColor" d="M17.4 10.2l3-1.9A.8.8 0 0 1 21.6 9v6a.8.8 0 0 1-1.2.7l-3-1.9v-3.6Z"/></svg><span>Demo</span></button>
+        <a class="research-link-chip" href="https://huggingface.co/bodhan-ai/indic-speak" target="_blank" rel="noopener noreferrer"><svg class="chip-ico" viewBox="0 0 95 88" aria-hidden="true" focusable="false"><path fill="#FFD21E" d="M47.21 76.5a34.75 34.75 0 1 0 0-69.5 34.75 34.75 0 0 0 0 69.5Z"/><path fill="#FF9D0B" d="M81.96 41.75a34.75 34.75 0 1 0-69.5 0 34.75 34.75 0 0 0 69.5 0Zm-73.5 0a38.75 38.75 0 1 1 77.5 0 38.75 38.75 0 0 1-77.5 0Z"/><path fill="#3A3B45" d="M58.5 32.3c1.28.44 1.78 3.06 3.07 2.38a5 5 0 1 0-6.76-2.07c.61 1.15 2.55-.72 3.7-.32ZM34.95 32.3c-1.28.44-1.79 3.06-3.07 2.38a5 5 0 1 1 6.76-2.07c-.61 1.15-2.56-.72-3.7-.32Z"/><path fill="#FF323D" d="M46.96 56.29c9.83 0 13-8.76 13-13.26 0-2.34-1.57-1.6-4.09-.36-2.33 1.15-5.46 2.74-8.9 2.74-7.19 0-13-6.88-13-2.38s3.16 13.26 13 13.26Z"/><path fill="#3A3B45" fill-rule="evenodd" d="M39.43 54a8.7 8.7 0 0 1 5.3-4.49c.4-.12.81.57 1.24 1.28.4.68.82 1.37 1.24 1.37.45 0 .9-.68 1.33-1.35.45-.7.89-1.38 1.32-1.25a8.61 8.61 0 0 1 5 4.17c3.73-2.94 5.1-7.74 5.1-10.7 0-2.34-1.57-1.6-4.09-.36l-.14.07c-2.31 1.15-5.39 2.67-8.77 2.67s-6.45-1.52-8.77-2.67c-2.6-1.29-4.23-2.1-4.23.29 0 3.05 1.46 8.06 5.47 10.97Z" clip-rule="evenodd"/><path fill="#FF9D0B" d="M70.71 37a3.25 3.25 0 1 0 0-6.5 3.25 3.25 0 0 0 0 6.5ZM24.21 37a3.25 3.25 0 1 0 0-6.5 3.25 3.25 0 0 0 0 6.5ZM17.52 48c-1.62 0-3.06.66-4.07 1.87a5.97 5.97 0 0 0-1.33 3.76 7.1 7.1 0 0 0-1.94-.3c-1.55 0-2.95.59-3.94 1.66a5.8 5.8 0 0 0-.8 7 5.3 5.3 0 0 0-1.79 2.82c-.24.9-.48 2.8.8 4.74a5.22 5.22 0 0 0-.37 5.02c1.02 2.32 3.57 4.14 8.52 6.1 3.07 1.22 5.89 2 5.91 2.01a44.33 44.33 0 0 0 10.93 1.6c5.86 0 10.05-1.8 12.46-5.34 3.88-5.69 3.33-10.9-1.7-15.92-2.77-2.78-4.62-6.87-5-7.77-.78-2.66-2.84-5.62-6.25-5.62a5.7 5.7 0 0 0-4.6 2.46c-1-1.26-1.98-2.25-2.86-2.82A7.4 7.4 0 0 0 17.52 48Zm0 4c.51 0 1.14.22 1.82.65 2.14 1.36 6.25 8.43 7.76 11.18.5.92 1.37 1.31 2.14 1.31 1.55 0 2.75-1.53.15-3.48-3.92-2.93-2.55-7.72-.68-8.01.08-.02.17-.02.24-.02 1.7 0 2.45 2.93 2.45 2.93s2.2 5.52 5.98 9.3c3.77 3.77 3.97 6.8 1.22 10.83-1.88 2.75-5.47 3.58-9.16 3.58-3.81 0-7.73-.9-9.92-1.46-.11-.03-13.45-3.8-11.76-7 .28-.54.75-.76 1.34-.76 2.38 0 6.7 3.54 8.57 3.54.41 0 .7-.17.83-.6.79-2.85-12.06-4.05-10.98-8.17.2-.73.71-1.02 1.44-1.02 3.14 0 10.2 5.53 11.68 5.53.11 0 .2-.03.24-.1.74-1.2.33-2.04-4.9-5.2-5.21-3.16-8.88-5.06-6.8-7.33.24-.26.58-.38 1-.38 3.17 0 10.66 6.82 10.66 6.82s2.02 2.1 3.25 2.1c.28 0 .52-.1.68-.38.86-1.46-8.06-8.22-8.56-11.01-.34-1.9.24-2.85 1.31-2.85Z"/><path fill="#FFD21E" d="M38.6 76.69c2.75-4.04 2.55-7.07-1.22-10.84-3.78-3.77-5.98-9.3-5.98-9.3s-.82-3.2-2.69-2.9c-1.87.3-3.24 5.08.68 8.01 3.91 2.93-.78 4.92-2.29 2.17-1.5-2.75-5.62-9.82-7.76-11.18-2.13-1.35-3.63-.6-3.13 2.2.5 2.79 9.43 9.55 8.56 11-.87 1.47-3.93-1.71-3.93-1.71s-9.57-8.71-11.66-6.44c-2.08 2.27 1.59 4.17 6.8 7.33 5.23 3.16 5.64 4 4.9 5.2-.75 1.2-12.28-8.53-13.36-4.4-1.08 4.11 11.77 5.3 10.98 8.15-.8 2.85-9.06-5.38-10.74-2.18-1.7 3.21 11.65 6.98 11.76 7.01 4.3 1.12 15.25 3.49 19.08-2.12Z"/><path fill="#FF9D0B" d="M77.4 48c1.62 0 3.07.66 4.07 1.87a5.97 5.97 0 0 1 1.33 3.76 7.1 7.1 0 0 1 1.95-.3c1.55 0 2.95.59 3.94 1.66a5.8 5.8 0 0 1 .8 7 5.3 5.3 0 0 1 1.78 2.82c.24.9.48 2.8-.8 4.74a5.22 5.22 0 0 1 .37 5.02c-1.02 2.32-3.57 4.14-8.51 6.1-3.08 1.22-5.9 2-5.92 2.01a44.33 44.33 0 0 1-10.93 1.6c-5.86 0-10.05-1.8-12.46-5.34-3.88-5.69-3.33-10.9 1.7-15.92 2.78-2.78 4.63-6.87 5.01-7.77.78-2.66 2.83-5.62 6.24-5.62a5.7 5.7 0 0 1 4.6 2.46c1-1.26 1.98-2.25 2.87-2.82A7.4 7.4 0 0 1 77.4 48Zm0 4c-.51 0-1.13.22-1.82.65-2.13 1.36-6.25 8.43-7.76 11.18a2.43 2.43 0 0 1-2.14 1.31c-1.54 0-2.75-1.53-.14-3.48 3.91-2.93 2.54-7.72.67-8.01a1.54 1.54 0 0 0-.24-.02c-1.7 0-2.45 2.93-2.45 2.93s-2.2 5.52-5.97 9.3c-3.78 3.77-3.98 6.8-1.22 10.83 1.87 2.75 5.47 3.58 9.15 3.58 3.82 0 7.73-.9 9.93-1.46.1-.03 13.45-3.8 11.76-7-.29-.54-.75-.76-1.34-.76-2.38 0-6.71 3.54-8.57 3.54-.42 0-.71-.17-.83-.6-.8-2.85 12.05-4.05 10.97-8.17-.19-.73-.7-1.02-1.44-1.02-3.14 0-10.2 5.53-11.68 5.53-.1 0-.19-.03-.23-.1-.74-1.2-.34-2.04 4.88-5.2 5.23-3.16 8.9-5.06 6.8-7.33-.23-.26-.57-.38-.98-.38-3.18 0-10.67 6.82-10.67 6.82s-2.02 2.1-3.24 2.1a.74.74 0 0 1-.68-.38c-.87-1.46 8.05-8.22 8.55-11.01.34-1.9-.24-2.85-1.31-2.85Z"/><path fill="#FFD21E" d="M56.33 76.69c-2.75-4.04-2.56-7.07 1.22-10.84 3.77-3.77 5.97-9.3 5.97-9.3s.82-3.2 2.7-2.9c1.86.3 3.23 5.08-.68 8.01-3.92 2.93.78 4.92 2.28 2.17 1.51-2.75 5.63-9.82 7.76-11.18 2.13-1.35 3.64-.6 3.13 2.2-.5 2.79-9.42 9.55-8.55 11 .86 1.47 3.92-1.71 3.92-1.71s9.58-8.71 11.66-6.44c2.08 2.27-1.58 4.17-6.8 7.33-5.23 3.16-5.63 4-4.9 5.2.75 1.2 12.28-8.53 13.36-4.4 1.08 4.11-11.76 5.3-10.97 8.15.8 2.85 9.05-5.38 10.74-2.18 1.69 3.21-11.65 6.98-11.76 7.01-4.31 1.12-15.26 3.49-19.08-2.12Z"/></svg><span>Hugging Face</span></a>
+        <span class="research-link-chip is-soon"><svg class="chip-ico" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path fill="currentColor" d="M6.766 11.328c-2.063-.25-3.516-1.734-3.516-3.656 0-.781.281-1.625.75-2.188-.203-.515-.172-1.609.063-2.062.625-.078 1.468.25 1.968.703.594-.187 1.219-.281 1.985-.281.765 0 1.39.094 1.953.265.484-.437 1.344-.765 1.969-.687.218.422.25 1.515.046 2.047.5.593.766 1.39.766 2.203 0 1.922-1.453 3.375-3.547 3.64.531.344.89 1.094.89 1.954v1.625c0 .468.391.734.86.547C13.781 14.359 16 11.53 16 8.03 16 3.61 12.406 0 7.984 0 3.563 0 0 3.61 0 8.031a7.88 7.88 0 0 0 5.172 7.422c.422.156.828-.125.828-.547v-1.25c-.219.094-.5.156-.75.156-1.031 0-1.64-.562-2.078-1.609-.172-.422-.36-.672-.719-.719-.187-.015-.25-.093-.25-.187 0-.188.313-.328.625-.328.453 0 .844.281 1.25.86.313.452.64.655 1.031.655s.641-.14 1-.5c.266-.265.47-.5.657-.656"/></svg><span class="chip-label">GitHub</span><span class="chip-soon">coming soon</span></span>
+        <span class="research-link-chip is-soon"><svg class="chip-ico" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path fill="currentColor" d="M3.5 1h6.29a1 1 0 0 1 .71.29l2.21 2.21a1 1 0 0 1 .29.71V14.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5v-13A.5.5 0 0 1 3.5 1zm6.25 1.5V4.5h2l-2-2zM5 6.75a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2.5a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2.5a.5.5 0 0 0 0 1h3.5a.5.5 0 0 0 0-1H5z"/></svg><span class="chip-label">Documentation</span><span class="chip-soon">coming soon</span></span>
+        <a class="research-link-chip chip-try" href="indic-speak.html#hear"><svg class="chip-ico chip-bolt" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M13.2 2 4.6 13.1a.6.6 0 0 0 .48.97h4.3l-1.5 6.7a.6.6 0 0 0 1.07.48l8.6-11.1a.6.6 0 0 0-.48-.97h-4.3l1.5-6.7A.6.6 0 0 0 13.2 2Z"/></svg><span>Try it out</span></a>
+      </nav>
+
+      <div class="hero-demo" id="heroDemo" hidden>
+        <button type="button" class="hero-demo-close" id="heroDemoClose" aria-label="Close the demo">&times;</button>
+        <div class="hero-demo-body" id="heroDemoBody"></div>
+      </div>
+
+      <div class="spec-strip">
+        <div class="spec-chip"><span class="v">Llama 3.2</span><span class="k">base model</span></div>
+        <div class="spec-chip"><span class="v">3.36B</span><span class="k">parameters</span></div>
+        <div class="spec-chip"><span class="v">2+ min</span><span class="k">single-shot generation</span></div>
+        <div class="spec-chip"><span class="v">7</span><span class="k">tokens per frame</span></div>
+        <div class="spec-chip"><span class="v">Bodhan Open License</span><span class="k">1.0</span></div>
+      </div>
+      <noscript><p class="hero-fallback"><a href="audio/hi_Kavya.mp3">Listen to Kavya read the sample sentence</a></p></noscript>
+    </div>
+  </div>
+</header>
+
+<div class="research-article-column">
+
+  <p class="research-type-dek">Most text-to-speech systems move through a long pipeline: letters to phonemes, phonemes to durations, durations to acoustic features, features to sound. Indic-Speak takes a shorter route. Give a language model audio codes in its vocabulary, and speaking becomes something it already knows how to do: continue the sequence.</p>
+
+  <nav class="toc-pills" id="tocPills" aria-label="Table of contents">
+    <p class="research-type-eyebrow toc-pills-title">On this page</p>
+    <ul></ul>
+  </nav>
+
+  <article class="research-prose">
+    <section id="opening" class="section-opening">
+      <p class="research-type-body">At <a href="https://ai4bharat.iitm.ac.in" target="_blank" rel="noopener noreferrer">AI4Bharat</a> we have worked on Indian language AI for years, and have open-sourced translation, speech recognition and speech generation across all 22 languages. Speech itself was never the missing piece. Reading <em>that</em> sentence was &mdash; the one that changes script mid-clause, the way people actually write. That is the gap we set out to close.</p>
+      <p class="research-type-body">Today, as a joint effort between <a href="https://bodhan.ai" target="_blank" rel="noopener noreferrer">Bodhan AI</a> and <a href="https://ai4bharat.iitm.ac.in" target="_blank" rel="noopener noreferrer">AI4Bharat</a>, we are introducing <b>Indic-Speak</b>: a text-to-speech model built to read text exactly as it is written, across 22 Indian languages and 12 scripts.</p>
+    </section>
+
+        <div class="act">
+      <p class="act-label">The idea</p>
+      <p class="act-line">One decision explains the system: make audio part of the vocabulary, and speech becomes a next-token problem.</p>
+    </div>
+<section id="model" data-toc="The model">
+      <header class="research-section-header">
+        <div class="research-section-rule" aria-hidden="true"></div>
+        <h2 class="research-type-h2"><span class="section-num">01</span> Put speech inside the vocabulary</h2>
+      </header>
+      <p class="research-type-lead">Start with a Llama-3.2-3B decoder that already models Hindi and English in one token stream. Add 28,672 codes from a neural audio codec. Train the model to continue a written sentence with those codes instead of more words. Text goes in; the next token begins a voice. The rest of the system follows from that choice.</p>
+      <p class="research-type-body">The consequence worth sitting with is what the model does not need. No phoneme dictionary per language, so a new script costs no frontend work. No aligner, so training needs no phoneme-level timing. No duration predictor, because length is simply how much the model generates before it stops. And no language decision anywhere in the request path: text arrives as written, code-mixed or not, and the tokeniser that already handled both halves of a Hindi-English sentence handles it unchanged.</p>
+      <p class="research-type-body">What it keeps is everything a text decoder already had. Attention reaches across the whole utterance, which is the mechanism behind punctuation acting as prosody: a clause can be shaped by a comma thirty words earlier. The 131,072-position context makes a long passage a budget question rather than an architectural one. And sampling behaves as it does for text, so the settings that make prose livelier make speech livelier and less reliable in the same proportion.</p>
+
+      <div class="research-subsection">
+        <p class="research-type-body">The 28,672 codes occupy one contiguous run in the middle of the vocabulary, ids 128,266 through 156,937. That contiguity does real work: telling speech from text at decode time is a range check on the token id, not a second output head and not a structure signal. Control tokens were placed below the run and conditioning tokens above it, so the added entries are deliberately not contiguous with each other. Code that assumes everything added sits above the base vocabulary is wrong here.</p>
+        <figure class="chart-card quiet">
+        <figcaption class="chart-card-header">
+        <h3 class="chart-card-title">Text and audio share one vocabulary</h3>
+        <p class="chart-card-subtitle">All 156,960 entries the model can emit, in order. The audio codes are one contiguous run in the middle, which is what lets the decoder tell speech from text with a range check rather than a separate head.</p>
+        </figcaption>
+        <div class="chart-panel">
+        <div class="chart-plot"><svg id="vocabBand" class="chart" role="img" aria-label="The 156,960-token vocabulary, showing the contiguous band of 28,672 audio codes"></svg></div>
+        </div>
+        <p class="chart-card-note">Control tokens sit below the audio band and conditioning tokens above it, so the added entries are deliberately not contiguous with each other.</p>
+        </figure>
+      </div>
+
+      <div class="research-subsection">
+        <p class="research-type-body">A request is a chat-template prompt carrying the speaker name, an optional style tag and the normalised text. The model answers by opening a speech span and then emitting audio codes until it stops. Everything after that point is deterministic: the flat stream de-interleaves into codebooks, the codebooks become latents, the latents become sound.</p>
+        <figure class="chart-card quiet">
+        <figcaption class="chart-card-header">
+        <h3 class="chart-card-title">One sentence in. One waveform out.</h3>
+        <p class="chart-card-subtitle">Six steps, one model and one decoder. Everything between the prompt and the audio is the same next-token loop a text model runs.</p>
+        </figcaption>
+        <div class="chart-panel">
+        <div class="chart-plot"><svg id="flowDiagram" class="chart" role="img" aria-label="End to end flow from prompt through the decoder and codebooks to a streamed waveform"></svg></div>
+        </div>
+        <p class="chart-card-note">The decoder emits <code>&lt;|start_of_speech|&gt;</code> itself; it is the first thing it generates rather than something the prompt supplies.</p>
+        </figure>
+
+            </div>
+    </section>
+
+        <div class="act">
+      <p class="act-label">The machine</p>
+      <p class="act-line">What actually runs at inference, counted rather than quoted, and where each of the three pieces starts and stops.</p>
+    </div>
+<section id="stack" data-toc="The stack">
+      <header class="research-section-header">
+        <div class="research-section-rule" aria-hidden="true"></div>
+        <h2 class="research-type-h2"><span class="section-num">02</span> Three pieces. One speaking model.</h2>
+      </header>
+      <p class="research-type-lead">Three components execute when you make a request, and the language model is 98% of the parameters. The other two are small by design: one is a lookup table, and one is a vocoder that was fine-tuned rather than trained from scratch.</p>
+      <div class="research-feature-grid left">
+        <article class="research-feature-card">
+          <p class="research-feature-index">model</p>
+          <h3 class="research-feature-title">Llama-3.2-3B backbone</h3>
+          <div class="fact-list">
+            <div><b>Parameters</b> — 3.301 B in the backbone; 3.359 B across everything that runs at inference, counted per component below</div>
+            <div><b>Vocabulary</b> — 156,960 tokens: 128,256 text plus 28,672 audio codes and a small set of speaker, style and non-verbal tokens, with input and output embeddings tied</div>
+            <div><b>Audio frame</b> — 7 codec tokens per 85.33 ms frame, 82.03 tokens per second of speech</div>
+            <div><b>Context</b> — 131,072 positions, so length is a budget rather than a limit</div>
+          </div>
+        </article>
+        <article class="research-feature-card">
+          <p class="research-feature-index">audio</p>
+          <h3 class="research-feature-title">SNAC codebooks, Vocos decoder</h3>
+          <div class="fact-list">
+            <div><b>Codebooks</b> — SNAC's quantizer at 24 kHz, three codebooks at a 1:2:4 time ratio flattened into one token stream. Only the codebooks are used, to turn generated codes back into latents: 0.14 M parameters</div>
+            <div><b>Decoder</b> — those latents go straight to a fine-tuned Vocos decoder, 58.4 M parameters. SNAC's own encoder and decoder are never in the path</div>
+            <div><b>Output</b> — 16-bit PCM at 24 kHz, streamed as it is generated</div>
+          </div>
+        </article>
+        <article class="research-feature-card span-2">
+          <p class="research-feature-index">serving</p>
+          <h3 class="research-feature-title">One request, streamed</h3>
+          <div class="fact-list">
+            <div><b>Request</b> — text, voice, optional style, optional sampling settings; the language is inferred from the text</div>
+            <div><b>Length</b> — about 30 s of speech per request, a 2,520-token ceiling; a request takes the text you give it, and splitting longer passages is the caller's job</div>
+            <div><b>Defaults</b> — temperature 0.6, top-p 0.9, top-k 50, repetition penalty 1.2. The conservative end of the sweep, chosen for the lowest defect rate; the livelier settings carry several times the failure rate and vary more between seeds</div>
+          </div>
+        </article>
+      </div>
+
+      <figure class="editorial-card arch-card">
+        <figcaption class="editorial-card-header">
+          <p class="editorial-card-eyebrow">model architecture</p>
+          <h3 class="editorial-card-title">One stream. No hidden handoff.</h3>
+          <p class="editorial-card-description">The language model has no audio head. Audio is just more vocabulary: 28,672 codec codes were added to a 128,256-token text vocabulary, and the model predicts them the same way it predicts a word. Three pieces run at inference, 3.36 billion parameters in total, and the language model is 98% of that. What makes the arrangement work is the shape of one frame.</p>
+        </figcaption>
+
+        <div class="editorial-panel arch-stack">
+          <p class="research-type-h4">The stack</p>
+          <dl class="param-list" id="paramList"></dl>
+          <p class="editorial-card-footer">Counted from the shipped weights, not estimated, and counting only what runs when you make a request. The backbone's input and output embeddings are tied, so its 156,960 &times; 3,072 embedding matrix is counted once. SNAC's encoder and decoder sit in that checkpoint too, another 19.7 M, but generation never touches them.</p>
+        </div>
+
+        <div class="editorial-panel">
+          <p class="arch-h">one frame = 7 tokens = 85.33 ms of audio</p>
+          <ul class="chart-legend arch-legend-list" aria-label="Codebook legend">
+            <li class="chart-legend-item"><span class="chart-marker chart-marker-square" style="color:#B33F00"></span><span>coarse codebook, 1 token</span></li>
+            <li class="chart-legend-item"><span class="chart-marker chart-marker-square" style="color:#CF7538"></span><span>middle, 2 tokens</span></li>
+            <li class="chart-legend-item"><span class="chart-marker chart-marker-square" style="color:#EFC8AC"></span><span>fine, 4 tokens</span></li>
+          </ul>
+          <svg id="frameDiagram" class="chart" role="img" aria-label="Diagram of one 7-token audio frame and how its three codebooks interleave"></svg>
+          <p class="arch-note">A code's offset in the vocabulary comes from <b>its position in the frame, not from which codebook it came from</b>. Positions 1 and 4 are both the middle codebook; 2, 3, 5 and 6 are all the fine one. That is what makes the flat stream self-describing: it de-interleaves without a separate structure signal, and a frame that starts at the wrong offset is detectably wrong rather than quietly misaligned.</p>
+        </div>
+
+        <div class="editorial-panel arch-budget">
+          <p class="research-type-h4">Budget a script</p>
+          <p class="editorial-control-hint">How long a script takes depends on who reads it: pace runs from 9.3 to 14.5 characters per second across the library, so the same words are 30 seconds in one voice and 46 in another. Pick a voice and a length to get the real numbers.</p>
+          <div class="editorial-controls editorial-controls-two">
+            <div class="editorial-control">
+              <div class="editorial-control-label"><span>Voice</span><strong id="budVoiceMeta">12.6 chars/s</strong></div>
+              <select id="budVoice" class="bud-select" aria-label="Voice"></select>
+            </div>
+            <div class="editorial-control">
+              <div class="editorial-control-label"><span>Script length</span><strong id="budChars">1,000 characters</strong></div>
+              <input type="range" id="budRange" min="100" max="20000" step="100" value="1000" aria-label="Script length in characters">
+            </div>
+          </div>
+          <dl class="editorial-summary">
+            <div><dt>speech</dt><dd id="budSec">79 s</dd></div>
+            <div><dt>tokens to generate</dt><dd id="budTokens">6,517</dd></div>
+            <div><dt>requests at the 30 s window</dt><dd id="budReqs">3</dd></div>
+          </dl>
+          <p class="arch-formula" id="budFormula"></p>
+        </div>
+
+        <p class="editorial-card-footer">Rates come from the codec: 2,048 samples per coarse frame at 24 kHz gives 11.72 frames per second, and seven tokens per frame gives 82.03 tokens per second of speech. The final partial frame is padded rather than dropped, which is why the frame count rounds up.</p>
+      </figure>
+
+    </section>
+
+    <section id="why" data-toc="Why an LLM">
+      <header class="research-section-header">
+        <div class="research-section-rule" aria-hidden="true"></div>
+        <h2 class="research-type-h2"><span class="section-num">03</span> Why an LLM&mdash;and what it costs</h2>
+      </header>
+      <p class="research-type-lead">A purpose-built acoustic model with a phoneme frontend was the alternative, and for one language it would have been the safer engineering. Three things made the language-model route the better bet for twenty-two of them.</p>
+      <div class="research-bullet-block">
+        <ul class="research-bullet-list">
+          <li class="research-bullet-item"><span class="research-bullet-marker" aria-hidden="true">01</span><span class="research-bullet-text"><b>Code-mixing costs nothing.</b> A phoneme frontend has to know which language a span is in before it can look anything up, and Indian text mixes scripts inside a clause. A backbone that already tokenises both halves needs no such decision, so the hardest case for a pipeline is the default case here.</span></li>
+          <li class="research-bullet-item"><span class="research-bullet-marker" aria-hidden="true">02</span><span class="research-bullet-text"><b>Punctuation is already prosody.</b> The model treats a comma as a boundary and a question mark as a contour because it learned that from text. A pipeline has to be told, usually through a hand-built feature.</span></li>
+          <li class="research-bullet-item"><span class="research-bullet-marker" aria-hidden="true">03</span><span class="research-bullet-text"><b>Length is a budget, not a redesign.</b> A multi-minute utterance becomes a sequence-length question with a known answer: 82.03 tokens per second of speech against 131,072 positions.</span></li>
+        </ul>
+      </div>
+      <p class="research-type-body">The cost lands on measurement. Generation is sampled, so output varies between runs, and a rare bad sample still sounds like fluent speech: clean audio, wrong words. A signal-quality metric cannot see that failure at all. So the evaluation reads transcripts and scores content rather than measuring the waveform, and reports the shape of the distribution rather than only its mean.</p>
+    </section>
+
+        <div class="act">
+      <p class="act-label">Call it</p>
+      <p class="act-line">The request shape, the defaults, the failure modes, and what to budget for a given script.</p>
+    </div>
+<section id="api" data-toc="Using it">
+      <header class="research-section-header">
+        <div class="research-section-rule" aria-hidden="true"></div>
+        <h2 class="research-type-h2"><span class="section-num">04</span> From one POST to a speaking voice</h2>
+      </header>
+      <p class="research-type-lead">One POST, one stream, no state. The shapes below are settled. The endpoint path and the auth header are placeholders until the public URL is announced.</p>
+      <div class="research-subsection">
+        <h3 class="research-type-h3">Send one clean request</h3>
+        <pre class="prompt-box">POST /v1/audio/speech
+Content-Type: application/json
+
+{
+  "prompt": "भारत एक हज़ार नौ सौ सैंतालीस में स्वतंत्र हुआ।",
+  "model": "bodhan-tts",
+  "voice_clone_id": "Amit",
+  "style": "news"
+}</pre>
+        <p class="research-type-body">Only the text is required. The voice defaults to Amit, and omitting the style gives the conversational register, which is the right choice for plain reading. Sampling fields are optional and forwarded as given; the defaults are temperature 0.6, top-p 0.9, top-k 50 and a repetition penalty of 1.2, with a token ceiling matching the 30-second window. A voice or style outside the accepted lists is rejected rather than approximated, so validate against those lists client-side.</p>
+      
+        <figure class="chart-card quiet">
+          <figcaption class="chart-card-header">
+            <h3 class="chart-card-title">Every knob, in one place</h3>
+            <p class="chart-card-subtitle">The complete set a caller can send. Aliases and nested duplicates are folded into the parameter they stand for rather than listed twice, so this is nine knobs and not twelve.</p>
+          </figcaption>
+          <div class="chart-panel api-panel">
+            <table class="data-table api-table">
+              <caption class="sr-only">Request parameters, with type, default and purpose</caption>
+              <thead><tr><th scope="col">parameter</th><th scope="col">type</th><th scope="col">default</th><th scope="col">what it does</th></tr></thead>
+              <tbody id="apiParams"></tbody>
+            </table>
+          </div>
+          <p class="chart-card-note">Generated from <code>verify_api/CONTRACT.md</code> by <code>src/apigen.py</code>, so this table moves when the contract does.</p>
+        </figure>
+
+        <h4 class="research-type-h4">Caveats</h4>
+        <p class="research-type-body">Behaviours that will surprise a caller, each against the parameter it applies to. These are properties of the interface, not of the audio.</p>
+        <div class="api-caveats" id="apiCaveats"></div>
+</div>
+      <div class="research-subsection">
+        <h3 class="research-type-h3">Stream the voice back</h3>
+        <p class="research-type-body">Audio arrives as server-sent events while it is being generated, each carrying base64 of raw PCM16, signed little-endian, mono, 24 kHz. No WAV header and no length prefix, so a client concatenates windows in order. Four details decide whether that client is correct.</p>
+        <div class="research-bullet-block">
+          <ul class="research-bullet-list">
+            <li class="research-bullet-item"><span class="research-bullet-marker" aria-hidden="true">01</span><span class="research-bullet-text"><b>Concatenate, do not overlap-add.</b> Consecutive windows do not overlap, so crossfading them smears the output.</span></li>
+            <li class="research-bullet-item"><span class="research-bullet-marker" aria-hidden="true">02</span><span class="research-bullet-text"><b>Payload sizes vary.</b> The first event carries two frames and later ones carry one, so a fixed-size read breaks on the second event.</span></li>
+            <li class="research-bullet-item"><span class="research-bullet-marker" aria-hidden="true">03</span><span class="research-bullet-text"><b>Some payloads are empty.</b> Skip them rather than reading an empty window as end-of-stream.</span></li>
+            <li class="research-bullet-item"><span class="research-bullet-marker" aria-hidden="true">04</span><span class="research-bullet-text"><b>Require the terminator.</b> A stream that ends without the done sentinel failed mid-generation, and the status line already said 200. Its absence is the only signal you get.</span></li>
+          </ul>
+        </div>
+        <p class="cap-subnote">Splitting long text is the caller's job. A request synthesises what it is given, and more than about 30 seconds of speech will truncate rather than continue.</p>
+      </div>
+      <div class="research-subsection">
+        <h3 class="research-type-h3">Write for a listener, not a parser</h3>
+        <p class="research-type-body">A model that reads text as written has to be handed text a person would actually say out loud. Nobody says "one two three comma four five six point seven eight rupees", and nobody says "backslash int". The normaliser in front of the model turns written notation into spoken words first, and it is the part of the stack that does the least glamorous and most necessary work.</p>
+        <figure class="chart-card quiet" id="normCard">
+          <figcaption class="chart-card-header">
+            <h3 class="chart-card-title">What you write is not always what we say</h3>
+            <p class="chart-card-subtitle">Written symbols have to become spoken words before the model can read them. Here is one real transformation.</p>
+          </figcaption>
+          <div class="chart-panel">
+            <div class="lang-tabs" id="normTabs" aria-label="Choose an example group"></div>
+            <div id="normPanels"></div>
+            <div class="norm-staging" hidden><div class="io-panel" id="normHindi"></div></div>
+          </div>
+        </figure>
+      </div>
+    </section>
+
+<section id="limitations" data-toc="Before you use it">
+      <header class="research-section-header">
+        <div class="research-section-rule" aria-hidden="true"></div>
+        <h2 class="research-type-h2"><span class="section-num">05</span> Know the edges before you ship</h2>
+      </header>
+        <p class="research-type-lead">The first seven describe the model and the evidence behind it; the last three are practical integration details. All are measured on the deployed endpoint, and each points to either a clear operating choice or an area still in progress.</p>
+
+      <div class="research-bullet-block">
+        <ul class="research-bullet-list">
+          <li class="research-bullet-item"><span class="research-bullet-marker" aria-hidden="true">01</span><span class="research-bullet-text"><b>Voice quality varies.</b> Across the library the judge mean runs from <b>4.53 to 4.96</b>. The weakest voice earns the top band on 68% of its readings against 97% for the strongest, and needs a second take on 2.7% of them against 0.3% &mdash; about nine times as often. The recommended voice for each language stays out of the thin end of that range, so start there rather than picking at random.</span></li>
+          <li class="research-bullet-item"><span class="research-bullet-marker" aria-hidden="true">02</span><span class="research-bullet-text"><b>Native casting remains the most accurate choice.</b> A voice reading its own language scores <b>4.94</b>, with 95.7% of readings in the top band and 0.4% needing a retake. The same voices reading other languages score <b>4.90</b>, 92.9% and 0.7%. Cross-lingual casting still works well; this is the small tradeoff behind the accent you hear.</span></li>
+          <li class="research-bullet-item"><span class="research-bullet-marker" aria-hidden="true">03</span><span class="research-bullet-text"><b>Benchmark coverage currently spans ten languages.</b> The other twelve have voices and playable audio, but not yet the same scored evidence. Treat them as supported and still being measured, rather than assuming they match the benchmarked set.</span></li>
+          <li class="research-bullet-item"><span class="research-bullet-marker" aria-hidden="true">04</span><span class="research-bullet-text"><b>The headline measures content fidelity.</b> Automatic transcription struggles with this code-mixed text: character error rate lands within two points of itself for the voice that scores 4.96 and the voice that scores 4.53, which means it is measuring the recogniser rather than the model. We therefore publish an LLM judge's fidelity score; its top band means &ldquo;no meaningful content error&rdquo;, not &ldquo;word-perfect&rdquo;.</span></li>
+          <li class="research-bullet-item"><span class="research-bullet-marker" aria-hidden="true">05</span><span class="research-bullet-text"><b>Naturalness testing is still in progress.</b> Every figure here measures whether the text was read correctly. We are not yet making a comparative claim about listening preference or voice quality; those tests are running and will be published separately.</span></li>
+          <li class="research-bullet-item"><span class="research-bullet-marker" aria-hidden="true">06</span><span class="research-bullet-text"><b>Most readings work first time; 0.7% need a retry.</b> That is 211 of 30,000: a repeated phrase, a dropped clause or a number that drifts. The API exposes no seed parameter, so a retry draws a fresh sample rather than reproducing the first one.</span></li>
+          <li class="research-bullet-item"><span class="research-bullet-marker" aria-hidden="true">07</span><span class="research-bullet-text"><b>Long passages currently need splitting.</b> One request covers about thirty seconds of audio. The five-and-a-half-minute chapter above is seven requests, split at punctuation and joined by the caller; single-pass multi-minute generation is on the roadmap.</span></li>
+          <li class="research-bullet-item"><span class="research-bullet-marker" aria-hidden="true">08</span><span class="research-bullet-text"><b>Style tags are exact API values.</b> <code>children&rsquo;s stories</code> works; <code>Children&rsquo;s Stories</code> returns a 422. Emotion tags are lowercase and the customer-care tag is title case, so validate against the published list rather than deriving a tag from display text.</span></li>
+          <li class="research-bullet-item"><span class="research-bullet-marker" aria-hidden="true">09</span><span class="research-bullet-text"><b>Choose the language for spoken numbers.</b> Latin digits inside an Indic sentence default to English words unless the sentence language is passed to the normaliser or the digits are written in native script. <code>number_lang</code> is a constructor argument, not a per-call one.</span></li>
+          <li class="research-bullet-item"><span class="research-bullet-marker" aria-hidden="true">10</span><span class="research-bullet-text"><b>Use retry-and-backoff under sustained load.</b> At a 1,200-per-minute ceiling, 1.7% of 70,931 request starts were rate-limited and all succeeded on retry. Accuracy did not move with load; a client should simply treat backoff as part of the normal request path.</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="outlook" data-toc="What's next">
+      <header class="research-section-header">
+        <div class="research-section-rule" aria-hidden="true"></div>
+        <h2 class="research-type-h2"><span class="section-num">06</span> The next token is only the beginning</h2>
+      </header>
+      <p class="research-type-body">The current design is deliberately simple, but it is not finished. These are the gaps we are working on next. We are not attaching dates; each improvement lands here when it holds up to the same evidence as this release.</p>
+
+      <div class="research-subsection">
+        <h3 class="research-type-h3">Teach the model to think before it speaks</h3>
+        <div class="roadmap">
+          <div class="rm-item"><span class="rm-when">thinking TTS</span><span>Today the prosody of a reading comes from what you send: the punctuation carries the breaths and a style tag sets the register. Next the model reasons about the context before it speaks and decides those for itself &mdash; where the emphasis belongs, which clause to slow down, what register the passage is actually in &mdash; so one sentence reads differently as a news bulletin, as a bedtime story, and as an answer to someone who sounds worried.</span></div>
+          <div class="rm-item"><span class="rm-when">preference study</span><span>Preference ranking against other Indian-language speech systems, on the code-mixed text these voices are built for. This is the naturalness evidence the limitations above say we do not yet have; it is running now and will be published here whichever way it comes out.</span></div>
+        </div>
+      </div>
+
+      <div class="research-subsection">
+        <h3 class="research-type-h3">Make the voice easier to ship</h3>
+        <div class="roadmap">
+          <div class="rm-item"><span class="rm-when">smaller model</span><span>A smaller, cheaper Indic-Speak: the same voices and the same languages at a fraction of the cost per second of audio, so speech can sit inside an interactive product or a modest deployment budget rather than only inside a batch job.</span></div>
+          <div class="rm-item"><span class="rm-when">expressive voices</span><span>Voices built for range rather than neutrality &mdash; laughter, hesitation, warmth, urgency, and the shifts inside a single passage that separate a person talking from a narrator reading. More voices in each language arrive with them.</span></div>
+          <div class="rm-item"><span class="rm-when">long form</span><span>Single-pass generation of multi-minute passages, so a chapter is one request instead of a split-and-join by the caller.</span></div>
+          <div class="rm-item"><span class="rm-when">timestamps</span><span>Word-level timestamps in the response, for subtitling, read-along and anything that has to line text up against audio.</span></div>
+        </div>
+      </div>
+      <div class="pull-note"><b>The architecture is compact; the ambition is not.</b> If one model can read the scripts and language mixtures people already use, the interface to speech becomes radically simple: send the words, choose a voice, and let the next token speak.</div>
+</section>
+  </article>
+
+  <aside class="sibling-link">
+    <div class="research-article-column">
+      <p class="research-type-eyebrow sibling-eyebrow">Want to hear it?</p>
+      <h2 class="research-type-h2 sibling-title">Want to hear it? Start here.</h2>
+      <p class="research-type-body sibling-body">Forty-five voices you can play, the same sentence read by a native and a non-native voice in ten languages, and a five-minute audiobook chapter.</p>
+      <a class="research-link-chip sibling-chip" href="indic-speak.html">Read the announcement</a>
+    </div>
+  </aside>
+
+  <section class="cite-block">
+    <div class="cite-head">
+      <h2 class="research-type-h3">Cite this work</h2>
+      <button type="button" class="cite-copy" id="copyCite">Copy BibTeX</button>
+    </div>
+    <pre class="cite-bibtex" id="bibtex">@misc{indic-speak-2026,
+  title  = {Indic-Speak: Text-to-Speech for 22 Indian Languages in 45 Voices},
+  author = {Bodhan.ai},
+  year   = {2026},
+  url    = {https://huggingface.co/bodhan-ai/indic-speak}
+}</pre>
+  </section>
+</div>
+
+<aside class="ecosystem-banner">
+  <div class="research-article-wide ecosystem-inner">
+    <h2 class="research-type-h2 ecosystem-heading">Available across India's AI ecosystem</h2>
+    <nav class="ecosystem-links" aria-label="Ecosystem links">
+      <a class="research-link-chip research-link-chip-on-mosaic ecosystem-chip" href="https://bhashini.gov.in" target="_blank" rel="noopener noreferrer"><img class="chip-mark" src="images/logo_bhashini.png" alt="" width="18" height="18">Bhashini</a>
+      <a class="research-link-chip research-link-chip-on-mosaic ecosystem-chip ecosystem-chip-logo" aria-label="AIKosh" href="https://aikosh.indiaai.gov.in" target="_blank" rel="noopener noreferrer"><img class="chip-logo" src="images/logo_aikosh.png" alt="AIKosh" width="100" height="26"></a>
+      <a class="research-link-chip research-link-chip-on-mosaic ecosystem-chip" href="https://ai4bharat.iitm.ac.in" target="_blank" rel="noopener noreferrer"><img class="chip-mark" src="images/logo_ai4bharat.png" alt="" width="18" height="18">AI4Bharat</a>
+<a class="research-link-chip research-link-chip-on-mosaic ecosystem-chip" href="https://bodhan.ai" target="_blank" rel="noopener noreferrer"><img class="chip-mark" src="images/bodhan_mark.svg" alt="" width="18" height="18">Bodhan AI</a>
+      <a class="research-link-chip research-link-chip-on-mosaic ecosystem-chip" href="https://huggingface.co/bodhan-ai/indic-speak" target="_blank" rel="noopener noreferrer"><svg class="chip-ico" viewBox="0 0 95 88" aria-hidden="true" focusable="false"><path fill="#FFD21E" d="M47.21 76.5a34.75 34.75 0 1 0 0-69.5 34.75 34.75 0 0 0 0 69.5Z"/><path fill="#FF9D0B" d="M81.96 41.75a34.75 34.75 0 1 0-69.5 0 34.75 34.75 0 0 0 69.5 0Zm-73.5 0a38.75 38.75 0 1 1 77.5 0 38.75 38.75 0 0 1-77.5 0Z"/><path fill="#3A3B45" d="M58.5 32.3c1.28.44 1.78 3.06 3.07 2.38a5 5 0 1 0-6.76-2.07c.61 1.15 2.55-.72 3.7-.32ZM34.95 32.3c-1.28.44-1.79 3.06-3.07 2.38a5 5 0 1 1 6.76-2.07c-.61 1.15-2.56-.72-3.7-.32Z"/><path fill="#FF323D" d="M46.96 56.29c9.83 0 13-8.76 13-13.26 0-2.34-1.57-1.6-4.09-.36-2.33 1.15-5.46 2.74-8.9 2.74-7.19 0-13-6.88-13-2.38s3.16 13.26 13 13.26Z"/><path fill="#3A3B45" fill-rule="evenodd" d="M39.43 54a8.7 8.7 0 0 1 5.3-4.49c.4-.12.81.57 1.24 1.28.4.68.82 1.37 1.24 1.37.45 0 .9-.68 1.33-1.35.45-.7.89-1.38 1.32-1.25a8.61 8.61 0 0 1 5 4.17c3.73-2.94 5.1-7.74 5.1-10.7 0-2.34-1.57-1.6-4.09-.36l-.14.07c-2.31 1.15-5.39 2.67-8.77 2.67s-6.45-1.52-8.77-2.67c-2.6-1.29-4.23-2.1-4.23.29 0 3.05 1.46 8.06 5.47 10.97Z" clip-rule="evenodd"/><path fill="#FF9D0B" d="M70.71 37a3.25 3.25 0 1 0 0-6.5 3.25 3.25 0 0 0 0 6.5ZM24.21 37a3.25 3.25 0 1 0 0-6.5 3.25 3.25 0 0 0 0 6.5ZM17.52 48c-1.62 0-3.06.66-4.07 1.87a5.97 5.97 0 0 0-1.33 3.76 7.1 7.1 0 0 0-1.94-.3c-1.55 0-2.95.59-3.94 1.66a5.8 5.8 0 0 0-.8 7 5.3 5.3 0 0 0-1.79 2.82c-.24.9-.48 2.8.8 4.74a5.22 5.22 0 0 0-.37 5.02c1.02 2.32 3.57 4.14 8.52 6.1 3.07 1.22 5.89 2 5.91 2.01a44.33 44.33 0 0 0 10.93 1.6c5.86 0 10.05-1.8 12.46-5.34 3.88-5.69 3.33-10.9-1.7-15.92-2.77-2.78-4.62-6.87-5-7.77-.78-2.66-2.84-5.62-6.25-5.62a5.7 5.7 0 0 0-4.6 2.46c-1-1.26-1.98-2.25-2.86-2.82A7.4 7.4 0 0 0 17.52 48Zm0 4c.51 0 1.14.22 1.82.65 2.14 1.36 6.25 8.43 7.76 11.18.5.92 1.37 1.31 2.14 1.31 1.55 0 2.75-1.53.15-3.48-3.92-2.93-2.55-7.72-.68-8.01.08-.02.17-.02.24-.02 1.7 0 2.45 2.93 2.45 2.93s2.2 5.52 5.98 9.3c3.77 3.77 3.97 6.8 1.22 10.83-1.88 2.75-5.47 3.58-9.16 3.58-3.81 0-7.73-.9-9.92-1.46-.11-.03-13.45-3.8-11.76-7 .28-.54.75-.76 1.34-.76 2.38 0 6.7 3.54 8.57 3.54.41 0 .7-.17.83-.6.79-2.85-12.06-4.05-10.98-8.17.2-.73.71-1.02 1.44-1.02 3.14 0 10.2 5.53 11.68 5.53.11 0 .2-.03.24-.1.74-1.2.33-2.04-4.9-5.2-5.21-3.16-8.88-5.06-6.8-7.33.24-.26.58-.38 1-.38 3.17 0 10.66 6.82 10.66 6.82s2.02 2.1 3.25 2.1c.28 0 .52-.1.68-.38.86-1.46-8.06-8.22-8.56-11.01-.34-1.9.24-2.85 1.31-2.85Z"/><path fill="#FFD21E" d="M38.6 76.69c2.75-4.04 2.55-7.07-1.22-10.84-3.78-3.77-5.98-9.3-5.98-9.3s-.82-3.2-2.69-2.9c-1.87.3-3.24 5.08.68 8.01 3.91 2.93-.78 4.92-2.29 2.17-1.5-2.75-5.62-9.82-7.76-11.18-2.13-1.35-3.63-.6-3.13 2.2.5 2.79 9.43 9.55 8.56 11-.87 1.47-3.93-1.71-3.93-1.71s-9.57-8.71-11.66-6.44c-2.08 2.27 1.59 4.17 6.8 7.33 5.23 3.16 5.64 4 4.9 5.2-.75 1.2-12.28-8.53-13.36-4.4-1.08 4.11 11.77 5.3 10.98 8.15-.8 2.85-9.06-5.38-10.74-2.18-1.7 3.21 11.65 6.98 11.76 7.01 4.3 1.12 15.25 3.49 19.08-2.12Z"/><path fill="#FF9D0B" d="M77.4 48c1.62 0 3.07.66 4.07 1.87a5.97 5.97 0 0 1 1.33 3.76 7.1 7.1 0 0 1 1.95-.3c1.55 0 2.95.59 3.94 1.66a5.8 5.8 0 0 1 .8 7 5.3 5.3 0 0 1 1.78 2.82c.24.9.48 2.8-.8 4.74a5.22 5.22 0 0 1 .37 5.02c-1.02 2.32-3.57 4.14-8.51 6.1-3.08 1.22-5.9 2-5.92 2.01a44.33 44.33 0 0 1-10.93 1.6c-5.86 0-10.05-1.8-12.46-5.34-3.88-5.69-3.33-10.9 1.7-15.92 2.78-2.78 4.63-6.87 5.01-7.77.78-2.66 2.83-5.62 6.24-5.62a5.7 5.7 0 0 1 4.6 2.46c1-1.26 1.98-2.25 2.87-2.82A7.4 7.4 0 0 1 77.4 48Zm0 4c-.51 0-1.13.22-1.82.65-2.13 1.36-6.25 8.43-7.76 11.18a2.43 2.43 0 0 1-2.14 1.31c-1.54 0-2.75-1.53-.14-3.48 3.91-2.93 2.54-7.72.67-8.01a1.54 1.54 0 0 0-.24-.02c-1.7 0-2.45 2.93-2.45 2.93s-2.2 5.52-5.97 9.3c-3.78 3.77-3.98 6.8-1.22 10.83 1.87 2.75 5.47 3.58 9.15 3.58 3.82 0 7.73-.9 9.93-1.46.1-.03 13.45-3.8 11.76-7-.29-.54-.75-.76-1.34-.76-2.38 0-6.71 3.54-8.57 3.54-.42 0-.71-.17-.83-.6-.8-2.85 12.05-4.05 10.97-8.17-.19-.73-.7-1.02-1.44-1.02-3.14 0-10.2 5.53-11.68 5.53-.1 0-.19-.03-.23-.1-.74-1.2-.34-2.04 4.88-5.2 5.23-3.16 8.9-5.06 6.8-7.33-.23-.26-.57-.38-.98-.38-3.18 0-10.67 6.82-10.67 6.82s-2.02 2.1-3.24 2.1a.74.74 0 0 1-.68-.38c-.87-1.46 8.05-8.22 8.55-11.01.34-1.9-.24-2.85-1.31-2.85Z"/><path fill="#FFD21E" d="M56.33 76.69c-2.75-4.04-2.56-7.07 1.22-10.84 3.77-3.77 5.97-9.3 5.97-9.3s.82-3.2 2.7-2.9c1.86.3 3.23 5.08-.68 8.01-3.92 2.93.78 4.92 2.28 2.17 1.51-2.75 5.63-9.82 7.76-11.18 2.13-1.35 3.64-.6 3.13 2.2-.5 2.79-9.42 9.55-8.55 11 .86 1.47 3.92-1.71 3.92-1.71s9.58-8.71 11.66-6.44c2.08 2.27-1.58 4.17-6.8 7.33-5.23 3.16-5.63 4-4.9 5.2.75 1.2 12.28-8.53 13.36-4.4 1.08 4.11-11.76 5.3-10.97 8.15.8 2.85 9.05-5.38 10.74-2.18 1.69 3.21-11.65 6.98-11.76 7.01-4.31 1.12-15.26 3.49-19.08-2.12Z"/></svg>Hugging Face</a>
+      <a class="research-link-chip research-link-chip-on-mosaic ecosystem-chip" href="https://github.com/Bodhan-AI" target="_blank" rel="noopener noreferrer"><svg class="chip-ico" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path fill="currentColor" d="M6.766 11.328c-2.063-.25-3.516-1.734-3.516-3.656 0-.781.281-1.625.75-2.188-.203-.515-.172-1.609.063-2.062.625-.078 1.468.25 1.968.703.594-.187 1.219-.281 1.985-.281.765 0 1.39.094 1.953.265.484-.437 1.344-.765 1.969-.687.218.422.25 1.515.046 2.047.5.593.766 1.39.766 2.203 0 1.922-1.453 3.375-3.547 3.64.531.344.89 1.094.89 1.954v1.625c0 .468.391.734.86.547C13.781 14.359 16 11.53 16 8.03 16 3.61 12.406 0 7.984 0 3.563 0 0 3.61 0 8.031a7.88 7.88 0 0 0 5.172 7.422c.422.156.828-.125.828-.547v-1.25c-.219.094-.5.156-.75.156-1.031 0-1.64-.562-2.078-1.609-.172-.422-.36-.672-.719-.719-.187-.015-.25-.093-.25-.187 0-.188.313-.328.625-.328.453 0 .844.281 1.25.86.313.452.64.655 1.031.655s.641-.14 1-.5c.266-.265.47-.5.657-.656"/></svg>GitHub</a>
+    </nav>
+  </div>
+</aside>
+
+<footer class="post-footer">
+  <div class="research-article-column">
+    <p>Indic-Speak · a joint effort between Bodhan AI and AI4Bharat · September 2026</p>
+    <p>© 2026 Bodhan AI. All rights reserved.</p>
+  </div>
+</footer>
+
+<button type="button" id="top-btn" aria-label="Back to top">↑</button>
+</div>

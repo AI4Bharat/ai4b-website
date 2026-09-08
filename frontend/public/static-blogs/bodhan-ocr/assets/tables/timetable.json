@@ -1,0 +1,20 @@
+{
+  "image": "timetable.png",
+  "width": 2408,
+  "height": 716,
+  "blocks": [
+    {
+      "order": 1,
+      "label": "Table",
+      "type": "Table",
+      "bbox_yxyx_per_mille": [
+        14.7,
+        3.8,
+        992.9,
+        988
+      ],
+      "conf": 0.977,
+      "text": "<table>\n<thead>\n<tr>\n<th colspan=\"2\">Academic Year</th>\n<th>Scheme</th>\n<th>Semester</th>\n<th>Section</th>\n<th>Room No</th>\n<th>Class<br/>Coordinator</th>\n<th colspan=\"2\">Semester<br/>Commencement</th>\n<th>Last Working Day</th>\n</tr>\n<tr>\n<th colspan=\"2\">2022-23</th>\n<th>2021</th>\n<th>IV</th>\n<th>-</th>\n<th>320</th>\n<th>Sandeep Y M</th>\n<th colspan=\"2\">05-06-2023</th>\n<th>16-09-2023</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Time<br/>Day</td>\n<td>8.30 am<br/>To<br/>9.30 am</td>\n<td>9.30 am<br/>To<br/>10.30 am</td>\n<td>10.30 am<br/>To<br/>10.50 am</td>\n<td>10.50 am<br/>To<br/>11.50 am</td>\n<td>11.50 am<br/>To<br/>12.50 pm</td>\n<td>12.50 pm<br/>To<br/>1.45 pm</td>\n<td>1.45 pm<br/>To<br/>2.40 pm</td>\n<td>2.40 pm<br/>To<br/>3.35 pm</td>\n<td>3.35 pm<br/>To<br/>4.30 pm</td>\n</tr>\n<tr>\n<td>MON</td>\n<td>EM</td>\n<td>MC</td>\n<td>TEA BREAK</td>\n<td>MAT</td>\n<td>DSD</td>\n<td rowspan=\"6\">LUNCH<br/>BREAK</td>\n<td colspan=\"2\">← EML-II (B3) / DSD (B1) --&gt;</td>\n<td>Mentor-Mentee</td>\n</tr>\n<tr>\n<td>TUE</td>\n<td>MC</td>\n<td>MAT</td>\n<td>TEA BREAK</td>\n<td>DSD</td>\n<td>EM</td>\n<td>UHV</td>\n<td colspan=\"2\">&lt;----- EML-II (B2) / DSD (B3) -----&gt;</td>\n</tr>\n<tr>\n<td>WED</td>\n<td>BE</td>\n<td>MC</td>\n<td>TEA BREAK</td>\n<td>Kannada</td>\n<td>MAT</td>\n<td colspan=\"3\">&lt;----------- FORUM ACTIVITY-----------&gt;</td>\n</tr>\n<tr>\n<td>THU</td>\n<td>MAT</td>\n<td>DSD</td>\n<td>TEA BREAK</td>\n<td colspan=\"2\">SOC- 302 A (Batch 1: 01-34)/<br/>MC- 302 B (Batch 2: 35-69)</td>\n<td colspan=\"2\">&lt;-- EML-II (B1) / DSD( B2) --&gt;</td>\n<td>Activity</td>\n</tr>\n<tr>\n<td>FRI</td>\n<td>MC</td>\n<td>EM</td>\n<td>TEA BREAK</td>\n<td colspan=\"2\">SOC- 302 A (Batch 2: 35-69)/<br/>MC- 302 B (Batch 1: 01-34)</td>\n<td colspan=\"3\">&lt;------- NSS /NCC /Sports / YOGA --------&gt;</td>\n</tr>\n<tr>\n<td>SAT</td>\n<td>DSD</td>\n<td>BE</td>\n<td>TEA BREAK</td>\n<td>EM</td>\n<td>UHV</td>\n<td colspan=\"3\"></td>\n</tr>\n</tbody>\n</table>"
+    }
+  ]
+}

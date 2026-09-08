@@ -1,0 +1,156 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ripple variants &mdash; pick one</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;600&family=Manrope:wght@400;600;700&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#2E3238;--muted:#6B6259;--accent:#C2410C;--cream:#FFF9F0;--white:#fff;
+        --border:rgba(255,234,210,.95)}
+  body{margin:0;background:var(--cream);color:var(--ink);
+       font-family:Manrope,system-ui,sans-serif;padding:2rem 1.25rem 5rem}
+  .wrap{max-width:1080px;margin:0 auto}
+  h1{font-family:'EB Garamond',Georgia,serif;font-weight:600;font-size:2rem;margin:0 0 .35rem}
+  .sub{color:var(--muted);margin:0 0 2.25rem;font-size:.95rem;line-height:1.6;max-width:52rem}
+  .v{margin:0 0 2.5rem}
+  .vh{display:flex;align-items:baseline;gap:.7rem;margin:0 0 .6rem;flex-wrap:wrap}
+  .tag{font-family:'JetBrains Mono',monospace;font-size:.66rem;font-weight:700;letter-spacing:.1em;
+       text-transform:uppercase;color:var(--accent);background:#FFF4E6;border-radius:4px;padding:4px 8px}
+  .vt{font-weight:700;font-size:1rem}
+  .vd{color:var(--muted);font-size:.88rem;line-height:1.55;margin:0 0 .7rem;max-width:60rem}
+  .card{position:relative;overflow:hidden;border-radius:1rem;border:1px solid var(--border);
+        background:radial-gradient(125% 165% at -5% 50%,#F2BB86 0%,#F9D6B4 24%,#FCE7D1 46%,
+          #FDF0E1 68%,#FEF6EC 86%,#FFFAF3 100%),var(--white);
+        height:300px;display:grid;place-items:center}
+  .card.plain{background:var(--white)}
+  canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .title{position:relative;font-family:'EB Garamond',Georgia,serif;font-size:2.1rem;font-weight:600;
+         text-align:center;line-height:1.15;pointer-events:none;padding:0 1rem}
+  @media(max-width:640px){.card{height:230px}.title{font-size:1.4rem}}
+</style>
+<div class="wrap">
+<h1>Ripple, four ways</h1>
+<p class="sub">All four are the same idea &mdash; sound radiating from a source, driven by Kavya&rsquo;s real
+loudness envelope &mdash; drawn at full resolution with far fewer and crisper rings than the version on the
+post. Tell me a letter (or a mix, e.g. &ldquo;C but slower&rdquo;) and I will put it on the hero.</p>
+
+<div class="v"><div class="vh"><span class="tag">A</span><span class="vt">Clean rings</span></div>
+<p class="vd">Twelve thin rings, wide apart, crisp hairlines. What a ripple actually looks like: you can follow one ring all the way out. Weight and colour still come from the envelope.</p>
+<div class="card"><canvas id="a"></canvas><div class="title">Indic-Speak: 45 voices for 22 Indian languages</div></div></div>
+
+<div class="v"><div class="vh"><span class="tag">B</span><span class="vt">Speech pulses</span></div>
+<p class="vd">A ring only when the voice actually starts a sound &mdash; emitted on envelope onsets rather than on a fixed clock. So the spacing between rings <em>is</em> the rhythm of the sentence, and the silences are visible gaps.</p>
+<div class="card"><canvas id="b"></canvas><div class="title">Indic-Speak: 45 voices for 22 Indian languages</div></div></div>
+
+<div class="v"><div class="vh"><span class="tag">C</span><span class="vt">Sampled wavefront</span></div>
+<p class="vd">The rings are made of discrete dots rather than continuous lines &mdash; audio is a sampled signal, so the wavefront is too. Dots thin out as the front expands.</p>
+<div class="card"><canvas id="c"></canvas><div class="title">Indic-Speak: 45 voices for 22 Indian languages</div></div></div>
+
+<div class="v"><div class="vh"><span class="tag">D</span><span class="vt">Many voices, interfering</span></div>
+<p class="vd">Three sources instead of one, their rings crossing. Reads as several voices in one room, which is the actual headline claim. Each source runs a different part of the envelope.</p>
+<div class="card"><canvas id="d"></canvas><div class="title">Indic-Speak: 45 voices for 22 Indian languages</div></div></div>
+</div>
+
+<script>
+const AMP = [0.275, 0.58, 0.373, 0.4, 0.352, 0.67, 0.463, 0.448, 0.456, 0.117, 0.552, 0.583, 0.287, 0.401, 0.365, 0.452, 0.257, 0.604, 0.417, 0.173, 0.789, 0.575, 0.635, 0.637, 0.343, 0.478, 0.019, 0.004, 0.161, 0.555, 0.442, 0.553, 0.515, 0.463, 0.095, 0.836, 0.017, 0.457, 0.412, 0.803, 0.427, 0.699, 0.281, 0.425, 0.359, 0.442, 0.438, 0.412, 0.09, 0.004, 0.154, 0.569, 0.425, 0.412, 0.403, 0.297, 0.413, 0.196, 0.762, 0.974, 0.941, 0.525, 0.471, 0.426, 0.008, 0.006, 0.004, 0.481, 0.296, 0.3, 0.386, 0.359, 0.082, 0.592, 0.602, 0.601, 0.655, 0.729, 0.558, 0.647, 0.519, 0.707, 0.379, 0.594, 0.553, 0.58, 0.22, 0.953, 0.329, 0.588, 0.314, 0.431, 0.052, 0.699, 0.134, 0.441, 0.401, 0.512, 0.739, 0.651, 0.906, 0.457, 0.016, 0.003, 0.806, 0.54, 0.233, 1.0, 1.0, 0.655, 0.215, 0.615, 0.069, 0.004, 0.003, 0.003, 0.361, 0.4, 0.396, 0.546, 0.458, 0.397, 0.509, 0.313, 0.733, 0.259, 0.321, 0.214, 0.552, 0.619, 0.385, 0.829, 0.679, 0.03, 0.128, 0.575, 0.852, 0.856, 0.461, 0.172, 0.033, 0.649, 0.57, 0.497, 0.48, 0.414, 0.386, 0.589, 0.057, 0.004, 0.005, 0.679, 0.916, 0.419, 0.738, 0.567, 0.309, 0.717, 0.21, 0.346, 0.091, 0.285, 0.263, 0.26, 0.38, 0.311, 0.426, 0.445, 0.652, 0.572, 0.327, 0.335, 0.418, 0.406, 0.607, 0.654], N = AMP.length;
+const WARM = ['#8F2F08','#A8380A','#C2410C','#D2691E','#E3A45C','#EFC79A'];
+function ramp(ctx, ox, oy, reach, stops){
+  const g = ctx.createRadialGradient(ox,oy,0,ox,oy,reach);
+  stops.forEach((s,i)=>g.addColorStop(i/(stops.length-1), s));
+  return g;
+}
+function mount(id, paint){
+  const cv = document.getElementById(id), ctx = cv.getContext('2d');
+  let W=0,H=0,dpr=1;
+  function layout(){
+    const r = cv.getBoundingClientRect();
+    dpr = Math.min(2, window.devicePixelRatio||1);
+    W = Math.round(r.width); H = Math.round(r.height);
+    cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  layout(); addEventListener('resize', layout);
+  const t0 = performance.now();
+  let told = false;
+  (function loop(now){
+    // rAF reports the frame's START time, which can precede a performance.now()
+    // taken just before it, so this clamp is load-bearing: a negative elapsed
+    // time becomes a negative radius and canvas throws.
+    try { paint(ctx, W, H, Math.max(0, now - t0) / 1000); }
+    catch (e) { if (!told) { told = true; console.error('variant ' + id + ': ' + e.message); } }
+    requestAnimationFrame(loop);
+  })(t0);
+}
+
+/* A - twelve clean rings */
+mount('a', (ctx,W,H,t)=>{
+  ctx.clearRect(0,0,W,H);
+  const ox=-W*0.04, oy=H/2, reach=Math.hypot(W-ox,oy)*1.05, RINGS=12, LIFE=6.4;
+  const g = ramp(ctx,ox,oy,reach,WARM);
+  for(let i=0;i<RINGS*2;i++){
+    const k=((t/LIFE)+i/RINGS)%2; if(k>1) continue;
+    const a=AMP[Math.floor((i*13)%N)];
+    ctx.globalAlpha = Math.min(1,k*10)*Math.pow(1-k,1.1)*(0.35+0.65*a);
+    ctx.lineWidth = 0.9+3.4*a;
+    ctx.strokeStyle = g;
+    ctx.beginPath(); ctx.arc(ox,oy,k*reach,-Math.PI/2.05,Math.PI/2.05); ctx.stroke();
+  }
+  ctx.globalAlpha=1;
+});
+
+/* B - a ring per speech onset */
+const ONSETS=(()=>{const o=[];for(let i=2;i<N;i++){if(AMP[i]>0.34&&AMP[i]-AMP[i-2]>0.13)o.push([i/9.2,AMP[i]]);}return o;})();
+mount('b', (ctx,W,H,t)=>{
+  ctx.clearRect(0,0,W,H);
+  const ox=-W*0.04, oy=H/2, reach=Math.hypot(W-ox,oy)*1.05, LIFE=5.6;
+  const span=ONSETS[ONSETS.length-1][0]+0.9, g=ramp(ctx,ox,oy,reach,WARM);
+  const tt=t%span;
+  for(const [ot,a] of ONSETS){
+    for(const off of [0,span]){
+      const k=(tt-ot+off)/LIFE; if(k<0||k>1) continue;
+      ctx.globalAlpha=Math.min(1,k*12)*Math.pow(1-k,1.05)*(0.4+0.6*a);
+      ctx.lineWidth=1.1+5.2*a*(1-k*0.4);
+      ctx.strokeStyle=g;
+      ctx.beginPath(); ctx.arc(ox,oy,k*reach,-Math.PI/2.05,Math.PI/2.05); ctx.stroke();
+    }
+  }
+  ctx.globalAlpha=1;
+});
+
+/* C - dotted wavefront */
+mount('c', (ctx,W,H,t)=>{
+  ctx.clearRect(0,0,W,H);
+  const ox=-W*0.04, oy=H/2, reach=Math.hypot(W-ox,oy)*1.05, RINGS=9, LIFE=6.8;
+  for(let i=0;i<RINGS*2;i++){
+    const k=((t/LIFE)+i/RINGS)%2; if(k>1) continue;
+    const a=AMP[Math.floor((i*17)%N)], r=k*reach;
+    const fade=Math.min(1,k*9)*Math.pow(1-k,1.15);
+    if(fade<=0.01) continue;
+    const step=13/Math.max(0.12,r/reach)/reach;   // constant arc spacing
+    ctx.fillStyle = WARM[Math.min(5,Math.floor(k*5.4))];
+    for(let th=-Math.PI/2.05; th<Math.PI/2.05; th+=step){
+      const j=Math.sin(th*7+i)*0.5+0.5;
+      ctx.globalAlpha=fade*(0.25+0.75*a)*(0.55+0.45*j);
+      const rad=0.7+2.1*a*(0.6+0.4*j);
+      ctx.beginPath(); ctx.arc(ox+Math.cos(th)*r, oy+Math.sin(th)*r, rad, 0, 6.2832); ctx.fill();
+    }
+  }
+  ctx.globalAlpha=1;
+});
+
+/* D - three interfering sources */
+mount('d', (ctx,W,H,t)=>{
+  ctx.clearRect(0,0,W,H);
+  const SRC=[[-0.03,0.5,0,'#A8380A'],[0.16,0.14,37,'#C2410C'],[0.11,0.87,71,'#D98A3A']];
+  const RINGS=8, LIFE=7.2;
+  for(const [fx,fy,seed,col] of SRC){
+    const ox=W*fx, oy=H*fy, reach=Math.hypot(W-ox,Math.max(oy,H-oy))*1.15;
+    for(let i=0;i<RINGS*2;i++){
+      const k=((t/LIFE)+i/RINGS)%2; if(k>1) continue;
+      const a=AMP[(i*19+seed)%N];
+      ctx.globalAlpha=Math.min(1,k*10)*Math.pow(1-k,1.25)*(0.3+0.6*a);
+      ctx.lineWidth=0.8+2.6*a;
+      ctx.strokeStyle=col;
+      ctx.beginPath(); ctx.arc(ox,oy,k*reach,0,6.2832); ctx.stroke();
+    }
+  }
+  ctx.globalAlpha=1;
+});
+</script>

@@ -1,0 +1,285 @@
+/* ── The voice range ──────────────────────────────────────────────────────
+ * What replaced the 45-row waveform ladder, and why.
+ *
+ * The ladder drew every voice's real loudness envelope and made the strip's LENGTH
+ * stand for pace. Both were mistakes. Forty-five ~18-second speech envelopes are
+ * forty-five samples of the same texture, so they carried no distinguishing
+ * information at that size; and a voice's pace is not a property of the voice.
+ * Measured over the library, 73% of the variance in characters per second is
+ * explained by which language the voice reads -- Meitei Mayek averages 9.9 ch/s and
+ * Tamil 13.9 -- so comparing two voices' pace compares two orthographies. Only 15%
+ * of the variance in pitch is explained by language, which is why pitch is the one
+ * measure here that survives being put on a shared axis.
+ *
+ * So: one axis, median pitch, positions true. The two registers face each other
+ * across it, which is what shows the thing the ladder buried -- 23 female voices
+ * packed into 83 Hz against 22 male voices spread over 123, sharing a 22 Hz band.
+ * Positions are in percent of the axis and every label is CSS px, so nothing scales
+ * with the container the way in-SVG type does.
+ * ──────────────────────────────────────────────────────────────────────── */
+.vr { margin-top: 16px; }
+
+/* ── the spectrum ── */
+.vr-spectrum {
+  padding: 0.6rem 0.9rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--white);
+}
+.vr-lane-label {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.vr-lane-label.is-f { color: #C2410C; }
+.vr-lane-label.is-m { color: #0F766E; text-align: right; }
+.vr-lane-label b { font-weight: 700; }
+
+.vr-field { position: relative; height: 150px; margin: 0.3rem 0; }
+
+/* The band both registers reach into. It is the only structural mark on the axis,
+   because it is the only claim the axis is making beyond position. */
+.vr-band {
+  position: absolute; top: 0; bottom: 0;
+  background: rgba(194, 65, 12, 0.07);
+  border-left: 1px dashed rgba(194, 65, 12, 0.35);
+  border-right: 1px dashed rgba(194, 65, 12, 0.35);
+}
+.vr-band-label {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.vr-axis {
+  position: absolute; left: 0; right: 0; top: 50%;
+  height: 1px; background: var(--border);
+}
+.vr-tick {
+  position: absolute; top: 50%;
+  transform: translateX(-50%);
+  padding-top: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--chart-text-secondary);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+.vr-tick::before {
+  content: '';
+  position: absolute; left: 50%; top: -3px;
+  width: 1px; height: 5px;
+  background: var(--border);
+}
+
+/* A voice. Lane 0 sits against the axis and the lanes stack away from it, so the
+   crowding at a pitch is legible as height. */
+.vr-dot {
+  position: absolute;
+  width: 11px; height: 11px;
+  margin-left: -5.5px;
+  padding: 0;
+  border: 1px solid var(--white);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+.vr-dot.is-f { background: #C2410C; }
+.vr-dot.is-m { background: #0F766E; }
+.vr-dot:hover, .vr-dot:focus-visible { transform: scale(1.5); z-index: 3; outline: none; }
+.vr-dot.is-on {
+  transform: scale(1.6);
+  box-shadow: 0 0 0 3px var(--white), 0 0 0 4px currentColor;
+  z-index: 4;
+}
+.vr-dot.is-f.is-on { color: #C2410C; }
+.vr-dot.is-m.is-on { color: #0F766E; }
+
+/* The name of the voice under the pointer, parked on the axis so it never covers
+   another dot. */
+.vr-hover {
+  position: absolute; top: 50%;
+  transform: translate(-50%, -50%);
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--text-primary);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+.vr-hover.is-on { opacity: 1; }
+
+/* ── directory and player, side by side where there is room ── */
+.vr-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.85rem;
+  margin-top: 0.85rem;
+}
+
+
+
+/* ── the one voice you are listening to ── */
+.vr-now {
+  padding: 0.8rem 0.9rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--white);
+}
+.vr-now-name {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.vr-now-meta {
+  display: block;
+  margin-top: 0.15rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--chart-text-secondary);
+}
+.vr-now-desc {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+.vr-now-desc em { font-style: normal; font-weight: 700; color: var(--text-primary); }
+.vr-play-row { display: flex; align-items: center; gap: 0.6rem; margin-top: 0.7rem; }
+.vr-play {
+  flex: none; width: 2.1rem; height: 2.1rem; border-radius: 50%;
+  border: 1px solid var(--accent); background: var(--accent-soft); color: var(--accent);
+  cursor: pointer; display: grid; place-items: center; padding: 0;
+  transition: background 0.16s ease, transform 0.16s ease;
+}
+.vr-play:hover { background: var(--accent); color: var(--white); transform: scale(1.06); }
+.vr-play:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.vr-play svg { width: 0.8rem; height: 0.8rem; display: block; }
+/* The one waveform on the page that has a job: it is the progress track. */
+.vr-wave { flex: 1 1 auto; min-width: 0; height: 26px; display: block; color: var(--accent); }
+.vr-wave path { fill: none; stroke: currentColor; stroke-width: 0.62; }
+.vr-wave .vr-w-base { opacity: 0.28; }
+/* The clip rect the progress animation widens; it paints nothing itself. */
+.vr-veil { fill: none; }
+.vr-clock {
+  flex: none;
+  font-family: var(--font-mono); font-size: 0.62rem;
+  color: var(--chart-text-secondary); font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 620px) {
+  .vr-field { height: 132px; }
+  /* 8px dots against a ~330px axis: the 5 Hz lane threshold is 9px there. */
+  .vr-dot { width: 8px; height: 8px; margin-left: -4px; }
+  .vr-spectrum { padding: 0.6rem 0.5rem 0.5rem; }
+}
+
+/* ── the recommended voices for the chosen language ─────────────────────────
+ * The wall picks a language; these are the voices to start with in it, and they
+ * are the same objects ringed on the axis above. Chips rather than cards: the
+ * description and the player belong to the one panel below, not to each name. */
+.vr-rec {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.6rem;
+  margin-bottom: 0.7rem;
+  min-height: 1.9rem;
+}
+.vr-rec-label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--chart-text-secondary);
+}
+.vr-rec-name {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--white);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+}
+.vr-rec-name i {
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  color: var(--chart-text-secondary);
+}
+.vr-rec-name:hover { border-color: var(--accent); }
+.vr-rec-name:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.vr-rec-name.is-on { background: var(--accent); border-color: var(--accent); color: var(--white); }
+.vr-rec-name.is-on i { color: rgba(255, 255, 255, 0.78); }
+.vr-rec-judge {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--chart-text-secondary);
+}
+
+/* A voice recommended for the chosen language, on the axis. */
+.vr-dot.is-rec { box-shadow: 0 0 0 2px var(--white), 0 0 0 3.5px currentColor; z-index: 3; }
+.vr-dot.is-f.is-rec { color: #C2410C; }
+.vr-dot.is-m.is-rec { color: #0F766E; }
+
+/* ── the three steps of the folded card ──────────────────────────────────── */
+.vc-step {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.4rem 0 0.55rem;
+}
+.vc-step:first-child { margin-top: 0.2rem; }
+.vc-step b {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.25rem; height: 1.25rem;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--white);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+.vc-step span {
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.vc-step i {
+  font-style: normal;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+/* The wall is the selector now, so the pair's own language tabs would be a second
+   control for the same thing. */
+#abTabs { display: none; }

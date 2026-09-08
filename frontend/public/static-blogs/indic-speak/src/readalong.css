@@ -1,0 +1,127 @@
+/* Transcript left, the pair of players right. Below 900px they stack, transcript
+   first, because on a phone the words are the thing worth the width. */
+.ab-panel[data-readalong].is-active {
+  display: grid;
+}
+.ab-panel[data-readalong] {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 22rem);
+  gap: 1.5rem;
+  /* the transcript is shorter than a stack of two players, so it centres
+     against them rather than leaving a 260px dead band underneath */
+  align-items: center;
+}
+.ab-panel[data-readalong] > .rl-left { grid-column: 1; }
+.ab-panel[data-readalong] > .ab-pair {
+  grid-column: 2;
+  display: grid;
+  /* post.css sets `1fr 1fr` here, which put the two readings side by side inside
+     the right-hand column. One below the other: they are the same sentence read
+     twice, so they should be compared vertically against one transcript. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.7rem;
+  margin-top: 0;
+}
+@media (max-width: 900px) {
+  .ab-panel[data-readalong] { grid-template-columns: 1fr; }
+  .ab-panel[data-readalong] > .ab-pair {
+    grid-column: 1; grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.rl-status {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.ab-panel[data-following] .rl-status { color: var(--accent); }
+
+/* white-space:pre-wrap keeps the trailing space that lives inside each span, so
+   re-rendering the sentence as spans does not weld the words together */
+.ab-panel[data-readalong] .ab-text {
+  white-space: pre-wrap;
+  font-size: 1.02rem;
+  line-height: 1.95;
+}
+.rl-w {
+  border-radius: 3px;
+  transition: background-color 0.12s linear, color 0.12s linear;
+}
+/* Words already spoken step back to grey, so the eye is drawn to the highlight
+   and the line behind it reads as done. #78716C is the lightest grey that still
+   clears 4.5:1 on the scroller's white -- read text is de-emphasised, not
+   unreadable. */
+.rl-w.is-done { color: #78716C; }
+.rl-w.is-on {
+  /* A marker behind the baseline rather than a filled rectangle. Declared here
+     because readalong.css is appended after the post's own stylesheets, so a copy
+     silently lost -- the gradient never shipped until this moved. */
+  background: linear-gradient(to bottom, transparent 8%, #FFE0C2 8%, #FFE0C2 92%, transparent 92%);
+  color: var(--chart-text-primary, #2C241C);
+  border-radius: 2px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+@media (prefers-reduced-motion: reduce) { .rl-w { transition: none; } }
+
+/* The estimate is declared where it is used, not only in a note further down. */
+
+/* A typeset expression inside a transcript: the browser's own math layout,
+   sized to the line, lit as one unit. */
+.rl-tex math { font-size: 1.05em; }
+.rl-tex.is-on, .rl-tex.is-done { padding: 0 0.1em; }
+
+/* The voice panel's transcript line and the excerpt mark. */
+.vr-text { margin: 0.6rem 0 0; font-family: var(--indic); font-size: 0.86rem; line-height: 1.7; color: var(--text-secondary); }
+.vr-text.rtl { direction: rtl; text-align: right; }
+.vr-text:empty { display: none; }
+.rl-more { color: var(--chart-text-secondary); margin-left: 0.15em; }
+
+/* The style samples: the status line sits on the example card, above the text,
+   and the lit word keeps the card's own colouring for the rest. */
+.sx-example .rl-status { margin: 0.6rem 0 0.2rem; }
+.sx-example[data-following] .rl-status, .sx-body[data-following] .rl-status { color: var(--accent); }
+
+/* ── the audiobook: same split, one clip, a scrolling transcript ─────────── */
+.rl-long {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 22rem);
+  gap: 1.5rem;
+  /* the transcript is shorter than a stack of two players, so it centres
+     against them rather than leaving a 260px dead band underneath */
+  align-items: center;
+}
+.rl-long .rl-right { position: sticky; top: 5rem; }
+@media (max-width: 900px) {
+  .rl-long { grid-template-columns: 1fr; }
+  .rl-long .rl-right { position: static; }
+}
+/* A 491-word chapter cannot sit on one screen, so it scrolls in its own box and
+   the highlight brings itself into view. */
+.rl-scroll {
+  max-height: min(58vh, 30rem);
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--white);
+  padding: 1rem 1.1rem;
+}
+.rl-body { white-space: pre-wrap; font-size: 1rem; line-height: 1.95; margin: 0; }
+/* .ab-text brings its own card, which is right for the short clips where it IS the
+   card. Inside the scroller that made two: same white, same border, one nested in
+   the other with two lots of padding. The scroller is the canvas here. */
+.rl-scroll > .rl-body {
+  background: none;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+}
+.rl-s { display: block; margin: 0 0 0.55rem; }
+.rl-s:last-child { margin-bottom: 0; }
+/* Inside a paragraph the sentences run on, which is what a paragraph is. The
+   block treatment above stays for the short clips, which are one sentence each. */
+.rl-p { margin: 0 0 1.05rem; }
+.rl-p:last-child { margin-bottom: 0; }
+.rl-p .rl-s { display: inline; margin: 0; }

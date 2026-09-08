@@ -1,0 +1,23 @@
+/* ── The typeset row in the normaliser showcase ─────────────────────────────
+ * The written row shows the LaTeX as it arrives and the spoken row shows what the
+ * model is handed; this row sits between them and shows the expression the way a
+ * reader would see it in a book. The math is MathML, pre-rendered by
+ * src/texgen.js and laid out by the browser, so there is nothing to style but the
+ * prose around it.
+ * ──────────────────────────────────────────────────────────────────────── */
+.norm-tex {
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  line-height: 1.85;
+  color: var(--chart-text-primary);
+}
+.norm-tex math { font-size: 1.08em; }
+
+/* The disclosure that keeps the audiobook playing, when the narration has just run
+   past the paragraph on screen. */
+.chart-data-toggle.is-nudge {
+  color: var(--accent);
+  animation: nudge 1.1s ease-in-out 3;
+}
+@keyframes nudge { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+@media (prefers-reduced-motion: reduce) { .chart-data-toggle.is-nudge { animation: none; } }

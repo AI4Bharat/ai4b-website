@@ -1,0 +1,16 @@
+Guy	Auto! ಅಣ್ಣ, Indiranagar 100 feet road ಬರ್ತೀರಾ?
+Driver	Indiranagar ah? ಇಲ್ಲ sir, ವಾಪಸ್ ಬರೋಕೆ ಸವಾರಿ ಸಿಗಲ್ಲ. Full traffic है उधर.
+Guy	ಅಯ್ಯೋ ಅಣ್ಣ, please. Meter ಮೇಲೆ ಸ್ವಲ್ಪ extra ಕೊಡ್ತೀನಿ.
+Driver	Meter ಬೇಡ sir, fixed rate. 200 rupees ಕೊಡಿ.
+Guy	200?! क्या भैया, इतना पास तो है. Koramangala से Indiranagar 200? IT techie दिख रहा हूँ क्या?
+Driver	Sir, peak hour sir. ಈಗ Sony World junction ಗೆ ಹೋದ್ರೆ, ಪಕ್ಕಾ half an hour stuck ಆಗ್ತೀವಿ. U-turn मारके जाना पड़ेगा. 150 last, ಬನ್ನಿ.
+Guy	ठीक है, चलो. Make it 130. ನಾನು local ಆಗಿದ್ದೀನಿ boss, daily commute है मेरा.
+Driver	ಸರಿ sir, ಬನ್ನಿ ಬನ್ನಿ. ಕೂತ್ಕೊಳ್ಳಿ. 150 ಕೊಡಿ, ख़ुशी से. Let's go.
+Guy	ಅಣ್ಣ, left ತಗೊಳ್ಳಿ next signal ಅಲ್ಲಿ. Google Maps ಅಲ್ಲಿ shortcut दिखा रहा है.
+Driver	Map ಬೇಡ sir, map follow ಮಾಡಿದ್ರೆ dead-end ಹೋಗಿ ಗುಂಡಿ ಲಿ ಬೀಳ್ತೀವಿ. ನಂಗೆ ಗೊತ್ತು, I know one inside road. मस्त route है.
+Guy	हाँ, main road full block ಆಗಿದೆ. ಎಂಥಾ traffic ಗುರು Bengaluru ಅಲ್ಲಿ आज कल.
+Driver	ಹೌದು sir, क्या करेगा. Metro काम चल रहा है ना. अंदर का road safe है, but ಸ್ವಲ್ಪ bumps ಇರುತ್ತೆ. ಹಿಡ್ಕೊಳ್ಳಿ.
+Guy	Done boss. Drop ಮಾಡ್ಬಿಡಿ near Toit.
+Driver	Toit ah? ಅಯ್ಯೋ, उधर parking नहीं मिलता sir. Police ಮಾಮ full fine ಹಾಕ್ತಾರೆ. I will drop you near the metro station, वहाँ से walk ಮಾಡಿ.
+Guy	ठीक है, ಪರವಾಗಿಲ್ಲ. PayTM ಮಾಡ್ತೀನಿ, QR code ಇದ್ಯಾ?
+Driver	हाँ sir, seat पीछे है देखो. Scan ಮಾಡಿ. Correct ಆಗಿ 150 ಹಾಕಿ, boss!
