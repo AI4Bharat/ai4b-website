@@ -56,7 +56,7 @@ const POST = {
       embed: "https://www.youtube.com/embed/5GuSEcs4ucc?start=7&rel=0",
       icon: "play",
     },
-    { label: "Documentation", url: "#", icon: "docs", soon: true },
+    { label: "API Docs", url: "https://console.bodhan.ai/api-docs/#speech-to-text-api", icon: "docs", },
   ],
 };
 
@@ -440,17 +440,17 @@ export default function BodhanASRBlogPage() {
     const handleScroll = () => {
       const iframe = iframeRef.current;
       if (!iframe || !iframe.contentDocument) return;
-      
+
       const iframeRect = iframe.getBoundingClientRect();
       let currentId = sections[0]?.id;
-      
+
       for (const section of sections) {
         const el = iframe.contentDocument.getElementById(section.id);
         if (el) {
           const rect = el.getBoundingClientRect();
           if (rect.width === 0 && rect.height === 0) continue;
           const topInViewport = iframeRect.top + rect.top;
-          
+
           if (topInViewport <= 180) {
             currentId = section.id;
           }
