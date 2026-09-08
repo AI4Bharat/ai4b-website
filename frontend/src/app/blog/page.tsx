@@ -560,7 +560,7 @@ const fetchBlogList = async (): Promise<Blog[]> => {
       related_link: null,
       markdown_content: "",
       page_url: "bodhan-asr",
-      authors: [{ name: "AI4Bharat Team" }]
+      authors: [{ name: "Bodhan AI & AI4Bharat" }]
     };
     
     // Inject Bodhan TTS static blog
@@ -573,7 +573,7 @@ const fetchBlogList = async (): Promise<Blog[]> => {
       related_link: null,
       markdown_content: "",
       page_url: "bodhan-tts",
-      authors: [{ name: "AI4Bharat Team & Bodhan AI Team" }]
+      authors: [{ name: "Bodhan AI & AI4Bharat" }]
     };
 
     // Inject Bodhan MT static blog
@@ -586,7 +586,7 @@ const fetchBlogList = async (): Promise<Blog[]> => {
       related_link: null,
       markdown_content: "",
       page_url: "bodhan-mt",
-      authors: [{ name: "Bodhan Translation Team" }]
+      authors: [{ name: "Bodhan AI & AI4Bharat" }]
     };
 
     // Inject Bodhan OCR static blog
@@ -599,7 +599,7 @@ const fetchBlogList = async (): Promise<Blog[]> => {
       related_link: null,
       markdown_content: "",
       page_url: "bodhan-ocr",
-      authors: [{ name: "Bodhan AI and AI4Bharat" }]
+      authors: [{ name: "Bodhan AI & AI4Bharat" }]
     };
 
     validBlogs.unshift(bodhanOCRBlog);
