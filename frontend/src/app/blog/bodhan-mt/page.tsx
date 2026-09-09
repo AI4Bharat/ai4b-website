@@ -37,7 +37,7 @@ const POST = {
   title: "Indic-Translate: State-of-the-art MT for India",
   date: "September 8, 2026",
   readMin: 12,
-  author: "The Bodhan Translation Team",
+  author: "Bodhan AI & AI4Bharat",
   links: [
     {
       label: "Hugging Face",

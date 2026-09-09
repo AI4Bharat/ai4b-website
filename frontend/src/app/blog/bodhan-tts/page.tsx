@@ -37,7 +37,7 @@ const POST = {
   title: "Indic-Speak: Text-to-Speech for the Way India Actually Writes",
   date: "September 8, 2026",
   readMin: 6,
-  author: "Bodhan AI and AI4Bharat",
+  author: "Bodhan AI & AI4Bharat",
   links: [
     {
       label: "Demo",
@@ -51,7 +51,7 @@ const POST = {
       icon: "hf",
     },
     { label: "GitHub", url: "#", icon: "github", soon: true },
-    { label: "Documentation", url: "https://console.bodhan.ai/api-docs/#text-to-speech-api", icon: "docs", soon: true },
+    { label: "API Docs", url: "https://console.bodhan.ai/api-docs/#text-to-speech-api", icon: "docs", soon: true },
     { label: "Try it out", url: "https://console.bodhan.ai/api-docs/#text-to-speech-api", icon: "bolt" },
   ],
 };
