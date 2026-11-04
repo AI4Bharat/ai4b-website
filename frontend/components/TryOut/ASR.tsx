@@ -196,7 +196,6 @@ export default function ASR({ services }: { services: any }) {
         ? prev.filter((item) => item !== value)
         : [...prev, value]
     );
-    console.log(preProcessor);
   };
 
   const handlePostCheckboxChange = (value: string) => {
@@ -205,7 +204,6 @@ export default function ASR({ services }: { services: any }) {
         ? prev.filter((item) => item !== value)
         : [...prev, value]
     );
-    console.log(postProcessor);
   };
 
   const handleFileChange = (event: any) => {
@@ -299,7 +297,7 @@ export default function ASR({ services }: { services: any }) {
               setService(event.target.value);
               setSourceLanguage(
                 services[event.target.value]["languageFilters"][
-                  "sourceLanguages"
+                "sourceLanguages"
                 ][0]
               );
             }}
